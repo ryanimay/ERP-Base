@@ -1,9 +1,16 @@
 package com.ex.erp.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Table(name="client")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ClientModel implements IBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,44 +22,4 @@ public class ClientModel implements IBaseModel {
     private String password;
     @Column(name = "roleId")
     private int roleId;
-
-    public ClientModel() {
-    }
-
-    public ClientModel(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
 }
