@@ -1,9 +1,15 @@
 package com.ex.erp.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 @Entity
 @Table(name = "permission")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PermissionModel implements GrantedAuthority, IBaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,30 +17,6 @@ public class PermissionModel implements GrantedAuthority, IBaseModel{
     private long id;
     @Column(name = "permissionName", nullable = false)
     private String permissionName;
-
-    public PermissionModel() {
-    }
-
-    public PermissionModel(int id, String permissionName) {
-        this.id = id;
-        this.permissionName = permissionName;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getPermissionName() {
-        return permissionName;
-    }
-
-    public void setPermissionName(String permissionName) {
-        this.permissionName = permissionName;
-    }
 
     @Override
     public String getAuthority() {
