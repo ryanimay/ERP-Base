@@ -1,7 +1,7 @@
 package com.ex.erp.config.security;
 
-import com.ex.erp.config.redis.cache.PermissionCache;
-import com.ex.erp.config.redis.cache.RoleCache;
+import com.ex.erp.service.cache.PermissionCache;
+import com.ex.erp.service.cache.RoleCache;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
