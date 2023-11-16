@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Entity
 @Table(name="client")
@@ -22,4 +21,8 @@ public class ClientModel implements IBaseModel {
     private String password;
     @Column(name = "roleId")
     private int roleId;
+    @Column(name = "is_active", nullable = false, columnDefinition = "BIT DEFAULT 1")
+    private boolean isActive;
+    @Column(name = "is_lock", nullable = false, columnDefinition = "BIT DEFAULT 0")
+    private boolean isLock;
 }
