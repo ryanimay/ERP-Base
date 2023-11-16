@@ -3,6 +3,7 @@ package com.ex.erp.config.redis.cache;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Map;
+import java.util.Set;
 
 public abstract class ICache {
 
@@ -30,6 +31,11 @@ public abstract class ICache {
      * */
     public void refresh(){
         redis.delete(REDIS_KEY);
+    }
+
+    public void refreshAll(){
+        Set<String> keys = redis.keys("*");
+        if (keys != null) redis.delete(keys);
     }
 
     @SuppressWarnings("unchecked")
