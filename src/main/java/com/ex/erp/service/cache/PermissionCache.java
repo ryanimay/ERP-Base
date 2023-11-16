@@ -1,4 +1,4 @@
-package com.ex.erp.config.redis.cache;
+package com.ex.erp.service.cache;
 
 import com.ex.erp.model.PermissionModel;
 import com.ex.erp.repository.PermissionRepository;

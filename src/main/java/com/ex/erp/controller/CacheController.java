@@ -1,6 +1,6 @@
 package com.ex.erp.controller;
 
-import com.ex.erp.config.redis.cache.ICache;
+import com.ex.erp.service.cache.ICache;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
