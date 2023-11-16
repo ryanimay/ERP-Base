@@ -42,17 +42,12 @@ public class TokenService {
         // 封裝帳密
         Authentication authToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
         // 執行帳密認證
-        try{
-            authToken = authenticationProvider.authenticate(authToken);
-        }catch (Exception e){
-            System.out.println("Authentication failed: " + e.getMessage());
-            throw e;
-        }
+        authToken = authenticationProvider.authenticate(authToken);
         // 認證成功後取得結果
         UserDetails userDetails = (UserDetails) authToken.getPrincipal();
         // 產token
         String accessToken = createAccessToken(userDetails.getUsername());
-        return new LoginResponse(accessToken, null, "Login Success");
+        return new LoginResponse(accessToken, null);
     }
 
     public Map<String,Object> parseToken(String token){
