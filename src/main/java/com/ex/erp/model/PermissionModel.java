@@ -15,11 +15,11 @@ public class PermissionModel implements GrantedAuthority, IBaseModel{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
-    @Column(name = "permissionName", nullable = false)
-    private String permissionName;
+    @Column(name = "authority", nullable = false)
+    private String authority;
 
     @Override
     public String getAuthority() {
-        return this.permissionName;
+        return this.authority;
     }
 }
