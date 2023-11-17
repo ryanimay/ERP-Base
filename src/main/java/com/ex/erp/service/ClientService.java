@@ -1,6 +1,6 @@
 package com.ex.erp.service;
 
-import com.ex.erp.dto.ClientRegisterDto;
+import com.ex.erp.dto.request.ClientRegisterDto;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.repository.ClientRepository;
 import com.ex.erp.tool.EncodeTool;
@@ -34,5 +34,9 @@ public class ClientService {
 
     public List<ClientModel> list() {
         return clientRepository.findAll();
+    }
+
+    public ClientModel findByUsername(String username) {
+        return clientRepository.findByUsername(username);
     }
 }
