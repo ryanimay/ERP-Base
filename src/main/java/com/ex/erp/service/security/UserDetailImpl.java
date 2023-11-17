@@ -1,4 +1,4 @@
-package com.ex.erp.config.security;
+package com.ex.erp.service.security;
 
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.service.cache.PermissionCache;
@@ -19,7 +19,7 @@ public class UserDetailImpl implements UserDetails {
     private RoleCache roleCache;
     private PermissionCache permissionCache;
 
-    public UserDetailImpl build(ClientModel client){
+    public UserDetailImpl build(ClientModel client) {
         ClientModel = client;
         return this;
     }
@@ -28,6 +28,14 @@ public class UserDetailImpl implements UserDetails {
     public void setCache(RoleCache roleCache, PermissionCache permissionCache) {
         this.roleCache = roleCache;
         this.permissionCache = permissionCache;
+    }
+
+    public ClientModel getClientModel() {
+        return ClientModel;
+    }
+
+    public Long getUserId(){
+        return ClientModel.getId();
     }
 
     @Override
@@ -65,14 +73,13 @@ public class UserDetailImpl implements UserDetails {
         return true;
     }
 
-    public void setClientModel(com.ex.erp.model.ClientModel clientModel) {
-        this.ClientModel = clientModel;
-    }
-
     private List<GrantedAuthority> getPermissionList(int roleId) {
         Map<String, Object> roleMap = roleCache.loadData();
         Map<String, Object> permissionMap = permissionCache.loadData();
         String permissions = roleMap.get(String.valueOf(roleId)).toString();
-        return Arrays.stream(permissions.split(",")).filter(permissionMap::containsKey).map(key -> (GrantedAuthority) permissionMap.get(key)).toList();
+        return Arrays.stream(permissions.split(","))
+                .filter(permissionMap::containsKey)
+                .map(key -> (GrantedAuthority) permissionMap.get(key))
+                .toList();
     }
 }
