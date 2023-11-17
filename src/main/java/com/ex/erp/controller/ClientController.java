@@ -1,16 +1,15 @@
 package com.ex.erp.controller;
 
-import com.ex.erp.config.jwt.TokenService;
-import com.ex.erp.dto.ClientRegisterDto;
-import com.ex.erp.dto.LoginRequest;
-import com.ex.erp.dto.LoginResponse;
-import com.ex.erp.model.ClientModel;
+import com.ex.erp.service.security.TokenService;
+import com.ex.erp.dto.request.ClientRegisterDto;
+import com.ex.erp.dto.request.LoginRequest;
+import com.ex.erp.dto.response.LoginResponse;
 import com.ex.erp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/client")
@@ -36,14 +35,20 @@ public class ClientController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest request){
-        ResponseEntity<Object> response;
         LoginResponse token = tokenService.createToken(request);
-        response = ResponseEntity.ok(token);
-        return response;
+        return ResponseEntity.ok(token);
     }
 
     @GetMapping("/list")
-    public List<ClientModel> clientList(){
-        return service.list();
+    public ResponseEntity<Object> clientList(){
+        return ResponseEntity.ok(service.list());
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<Object> refreshToken(@RequestBody Map<String, String> request){
+        String refreshToken = request.get("refreshToken");
+        String accessToken = tokenService.refreshAccessToken(refreshToken);
+        Map<String, String> token = Map.of(accessToken, refreshToken);
+        return ResponseEntity.ok(token);
     }
 }

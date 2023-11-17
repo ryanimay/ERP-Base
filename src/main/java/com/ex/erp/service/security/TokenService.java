@@ -1,7 +1,7 @@
-package com.ex.erp.config.jwt;
+package com.ex.erp.service.security;
 
-import com.ex.erp.dto.LoginRequest;
-import com.ex.erp.dto.LoginResponse;
+import com.ex.erp.dto.request.LoginRequest;
+import com.ex.erp.dto.response.LoginResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -34,20 +34,27 @@ public class TokenService {
 
     @PostConstruct
     public void init(){
-        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);//伺服器重啟時刷新
         jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
     }
 
     public LoginResponse createToken(LoginRequest request){
         // 封裝帳密
         Authentication authToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
-        // 執行帳密認證
+        // security執行帳密認證
         authToken = authenticationProvider.authenticate(authToken);
         // 認證成功後取得結果
         UserDetails userDetails = (UserDetails) authToken.getPrincipal();
         // 產token
-        String accessToken = createAccessToken(userDetails.getUsername());
-        return new LoginResponse(accessToken, null);
+        String accessToken = createToken("Access Token", userDetails.getUsername(), 90);//90秒
+        String refreshToken = createToken("Refresh Token", userDetails.getUsername(), 60 * 30);//30分鐘刷新
+        return new LoginResponse(accessToken, refreshToken);
+    }
+
+    public String refreshAccessToken(String refreshToken){
+        Map<String, Object> payload = parseToken(refreshToken);
+        String username = (String) payload.get("username");
+        return createToken("Access Token", username, 90);
     }
 
     public Map<String,Object> parseToken(String token){
@@ -55,18 +62,16 @@ public class TokenService {
         return new HashMap<>(claims);
     }
 
-    private String createAccessToken(String username) {
-        //JWT過期時間(60秒*30分鐘)
-        int securityTime = 60 * 30;
+    private String createToken(String tokenType, String username, int expirationTime) {
         //轉毫秒
         long expirationMillis = Instant.now()
-                .plusSeconds(securityTime)
+                .plusSeconds(expirationTime)
                 .getEpochSecond()
                 * 1000;
 
         // 設置標準內容與自定義內容
         Claims claims = Jwts.claims();
-        claims.setSubject("Access Token");
+        claims.setSubject(tokenType);
         claims.setIssuedAt(new Date());
         claims.setExpiration(new Date(expirationMillis));
         claims.put("username", username);
