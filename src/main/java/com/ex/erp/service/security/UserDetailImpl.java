@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -73,7 +72,7 @@ public class UserDetailImpl implements UserDetails {
         return true;
     }
 
-    private List<GrantedAuthority> getPermissionList(int roleId) {
+    private Collection<? extends GrantedAuthority> getPermissionList(int roleId) {
         Map<String, Object> roleMap = roleCache.loadData();
         Map<String, Object> permissionMap = permissionCache.loadData();
         String permissions = roleMap.get(String.valueOf(roleId)).toString();
