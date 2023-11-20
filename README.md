@@ -4,3 +4,5 @@
 Redis緩存  
 前端Vus.js  
 資料庫SpringDataJpa + MSSQL  
+順便練習TDD
+剩下有想到再補
