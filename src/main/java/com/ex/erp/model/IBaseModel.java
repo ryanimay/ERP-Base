@@ -1,4 +1,6 @@
 package com.ex.erp.model;
 
-public interface IBaseModel {
+import java.io.Serializable;
+
+public interface IBaseModel extends Serializable {
 }

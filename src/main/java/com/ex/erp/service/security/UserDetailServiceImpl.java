@@ -11,15 +11,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
     private ClientService clientService;
-    private UserDetailImpl userDetail;
+    private UserDetailFactory userDetailFactory;
 
     @Autowired
     public void setClientService(ClientService clientService) {
         this.clientService = clientService;
     }
     @Autowired
-    public void setUserDetail(UserDetailImpl userDetail) {
-        this.userDetail = userDetail;
+    public void setUserDetail(UserDetailFactory userDetailFactory) {
+        this.userDetailFactory = userDetailFactory;
     }
 
     @Override
@@ -29,6 +29,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
             System.out.println("Cant find user:" + username);
             throw new UsernameNotFoundException("Cant find user:" + username);
         }
-        return userDetail.build(client);
+        return userDetailFactory.build(client);
     }
 }

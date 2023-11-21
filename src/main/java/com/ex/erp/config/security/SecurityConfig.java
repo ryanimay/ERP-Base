@@ -1,6 +1,6 @@
 package com.ex.erp.config.security;
 
-import com.ex.erp.config.jwt.JwtAuthenticationFilter;
+import com.ex.erp.filter.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
