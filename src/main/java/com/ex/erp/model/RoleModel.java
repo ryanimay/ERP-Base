@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Entity
 @Table(name = "role")
 @Data
@@ -17,6 +20,13 @@ public class RoleModel implements IBaseModel{
     private long id;
     @Column(name = "roleName", nullable = false)
     private String roleName;
-    @Column(name = "permissionId", nullable = false)
-    private int permissionId;
+
+    @OneToMany(mappedBy = "role")
+    private Set<RolePermissionModel> rolePermissions;
+
+    public Set<PermissionModel> getPermissions() {
+        return rolePermissions.stream()
+                .map(RolePermissionModel::getPermission)
+                .collect(Collectors.toSet());
+    }
 }

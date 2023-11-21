@@ -4,9 +4,9 @@ import com.ex.erp.dto.response.ClientResponse;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.model.PermissionModel;
 import com.ex.erp.model.RoleModel;
-import com.ex.erp.repository.PermissionRepository;
-import com.ex.erp.repository.RoleRepository;
 import com.ex.erp.service.ClientService;
+import com.ex.erp.service.PermissionService;
+import com.ex.erp.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,23 +14,23 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @CacheConfig(cacheNames = "client")
 public class ClientCache {
     private ClientService clientService;
-    private RoleRepository roleRepository;
-    private PermissionRepository permissionRepository;
+    private RoleService roleService;
+    private PermissionService permissionService;
     @Autowired
-    public void setPermissionRepository(PermissionRepository permissionRepository){
-        this.permissionRepository = permissionRepository;
+    public void setPermissionRepository(PermissionService permissionService){
+        this.permissionService = permissionService;
     }
     @Autowired
-    public void setRoleRepository(RoleRepository roleRepository){
-        this.roleRepository = roleRepository;
+    public void setRoleRepository(RoleService roleService){
+        this.roleService = roleService;
     }
     @Autowired
     public void setClientService(ClientService clientService){
@@ -53,33 +53,20 @@ public class ClientCache {
     }
 
     @Cacheable(key = "'roleCache'")
-    public Map<String, Object> getRole() {
-        Map<String, Object> roleMap = new HashMap<>();
-        List<RoleModel> roleList = roleRepository.findAll();
-        for(RoleModel model : roleList){
-            String roleId = String.valueOf(model.getId());
-            String permissionIds = roleMap.getOrDefault(roleId, "") + "," + model.getPermissionId();
-            roleMap.put(roleId, permissionIds);
-        }
-        return roleMap;
+    public List<RoleModel>  getRole() {
+        return roleService.findAll();
     }
 
     @Cacheable(key = "'permissionCache'")
-    public Map<String, Object> getPermission() {
-        List<PermissionModel> permissionList = permissionRepository.findAll();
-        return permissionList.stream()
-                .collect(Collectors.toMap(model -> String.valueOf(model.getId()), Function.identity()));
+    public List<PermissionModel> getPermission() {
+        return permissionService.findAll();
     }
 
     //角色擁有權限
     @Cacheable(key = "'rolePermission_' + #roleId")
     public Collection<? extends GrantedAuthority> getRolePermission(int roleId) {
-        Map<String, Object> roleMap = getRole();
-        Map<String, Object> permissionMap = getPermission();
-        String permissions = roleMap.get(String.valueOf(roleId)).toString();
-        return Arrays.stream(permissions.split(","))
-                .filter(permissionMap::containsKey)
-                .map(key -> (GrantedAuthority) permissionMap.get(key))
-                .toList();
+        List<RoleModel> roles = getRole();
+        Optional<RoleModel> roleModel = roles.stream().filter(role -> role.getId() == roleId).findFirst();
+        return roleModel.<Collection<? extends GrantedAuthority>>map(RoleModel::getPermissions).orElse(null);
     }
 }
