@@ -1,6 +1,7 @@
 package com.ex.erp.service;
 
 import com.ex.erp.dto.request.ClientRegisterDto;
+import com.ex.erp.dto.response.ClientResponse;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.repository.ClientRepository;
 import com.ex.erp.tool.EncodeTool;
@@ -28,12 +29,9 @@ public class ClientService {
         clientRepository.save(dto.toModel());
     }
 
-    public ClientModel login() {
-        return null;
-    }
-
-    public List<ClientModel> list() {
-        return clientRepository.findAll();
+    public List<ClientResponse> list() {
+        List<ClientModel> allClient = clientRepository.findAll();
+        return allClient.stream().map(ClientResponse::new).toList();
     }
 
     public ClientModel findByUsername(String username) {

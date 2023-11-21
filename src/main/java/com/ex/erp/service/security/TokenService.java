@@ -1,7 +1,6 @@
 package com.ex.erp.service.security;
 
 import com.ex.erp.dto.request.LoginRequest;
-import com.ex.erp.dto.response.LoginResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -9,16 +8,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +26,11 @@ public class TokenService {
     private Key secretKey;
     private JwtParser jwtParser;
     private AuthenticationProvider authenticationProvider;
+    public static final String ACCESS_TOKEN = "X-Access-Token";
+    private static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新
+    public static final String REFRESH_TOKEN = "X-Refresh-Token";
+    private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr
+    private static final String TOKEN_PROPERTIES_KEY = "username";
 
     @Autowired
     public void setAuthenticationProvider(AuthenticationProvider authenticationProvider) {
@@ -40,23 +43,26 @@ public class TokenService {
         jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
     }
 
-    public LoginResponse createToken(LoginRequest request){
+    public HttpHeaders createToken(LoginRequest request){
         // 封裝帳密
-        Authentication authToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
         // security執行帳密認證
-        authToken = authenticationProvider.authenticate(authToken);
+        authentication = authenticationProvider.authenticate(authentication);
         // 認證成功後取得結果
-        UserDetails userDetails = (UserDetails) authToken.getPrincipal();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         // 產token
-        String accessToken = createToken(userDetails.getUsername(), userDetails.getAuthorities(), 60 * 30);//30分鐘刷新
-        return new LoginResponse(accessToken);
+        String accessToken = createToken(ACCESS_TOKEN, userDetails.getUsername(), ACCESS_TOKEN_EXPIRE_TIME);
+        String refreshToken = createToken(REFRESH_TOKEN, userDetails.getUsername(), REFRESH_TOKEN_EXPIRE_TIME);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        httpHeaders.add(REFRESH_TOKEN, refreshToken);
+        return httpHeaders;
     }
 
     public String refreshAccessToken(String refreshToken){
         Map<String, Object> payload = parseToken(refreshToken);
-        String username = (String) payload.get("username");
-        Collection<? extends GrantedAuthority> authority = (Collection<? extends GrantedAuthority>) payload.get("authority");
-        return createToken(username, authority, 90);
+        String username = (String) payload.get(TOKEN_PROPERTIES_KEY);
+        return createToken(REFRESH_TOKEN, username, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
     public Map<String,Object> parseToken(String token){
@@ -64,25 +70,28 @@ public class TokenService {
         return new HashMap<>(claims);
     }
 
-    private String createToken(String username, Collection<? extends GrantedAuthority> authority, int expirationTime) {
+    private String createToken(String type, String username, int expirationTime) {
         //轉毫秒
-        long expirationMillis = Instant.now()
-                .plusSeconds(expirationTime)
-                .getEpochSecond()
-                * 1000;
+        long expirationMillis = getExpireMillisecond(expirationTime);
 
         // 設置標準內容與自定義內容
         Claims claims = Jwts.claims();
-        claims.setSubject("Access Token");
+        claims.setSubject(type);
         claims.setIssuedAt(new Date());
         claims.setExpiration(new Date(expirationMillis));
-        claims.put("username", username);
-        claims.put("authority", authority);
+        claims.put(TOKEN_PROPERTIES_KEY, username);
 
         // 簽名後產生 token
         return Jwts.builder()
                 .setClaims(claims)
                 .signWith(secretKey)
                 .compact();
+    }
+
+    private Long getExpireMillisecond(int expirationTime){
+        return Instant.now()
+                .plusSeconds(expirationTime)
+                .getEpochSecond()
+                * 1000;
     }
 }
