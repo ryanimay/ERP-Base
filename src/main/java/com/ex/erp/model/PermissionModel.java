@@ -17,6 +17,12 @@ public class PermissionModel implements GrantedAuthority, IBaseModel{
     private long id;
     @Column(name = "authority", nullable = false)
     private String authority;
+    @Column(name = "parentsId")
+    private Long parentsId;
+    @Column(name = "info")
+    private String info;
+    @Column(name = "url")
+    private String url;
 
     @Override
     public String getAuthority() {
