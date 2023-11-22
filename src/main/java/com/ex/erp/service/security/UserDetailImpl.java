@@ -4,9 +4,11 @@ import com.ex.erp.model.ClientModel;
 import com.ex.erp.service.cache.ClientCache;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
+@Transactional
 public class UserDetailImpl implements UserDetails {
     private final ClientModel ClientModel;
     private final ClientCache ClientCache;
@@ -43,7 +45,7 @@ public class UserDetailImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return ClientCache.getRolePermission(ClientModel.getRoleId());
+        return ClientCache.getRolePermission(ClientModel.getRole().getId());
     }
 
     @Override
