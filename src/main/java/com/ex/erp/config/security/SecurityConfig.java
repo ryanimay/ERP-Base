@@ -42,22 +42,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter) throws Exception {
 
         List<PermissionModel> permissions = clientCache.getPermission();
-        permissions.forEach(permission ->
-        {
-            try {
-                http.authorizeHttpRequests(request -> request
-                        .requestMatchers(permission.getUrl()).hasAuthority(permission.getAuthority())
-                );
-            } catch (Exception e) {
-                System.out.println("PermissionSetting Error");
-                throw new RuntimeException(e);
-            }
-        });
+        //配置資料庫內所有permission表的API權限設定
+        for (PermissionModel permission : permissions) {
+            configurePermission(http, permission);
+        }
 
+        //權限以外的設定
         http.authorizeHttpRequests(request -> request
-                        .requestMatchers("/client/opValid").permitAll()
-                        .requestMatchers("/client/login").permitAll()
-                        .requestMatchers("/client/register").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
@@ -68,5 +59,16 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    //設定所有權限
+    private void configurePermission(HttpSecurity http, PermissionModel permission) throws Exception {
+        String authority = permission.getAuthority();
+        System.out.println("set permission: " + permission.getUrl() + " : " + permission.getAuthority());
+        if("*".equals(authority)){
+            http.authorizeHttpRequests(request -> request.requestMatchers(permission.getUrl()).permitAll());
+        }else{
+            http.authorizeHttpRequests(request -> request.requestMatchers(permission.getUrl()).hasAuthority(authority));
+        }
     }
 }

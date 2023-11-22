@@ -19,10 +19,12 @@ public class ClientModel implements IBaseModel {
     private String username;
     @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "roleId")
-    private int roleId;
     @Column(name = "is_active", nullable = false, columnDefinition = "BIT DEFAULT 1")
     private boolean isActive;
     @Column(name = "is_lock", nullable = false, columnDefinition = "BIT DEFAULT 0")
     private boolean isLock;
+
+    @ManyToOne
+    @JoinColumn(name = "roleId", referencedColumnName = "id")
+    private RoleModel role;
 }

@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @IdClass(RolePermissionId.class)
 public class RolePermissionModel implements IBaseModel{
     @Id
-    @ManyToOne
-    @JoinColumn(name = "roleId", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
     private RoleModel role;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "permissionId", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "permission_id")
     private PermissionModel permission;
 }

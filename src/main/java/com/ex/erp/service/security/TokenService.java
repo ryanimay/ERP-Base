@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.time.Instant;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Transactional
 public class TokenService {
     private Key secretKey;
     private JwtParser jwtParser;

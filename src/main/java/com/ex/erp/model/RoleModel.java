@@ -21,11 +21,11 @@ public class RoleModel implements IBaseModel{
     @Column(name = "roleName", nullable = false)
     private String roleName;
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RolePermissionModel> rolePermissions;
 
     public Set<PermissionModel> getPermissions() {
-        return rolePermissions.stream()
+        return getRolePermissions().stream()
                 .map(RolePermissionModel::getPermission)
                 .collect(Collectors.toSet());
     }

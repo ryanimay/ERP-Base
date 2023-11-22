@@ -13,13 +13,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @CacheConfig(cacheNames = "client")
+@Transactional
 public class ClientCache {
     private ClientService clientService;
     private RoleService roleService;
@@ -64,9 +65,7 @@ public class ClientCache {
 
     //角色擁有權限
     @Cacheable(key = "'rolePermission_' + #roleId")
-    public Collection<? extends GrantedAuthority> getRolePermission(int roleId) {
-        List<RoleModel> roles = getRole();
-        Optional<RoleModel> roleModel = roles.stream().filter(role -> role.getId() == roleId).findFirst();
-        return roleModel.<Collection<? extends GrantedAuthority>>map(RoleModel::getPermissions).orElse(null);
+    public Collection<? extends GrantedAuthority> getRolePermission(long roleId) {
+        return roleService.getPermissionsByRoleId(roleId);
     }
 }
