@@ -2,10 +2,10 @@ package com.ex.erp.controller;
 
 import com.ex.erp.dto.request.ClientRegisterDto;
 import com.ex.erp.dto.request.LoginRequest;
+import com.ex.erp.dto.response.ClientResponse;
 import com.ex.erp.dto.security.ClientIdentity;
 import com.ex.erp.service.ClientService;
 import com.ex.erp.service.cache.ClientCache;
-import com.ex.erp.service.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/client")
 public class ClientController {
-    private final ClientService service;
-    private final TokenService tokenService;
+    private final ClientService clientService;
     private final ClientCache clientCache;
 
     @Autowired
-    public ClientController(ClientService service, TokenService tokenService, ClientCache clientCache) {
-        this.service = service;
-        this.tokenService = tokenService;
+    public ClientController(ClientService service, ClientCache clientCache) {
+        this.clientService = service;
         this.clientCache = clientCache;
     }
 
@@ -32,18 +30,19 @@ public class ClientController {
 
     @PostMapping("/register")
     public void register(@RequestBody ClientRegisterDto dto){
-        service.register(dto);
+        clientService.register(dto);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest request){
-        HttpHeaders token = tokenService.createToken(request);
-        return ResponseEntity.ok().headers(token).body(clientCache.getClient(request.getUsername()));
+        HttpHeaders token = clientService.login(request);
+        ClientResponse client = clientCache.getClient(request.getUsername());
+        return ResponseEntity.ok().headers(token).body(client);
     }
 
     @GetMapping("/list")
     public ResponseEntity<Object> clientList(){
-        return ResponseEntity.ok(service.list());
+        return ResponseEntity.ok(clientService.list());
     }
 
     @GetMapping("/get")

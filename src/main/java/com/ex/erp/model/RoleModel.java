@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "role")
@@ -21,12 +21,11 @@ public class RoleModel implements IBaseModel{
     @Column(name = "roleName", nullable = false)
     private String roleName;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<RolePermissionModel> rolePermissions;
-
-    public Set<PermissionModel> getPermissions() {
-        return getRolePermissions().stream()
-                .map(RolePermissionModel::getPermission)
-                .collect(Collectors.toSet());
-    }
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "role_permission",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<PermissionModel> permissions = new HashSet<>();
 }

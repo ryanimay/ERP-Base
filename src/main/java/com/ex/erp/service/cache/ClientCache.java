@@ -64,8 +64,8 @@ public class ClientCache {
     }
 
     //角色擁有權限
-    @Cacheable(key = "'rolePermission_' + #roleId")
-    public Collection<? extends GrantedAuthority> getRolePermission(long roleId) {
-        return roleService.getPermissionsByRoleId(roleId);
+    @Cacheable(key = "'rolePermission_' + #role.id")
+    public Collection<? extends GrantedAuthority> getRolePermission(RoleModel role) {
+        return role.getPermissions();
     }
 }

@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,7 +36,7 @@ public class TokenService {
     private static final String TOKEN_PROPERTIES_KEY = "username";
 
     @Autowired
-    public void setAuthenticationProvider(AuthenticationProvider authenticationProvider) {
+    public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
 
