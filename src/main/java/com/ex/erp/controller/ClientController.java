@@ -3,7 +3,6 @@ package com.ex.erp.controller;
 import com.ex.erp.dto.request.ClientRegisterDto;
 import com.ex.erp.dto.request.LoginRequest;
 import com.ex.erp.dto.response.ClientResponse;
-import com.ex.erp.dto.security.ClientIdentity;
 import com.ex.erp.service.ClientService;
 import com.ex.erp.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +42,6 @@ public class ClientController {
     @GetMapping("/list")
     public ResponseEntity<Object> clientList(){
         return ResponseEntity.ok(clientService.list());
-    }
-
-    @GetMapping("/get")
-    public ResponseEntity<Object> getuser(){
-        return ResponseEntity.ok(ClientIdentity.getUser());
     }
 
 //    @PostMapping("/refreshToken")
