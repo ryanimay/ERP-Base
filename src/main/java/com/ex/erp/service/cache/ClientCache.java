@@ -26,11 +26,11 @@ public class ClientCache {
     private RoleService roleService;
     private PermissionService permissionService;
     @Autowired
-    public void setPermissionRepository(PermissionService permissionService){
+    public void setPermissionService(PermissionService permissionService){
         this.permissionService = permissionService;
     }
     @Autowired
-    public void setRoleRepository(RoleService roleService){
+    public void setRoleService(RoleService roleService){
         this.roleService = roleService;
     }
     @Autowired
