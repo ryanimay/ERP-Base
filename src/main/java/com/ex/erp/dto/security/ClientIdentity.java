@@ -1,6 +1,6 @@
 package com.ex.erp.dto.security;
 
-import com.ex.erp.dto.response.ClientResponse;
+import com.ex.erp.dto.response.ClientResponseModel;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -10,9 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * */
 public class ClientIdentity {
     private static final String EMPTY_USER = "anonymousUser";//SpringSecurity預設未登入使用者字段
-    public static ClientResponse getUser(){
+    public static ClientResponseModel getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
-        return EMPTY_USER.equals(principal) ? null : (ClientResponse)principal;
+        return EMPTY_USER.equals(principal) ? null : (ClientResponseModel)principal;
     }
 }
