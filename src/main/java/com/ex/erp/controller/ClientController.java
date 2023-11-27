@@ -2,7 +2,8 @@ package com.ex.erp.controller;
 
 import com.ex.erp.dto.request.ClientRegisterDto;
 import com.ex.erp.dto.request.LoginRequest;
-import com.ex.erp.dto.response.ClientResponse;
+import com.ex.erp.dto.response.ApiResponse;
+import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.service.ClientService;
 import com.ex.erp.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,32 +24,25 @@ public class ClientController {
     }
 
     @GetMapping("/opValid")
-    public String opValid(){
-        return "ok";
+    public ResponseEntity<ApiResponse<Object>> opValid(){
+        return ApiResponse.success("OK");
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody ClientRegisterDto dto){
+    public ResponseEntity<ApiResponse<Object>> register(@RequestBody ClientRegisterDto dto){
         clientService.register(dto);
+        return ApiResponse.success("register success");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginRequest request){
+    public ResponseEntity<ApiResponse<Object>> login(@RequestBody LoginRequest request){
         HttpHeaders token = clientService.login(request);
-        ClientResponse client = new ClientResponse(clientCache.getClient(request.getUsername()));
-        return ResponseEntity.ok().headers(token).body(client);
+        ClientResponseModel client = new ClientResponseModel(clientCache.getClient(request.getUsername()));
+        return ApiResponse.success(token, client);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Object> clientList(){
-        return ResponseEntity.ok(clientService.list());
+    public ResponseEntity<ApiResponse<Object>> clientList(){
+        return ApiResponse.success(clientService.list());
     }
-
-//    @PostMapping("/refreshToken")
-//    public ResponseEntity<Object> refreshToken(@RequestBody Map<String, String> request){
-//        String refreshToken = request.get("refreshToken");
-//        String accessToken = tokenService.refreshAccessToken(refreshToken);
-//        Map<String, String> token = Map.of(accessToken, refreshToken);
-//        return ResponseEntity.ok(token);
-//    }
 }
