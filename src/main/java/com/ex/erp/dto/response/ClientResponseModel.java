@@ -12,14 +12,14 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientResponse implements Serializable {
+public class ClientResponseModel implements Serializable {
     private long id;
     private String username;
     private long roleId;
     private boolean isActive;
     private boolean isLock;
 
-    public ClientResponse(ClientModel clientModel) {
+    public ClientResponseModel(ClientModel clientModel) {
         this.id = clientModel.getId();
         this.username = clientModel.getUsername();
         this.roleId = clientModel.getRole().getId();

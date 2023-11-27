@@ -2,7 +2,7 @@ package com.ex.erp.service;
 
 import com.ex.erp.dto.request.ClientRegisterDto;
 import com.ex.erp.dto.request.LoginRequest;
-import com.ex.erp.dto.response.ClientResponse;
+import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.repository.ClientRepository;
 import com.ex.erp.service.security.TokenService;
@@ -43,9 +43,9 @@ public class ClientService {
         return tokenService.createToken(request);
     }
 
-    public List<ClientResponse> list() {
+    public List<ClientResponseModel> list() {
         List<ClientModel> allClient = clientRepository.findAll();
-        return allClient.stream().map(ClientResponse::new).toList();
+        return allClient.stream().map(ClientResponseModel::new).toList();
     }
 
     public ClientModel findByUsername(String username) {
