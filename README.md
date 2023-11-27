@@ -8,5 +8,7 @@
 Redis緩存  
 前端Vus.js  
 資料庫SpringDataJpa + MSSQL  
-順便練習TDD
+順便練習TDD和測試  
 剩下有想到再補
+
+SpringSecurity筆記:https://hackmd.io/@S1MNxjTORYSfAfivxMlEQw/rykdZBNEa
