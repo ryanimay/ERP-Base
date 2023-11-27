@@ -2,6 +2,7 @@ package com.ex.erp.service.security;
 
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.service.ClientService;
+import com.ex.erp.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class UserDetailServiceImpl implements UserDetailsService {
+    LogFactory LOG = new LogFactory(UserDetailServiceImpl.class);
     private ClientService clientService;
     private UserDetailFactory userDetailFactory;
 
@@ -28,7 +30,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ClientModel client = clientService.findByUsername(username);
         if (client == null) {
-            System.out.println("Cant find user:" + username);
+            LOG.warn("Cant find user: {0}", username);
             throw new UsernameNotFoundException("Cant find user:" + username);
         }
         return userDetailFactory.build(client);

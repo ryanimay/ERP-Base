@@ -1,5 +1,6 @@
 package com.ex.erp.model;
 
+import com.ex.erp.dto.security.PermissionDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleModel implements IBaseModel{
+public class RoleModel implements IBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -28,4 +29,12 @@ public class RoleModel implements IBaseModel{
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<PermissionModel> permissions = new HashSet<>();
+
+    //存簡單資料就好，剔除父類
+    public Set<PermissionDto> getPermissionsDto() {
+        Set<PermissionModel> permissionSet = getPermissions();
+        Set<PermissionDto> dtoResult = new HashSet<>();
+        permissionSet.forEach(model -> dtoResult.add(new PermissionDto(model)));
+        return dtoResult;
+    }
 }

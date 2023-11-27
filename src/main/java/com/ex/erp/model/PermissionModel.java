@@ -1,20 +1,20 @@
 package com.ex.erp.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "permission")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PermissionModel implements GrantedAuthority, IBaseModel{
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")//防止多個子節點重複序列化同一父節點
+public class PermissionModel implements IBaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -28,13 +28,13 @@ public class PermissionModel implements GrantedAuthority, IBaseModel{
 
     @ManyToOne
     @JoinColumn(name = "parentsId")
+    @JsonIgnoreProperties("parentPermission")
     private PermissionModel parentPermission;
 
-    @OneToMany(mappedBy = "parentPermission")
-    private Set<PermissionModel> childPermissions = new HashSet<>();
-
-    @Override
-    public String getAuthority() {
-        return this.authority;
+    //根節點的parentsId設為0L，後續比較好整理
+    public Long getParentId() {
+        PermissionModel parent = getParentPermission();
+        if(parent == null) return 0L;
+        return parent.getId();
     }
 }

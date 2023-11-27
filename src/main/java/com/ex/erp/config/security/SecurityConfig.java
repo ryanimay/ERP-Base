@@ -2,11 +2,11 @@ package com.ex.erp.config.security;
 
 import com.ex.erp.filter.jwt.JwtAuthenticationFilter;
 import com.ex.erp.model.PermissionModel;
+import com.ex.erp.service.CacheService;
 import com.ex.erp.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,16 +18,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private CacheService cacheService;
     private ClientCache clientCache;
 
     @Autowired
-    public void setClientCache(@Lazy ClientCache clientCache) {
+    public void setClientCache(ClientCache clientCache) {
         this.clientCache = clientCache;
+    }
+    @Autowired
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
     }
 
     @Bean
@@ -40,14 +46,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter) throws Exception {
+        cacheService.refreshAllCache();//啟動時刷新全部緩存
 
-        List<PermissionModel> permissions = clientCache.getPermission();
-        //配置資料庫內所有permission表的API權限設定
-        for (PermissionModel permission : permissions) {
-            configurePermission(http, permission);
-        }
+        //配置資料庫內permission表的所有API權限設定
+        configurePermission(http);
 
-        //權限以外的設定
+        //permission表以外的設定
         http.authorizeHttpRequests(request -> request
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -61,14 +65,20 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //設定所有權限
-    private void configurePermission(HttpSecurity http, PermissionModel permission) throws Exception {
-        String authority = permission.getAuthority();
-        System.out.println("set permission: " + permission.getUrl() + " : " + permission.getAuthority());
-        if("*".equals(authority)){
-            http.authorizeHttpRequests(request -> request.requestMatchers(permission.getUrl()).permitAll());
-        }else{
-            http.authorizeHttpRequests(request -> request.requestMatchers(permission.getUrl()).hasAuthority(authority));
-        }
+    //動態設定所有權限
+    private void configurePermission(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(request -> {
+            List<PermissionModel> permissions = clientCache.getPermission();//寫在每次的請求內，這樣才可以靠刷新緩存改變權限
+            Collections.reverse(permissions);//調頭，從子權限開始設定，不然會被父權限擋掉
+            for (PermissionModel permission : permissions) {
+                String authority = permission.getAuthority();
+                String url = permission.getUrl();
+                if("*".equals(authority)){
+                    request.requestMatchers(url).permitAll();
+                }else{
+                    request.requestMatchers(url).hasAuthority(authority);
+                }
+            }
+        });
     }
 }

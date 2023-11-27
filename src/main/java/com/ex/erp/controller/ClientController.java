@@ -35,7 +35,7 @@ public class ClientController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest request){
         HttpHeaders token = clientService.login(request);
-        ClientResponse client = clientCache.getClient(request.getUsername());
+        ClientResponse client = new ClientResponse(clientCache.getClient(request.getUsername()));
         return ResponseEntity.ok().headers(token).body(client);
     }
 

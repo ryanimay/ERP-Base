@@ -1,8 +1,9 @@
 package com.ex.erp.filter.jwt;
 
-import com.ex.erp.dto.response.ClientResponse;
+import com.ex.erp.model.ClientModel;
 import com.ex.erp.service.cache.ClientCache;
 import com.ex.erp.service.security.TokenService;
+import com.ex.erp.tool.LogFactory;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    LogFactory LOG = new LogFactory(JwtAuthenticationFilter.class);
     private TokenService tokenService;
     private ClientCache clientCache;
     @Autowired
@@ -50,8 +52,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = token.replace("Bearer ", "");
         Map<String, Object> tokenDetail = tokenService.parseToken(accessToken);
         String username = (String) tokenDetail.get("username");
-        ClientResponse client = clientCache.getClient(username);
-        Collection<? extends GrantedAuthority> rolePermission = clientCache.getRolePermission(client.getRoleModel());
+        ClientModel client = clientCache.getClient(username);
+        Collection<? extends GrantedAuthority> rolePermission = clientCache.getRolePermission(client.getRole());
         Authentication authentication = new UsernamePasswordAuthenticationToken(client, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
@@ -66,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
             response.setHeader(TokenService.REFRESH_TOKEN, token);
         }else{
-            System.out.println(TokenService.REFRESH_TOKEN + " empty");
+            LOG.warn(TokenService.REFRESH_TOKEN + " empty");
         }
     }
 }
