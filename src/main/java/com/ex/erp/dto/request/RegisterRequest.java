@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest implements IBaseDto<ClientModel> {
     @NotBlank(message = "用戶名不得為空")
-    @Size(min = 6, max = 10, message = "用戶名稱長度不得小於{min}, 不得大於{max}")
+    @Size(min = 6, max = 20, message = "用戶名稱長度不得小於{min}, 不得大於{max}")
     private String username;
     @NotBlank(message = "密碼不得為空")
     @Size(min = 8, max = 20, message = "密碼長度不得小於{min}, 不得大於{max}")
