@@ -1,7 +1,7 @@
 package com.ex.erp.controller;
 
-import com.ex.erp.dto.request.RegisterRequest;
 import com.ex.erp.dto.request.LoginRequest;
+import com.ex.erp.dto.request.RegisterRequest;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.service.ClientService;
@@ -10,12 +10,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/client")
-@Validated
 public class ClientController {
     private final ClientService clientService;
     private final ClientCache clientCache;
