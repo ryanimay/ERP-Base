@@ -2,14 +2,14 @@ package com.ex.erp.dto.request;
 
 import com.ex.erp.model.ClientModel;
 
-public class ClientRegisterDto implements IBaseDto<ClientModel> {
+public class RegisterRequest implements IBaseDto<ClientModel> {
     private String username;
     private String password;
 
-    public ClientRegisterDto() {
+    public RegisterRequest() {
     }
 
-    public ClientRegisterDto(String username, String password) {
+    public RegisterRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
