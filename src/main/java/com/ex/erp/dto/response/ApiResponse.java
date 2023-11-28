@@ -13,12 +13,12 @@ import org.springframework.http.ResponseEntity;
 public class ApiResponse<T> {
     private int code;
     private String message;
-    private T Data;
+    private T data;
 
     public ApiResponse(ApiResponseCode responseCode, T data) {
         this.code = responseCode.getCode();
         this.message = responseCode.getMessage();
-        Data = data;
+        this.data = data;
     }
 
     public ApiResponse(HttpStatus httpStatus) {
@@ -29,7 +29,7 @@ public class ApiResponse<T> {
     public ApiResponse(HttpStatus httpStatus, T data) {
         this.code = httpStatus.value();
         this.message = httpStatus.getReasonPhrase();
-        Data = data;
+        this.data = data;
     }
 
     public static ResponseEntity<ApiResponse<Object>> success(Object data){
