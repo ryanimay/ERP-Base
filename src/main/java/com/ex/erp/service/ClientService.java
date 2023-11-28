@@ -1,6 +1,6 @@
 package com.ex.erp.service;
 
-import com.ex.erp.dto.request.ClientRegisterDto;
+import com.ex.erp.dto.request.RegisterRequest;
 import com.ex.erp.dto.request.LoginRequest;
 import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.model.ClientModel;
@@ -33,7 +33,7 @@ public class ClientService {
     public void setTokenService(TokenService tokenService){
         this.tokenService = tokenService;
     }
-    public void register(ClientRegisterDto dto) {
+    public void register(RegisterRequest dto) {
         String password = encodeTool.passwordEncode(dto.getPassword());
         dto.setPassword(password);
         clientRepository.save(dto.toModel());
