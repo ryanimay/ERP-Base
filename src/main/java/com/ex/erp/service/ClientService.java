@@ -34,8 +34,7 @@ public class ClientService {
         this.tokenService = tokenService;
     }
     public void register(RegisterRequest dto) {
-        String password = encodeTool.passwordEncode(dto.getPassword());
-        dto.setPassword(password);
+        dto.setPassword(passwordEncode(dto.getPassword()));
         clientRepository.save(dto.toModel());
     }
 
@@ -50,5 +49,9 @@ public class ClientService {
 
     public ClientModel findByUsername(String username) {
         return clientRepository.findByUsername(username);
+    }
+
+    private String passwordEncode(String password){
+        return encodeTool.passwordEncode(password);
     }
 }

@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest implements IBaseDto<ClientModel> {
-    @NotBlank(message = "用戶名不得為空")
-    @Size(min = 6, max = 20, message = "用戶名稱長度不得小於{min}, 不得大於{max}")
+    @NotBlank(message = "client.userNameNotEmpty")
+    @Size(min = 6, max = 20, message = "client.userNameSize")
     private String username;
-    @NotBlank(message = "密碼不得為空")
-    @Size(min = 8, max = 20, message = "密碼長度不得小於{min}, 不得大於{max}")
+    @NotBlank(message = "client.passwordNotEmpty")
+    @Size(min = 8, max = 20, message = "client.passwordSize")
     @Pattern.List({
-            @Pattern(regexp = ".*[a-z].*", message = "密碼必須包含小寫字母"),
-            @Pattern(regexp = ".*[A-Z].*", message = "密碼必須包含大寫字母"),
-            @Pattern(regexp = ".*\\d.*", message = "密碼必須包含數字"),
-            @Pattern(regexp = "^[^\\s!@#$%^&*()_+={}\\[\\]:;<>,.?~\\\\/-]+$", message = "密碼不得包含空格或特殊字符")
+            @Pattern(regexp = ".*[a-z].*", message = "client.passwordContainLowercaseL"),
+            @Pattern(regexp = ".*[A-Z].*", message = "client.passwordContainUppercaseL"),
+            @Pattern(regexp = ".*\\d.*", message = "client.passwordContainNumber"),
+            @Pattern(regexp = "^[^\\s!@#$%^&*()_+={}\\[\\]:;<>,.?~\\\\/-]+$", message = "client.passwordNotContainSpecialCharacters")
     })
     private String password;
 
