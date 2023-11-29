@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequest {
-    @NotBlank(message = "用戶名不得為空")
+    @NotBlank(message = "client.userNameNotEmpty")
     private String username;
-    @NotBlank(message = "密碼不得為空")
+    @NotBlank(message = "client.passwordNotEmpty")
     private String password;
 }

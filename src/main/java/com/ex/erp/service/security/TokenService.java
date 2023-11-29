@@ -33,7 +33,7 @@ public class TokenService {
     private static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新
     public static final String REFRESH_TOKEN = "X-Refresh-Token";
     private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr
-    private static final String TOKEN_PROPERTIES_KEY = "username";
+    private static final String TOKEN_PROPERTIES_USERNAME = "username";
 
     @Autowired
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
@@ -64,7 +64,7 @@ public class TokenService {
 
     public String refreshAccessToken(String refreshToken){
         Map<String, Object> payload = parseToken(refreshToken);
-        String username = (String) payload.get(TOKEN_PROPERTIES_KEY);
+        String username = (String) payload.get(TOKEN_PROPERTIES_USERNAME);
         return createToken(REFRESH_TOKEN, username, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
@@ -82,7 +82,7 @@ public class TokenService {
         claims.setSubject(type);
         claims.setIssuedAt(new Date());
         claims.setExpiration(new Date(expirationMillis));
-        claims.put(TOKEN_PROPERTIES_KEY, username);
+        claims.put(TOKEN_PROPERTIES_USERNAME, username);
 
         // 簽名後產生 token
         return Jwts.builder()

@@ -19,11 +19,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(JwtAuthenticationFilter.class);
+    public static final String PRINCIPAL_CLIENT = "client";
+    public static final String PRINCIPAL_LOCALE = "locale";
     private TokenService tokenService;
     private ClientCache clientCache;
     @Autowired
@@ -54,7 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = (String) tokenDetail.get("username");
         ClientModel client = clientCache.getClient(username);
         Collection<? extends GrantedAuthority> rolePermission = clientCache.getRolePermission(client.getRole());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(client, null, rolePermission);
+        HashMap<String, Object> principalMap = new HashMap<>();
+        principalMap.put(PRINCIPAL_CLIENT, client);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
