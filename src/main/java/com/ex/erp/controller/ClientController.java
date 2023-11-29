@@ -32,6 +32,11 @@ public class ClientController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest dto){
+        // 檢查使用者名稱是否已存在
+        if (clientService.isUsernameExists(dto.getUsername())) {
+            return ApiResponse.error(ApiResponseCode.USERNAME_ALREADY_EXIST);
+        }
+
         clientService.register(dto);
         return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
     }

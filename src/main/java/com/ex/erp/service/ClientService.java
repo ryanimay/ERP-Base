@@ -54,4 +54,8 @@ public class ClientService {
     private String passwordEncode(String password){
         return encodeTool.passwordEncode(password);
     }
+
+    public boolean isUsernameExists(String username) {
+        return clientRepository.existsByUsername(username);
+    }
 }
