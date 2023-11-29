@@ -39,6 +39,7 @@ public class ClientIdentity {
     @SuppressWarnings("unchecked")
     private static Object getPrincipal(String key){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null) return null;
         Object principal = authentication.getPrincipal();
         if(EMPTY_USER.equals(principal)) return null;
         Map<String, Object> principalMap = (Map<String, Object>) principal;

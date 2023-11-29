@@ -24,11 +24,13 @@ public class ApiResponse {
         this.message = responseCode.getMessage();
         this.data = data;
     }
-
+    @SuppressWarnings("ConstantConditions")
     public ApiResponse(ApiResponseCode responseCode) {
         this.code = responseCode.getCode();
         this.message = responseCode.getMessage();
-        this.data = messageSource.getMessage(responseCode.getCustomMessage(), null, ClientIdentity.getLocale());
+        String customMessage = responseCode.getCustomMessage();
+        String formatMsg = messageSource.getMessage(customMessage, null, ClientIdentity.getLocale());
+        this.data = formatMsg == null ? customMessage : formatMsg;
     }
 
     public ApiResponse(HttpStatus httpStatus) {
