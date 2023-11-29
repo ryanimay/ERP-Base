@@ -3,6 +3,7 @@ package com.ex.erp.controller;
 import com.ex.erp.dto.request.LoginRequest;
 import com.ex.erp.dto.request.RegisterRequest;
 import com.ex.erp.dto.response.ApiResponse;
+import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.service.ClientService;
 import com.ex.erp.service.cache.ClientCache;
@@ -25,25 +26,25 @@ public class ClientController {
     }
 
     @GetMapping("/opValid")
-    public ResponseEntity<ApiResponse<Object>> opValid(){
+    public ResponseEntity<ApiResponse> opValid(){
         return ApiResponse.success("OK");
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Object>> register(@RequestBody @Valid RegisterRequest dto){
+    public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest dto){
         clientService.register(dto);
-        return ApiResponse.success("register success");
+        return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Object>> login(@RequestBody @Valid LoginRequest request){
+    public ResponseEntity<ApiResponse> login(@RequestBody @Valid LoginRequest request){
         HttpHeaders token = clientService.login(request);
         ClientResponseModel client = new ClientResponseModel(clientCache.getClient(request.getUsername()));
         return ApiResponse.success(token, client);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse<Object>> clientList(){
+    public ResponseEntity<ApiResponse> clientList(){
         return ApiResponse.success(clientService.list());
     }
 }

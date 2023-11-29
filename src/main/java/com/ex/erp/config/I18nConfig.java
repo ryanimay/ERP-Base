@@ -1,5 +1,6 @@
 package com.ex.erp.config;
 
+import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.security.ClientIdentity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ public class I18nConfig {
         messageSource.setBasename("message");
         messageSource.setDefaultLocale(ClientIdentity.defaultLocale);
         messageSource.setDefaultEncoding("UTF-8");
+        ApiResponse.setMessageResource(messageSource);//設置給ApiResponse使用
         return messageSource;
     }
 }
