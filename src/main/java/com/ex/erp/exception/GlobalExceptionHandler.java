@@ -25,17 +25,17 @@ public class GlobalExceptionHandler {
         this.messageSource = messageSource;
     }
     @ExceptionHandler(LockedException.class)
-    public ResponseEntity<ApiResponse<Object>> lockedExceptionHandler(Exception e){
+    public ResponseEntity<ApiResponse> lockedExceptionHandler(Exception e){
         return ApiResponse.error(HttpStatus.LOCKED, e.getMessage());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Object>> badCredentialsExceptionHandler(Exception e){
+    public ResponseEntity<ApiResponse> badCredentialsExceptionHandler(Exception e){
         return ApiResponse.error(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Object>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex){
+    public ResponseEntity<ApiResponse> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex){
         BindingResult result = ex.getBindingResult();
         List<FieldError> fieldErrors = result.getFieldErrors();
         // Handle field errors and extract messages
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> globalHandler(Exception e){
+    public ResponseEntity<ApiResponse> globalHandler(Exception e){
         return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "Exception Type: " + e.getClass().getName() + "\nError:" + e.getMessage());
     }
 

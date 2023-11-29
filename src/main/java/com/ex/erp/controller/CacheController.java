@@ -1,6 +1,7 @@
 package com.ex.erp.controller;
 
 import com.ex.erp.dto.response.ApiResponse;
+import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.service.CacheService;
 import com.ex.erp.tool.LogFactory;
 import io.micrometer.common.util.StringUtils;
@@ -21,13 +22,13 @@ public class CacheController {
     }
 
     @GetMapping("/refresh")
-    public ResponseEntity<ApiResponse<Object>> refresh(String cacheKey){
+    public ResponseEntity<ApiResponse> refresh(String cacheKey){
         if(StringUtils.isNotEmpty(cacheKey)){
 
             LOG.info("refresh cacheName:" + cacheKey);
         }else {
             cacheService.refreshAllCache();
         }
-        return ApiResponse.success("refresh cache success");
+        return ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
     }
 }

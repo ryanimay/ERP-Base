@@ -1,23 +1,30 @@
 package com.ex.erp.dto.response;
 
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+/**
+ *自定義API返回信息
+ */
+@Getter
 public enum ApiResponseCode {
-    //保留自訂義的拓展空間
-
-
+    USERNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.usernameAlreadyExists"),
+    REGISTER_SUCCESS(HttpStatus.OK, "response.registerSuccess"),
+    REFRESH_CACHE_SUCCESS(HttpStatus.OK, "response.refreshCacheSuccess")
     ;
-    private final int code;
-    private final String message;
+    private final HttpStatus status;
+    private final String customMessage;
 
-    ApiResponseCode(int code, String message) {
-        this.code = code;
-        this.message = message;
+    ApiResponseCode(HttpStatus status, String customMessage) {
+        this.status = status;
+        this.customMessage = customMessage;
     }
 
-    public int getCode() {
-        return code;
+    public int getCode(){
+        return status.value();
     }
 
-    public String getMessage() {
-        return message;
+    public String getMessage(){
+        return status.getReasonPhrase();
     }
 }
