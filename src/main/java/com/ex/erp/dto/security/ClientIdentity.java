@@ -36,7 +36,7 @@ public class ClientIdentity {
         Locale locale = (Locale) getPrincipal(JwtAuthenticationFilter.PRINCIPAL_LOCALE);
         return locale == null ? defaultLocale : locale;
     }
-
+    @SuppressWarnings("unchecked")
     private static Object getPrincipal(String key){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
