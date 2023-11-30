@@ -1,6 +1,7 @@
 package com.ex.erp.dto.request;
 
 import com.ex.erp.model.ClientModel;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -25,10 +26,15 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
     })
     private String password;
 
+    @NotBlank(message = "client.emailNotEmpty")
+    @Email(message = "client.invalidEmailFormat")
+    private String email;
+
     public ClientModel toModel() {
         ClientModel model = new ClientModel();
         model.setUsername(username);
         model.setPassword(password);
+        model.setEmail(email);
         return model;
     }
 }

@@ -30,6 +30,10 @@ public class RoleModel implements IBaseModel {
     )
     private Set<PermissionModel> permissions = new HashSet<>();
 
+    public RoleModel(long id) {
+        this.id = id;
+    }
+
     //存簡單資料就好，剔除父類
     public Set<PermissionDto> getPermissionsDto() {
         Set<PermissionModel> permissionSet = getPermissions();
