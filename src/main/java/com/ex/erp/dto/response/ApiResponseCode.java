@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 public enum ApiResponseCode {
-    USERNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.usernameAlreadyExists"),
     REGISTER_SUCCESS(HttpStatus.OK, "response.registerSuccess"),
-    REFRESH_CACHE_SUCCESS(HttpStatus.OK, "response.refreshCacheSuccess")
-    ;
+    REFRESH_CACHE_SUCCESS(HttpStatus.OK, "response.refreshCacheSuccess"),
+    USERNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.usernameAlreadyExists"),
+    EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.emailAlreadyExists");
     private final HttpStatus status;
     private final String customMessage;
 

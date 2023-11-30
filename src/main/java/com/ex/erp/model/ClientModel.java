@@ -19,12 +19,23 @@ public class ClientModel implements IBaseModel {
     private String username;
     @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "is_active", nullable = false, columnDefinition = "BIT DEFAULT 1")
-    private boolean isActive;
-    @Column(name = "is_lock", nullable = false, columnDefinition = "BIT DEFAULT 0")
-    private boolean isLock;
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+    @Column(name = "is_lock", nullable = false)
+    private boolean isLock = false;
+    @Column(name = "email")
+    private String email;
 
     @ManyToOne
-    @JoinColumn(name = "roleId", referencedColumnName = "id")
+    @JoinColumn(name = "roleId", nullable = false, referencedColumnName = "id")
     private RoleModel role;
+
+    @PrePersist
+    public void prePersist(){
+        if(role == null) role = defaultRole();
+    }
+
+    private RoleModel defaultRole() {
+        return new RoleModel(1);
+    }
 }

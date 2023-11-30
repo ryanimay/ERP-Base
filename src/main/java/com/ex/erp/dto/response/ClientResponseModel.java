@@ -13,11 +13,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientResponseModel implements Serializable {
+
     private long id;
     private String username;
     private long roleId;
     private boolean isActive;
     private boolean isLock;
+    private String email;
 
     public ClientResponseModel(ClientModel clientModel) {
         this.id = clientModel.getId();
@@ -25,5 +27,6 @@ public class ClientResponseModel implements Serializable {
         this.roleId = clientModel.getRole().getId();
         this.isActive = clientModel.isActive();
         this.isLock = clientModel.isLock();
+        this.email = clientModel.getEmail();
     }
 }
