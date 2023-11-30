@@ -13,8 +13,8 @@ public class ResponseExpectation {
         actions.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    public static void expectStatusIs(ResultActions actions, ApiResponseCode apiResponseCode) throws Exception {
-        actions.andExpect(MockMvcResultMatchers.status().is(apiResponseCode.getCode()));
+    public static void expectStatusIs(ResultActions actions, int statusCode) throws Exception {
+        actions.andExpect(MockMvcResultMatchers.status().is(statusCode));
     }
 
     public static void expectBody(ResultActions actions, ApiResponseCode apiResponseCode) throws Exception {
