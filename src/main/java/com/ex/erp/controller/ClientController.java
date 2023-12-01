@@ -2,11 +2,12 @@ package com.ex.erp.controller;
 
 import com.ex.erp.dto.request.LoginRequest;
 import com.ex.erp.dto.request.RegisterRequest;
+import com.ex.erp.dto.request.ResetPasswordRequest;
 import com.ex.erp.dto.response.ApiResponse;
-import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.service.ClientService;
 import com.ex.erp.service.cache.ClientCache;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -32,12 +33,7 @@ public class ClientController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest dto){
-        // 檢查使用者資料庫參數
-        ApiResponseCode code = clientService.verifyRegistration(dto);
-        if(code != null) return ApiResponse.error(code);
-
-        clientService.register(dto);
-        return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
+        return clientService.register(dto);
     }
 
     @PostMapping("/login")
@@ -45,6 +41,11 @@ public class ClientController {
         HttpHeaders token = clientService.login(request);
         ClientResponseModel client = new ClientResponseModel(clientCache.getClient(request.getUsername()));
         return ApiResponse.success(token, client);
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<ApiResponse> login(@RequestBody @Valid ResetPasswordRequest resetRequest) throws MessagingException {
+        return clientService.resetPassword(resetRequest);
     }
 
     @GetMapping("/list")

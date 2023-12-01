@@ -23,7 +23,7 @@ public class ClientModel implements IBaseModel {
     private boolean isActive = true;
     @Column(name = "is_lock", nullable = false)
     private boolean isLock = false;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @ManyToOne
