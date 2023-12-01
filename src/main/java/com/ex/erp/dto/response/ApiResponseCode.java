@@ -11,7 +11,14 @@ public enum ApiResponseCode {
     REGISTER_SUCCESS(HttpStatus.OK, "response.registerSuccess"),
     REFRESH_CACHE_SUCCESS(HttpStatus.OK, "response.refreshCacheSuccess"),
     USERNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.usernameAlreadyExists"),
-    EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.emailAlreadyExists");
+    USERNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "response.usernameNotExists"),
+    EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.emailAlreadyExists"),
+    UNKNOWN_EMAIL(HttpStatus.BAD_REQUEST, "response.unknownEmail"),
+    RESET_PASSWORD_SUCCESS(HttpStatus.OK, "response.resetPasswordSuccess"),
+    RESET_PASSWORD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "response.resetPasswordError"),
+    INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "response.invalidUsernameOrPassword"),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "response.accessDenied"),
+    INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "response.invalidSignature");
     private final HttpStatus status;
     private final String customMessage;
 
