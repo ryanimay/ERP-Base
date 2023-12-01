@@ -5,6 +5,7 @@ import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.dto.security.ClientIdentity;
 import com.ex.erp.tool.LogFactory;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> signatureExceptionHandler(Exception e){
         LOG.error(e);
         return ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ApiResponse> messagingExceptionHandler(Exception e){
+        LOG.error(e);
+        return ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
