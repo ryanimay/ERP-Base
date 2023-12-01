@@ -44,7 +44,7 @@ public class ClientController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<ApiResponse> login(@RequestBody @Valid ResetPasswordRequest resetRequest) throws MessagingException {
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest resetRequest) throws MessagingException {
         return clientService.resetPassword(resetRequest);
     }
 
@@ -52,4 +52,6 @@ public class ClientController {
     public ResponseEntity<ApiResponse> clientList(){
         return ApiResponse.success(clientService.list());
     }
+
+
 }
