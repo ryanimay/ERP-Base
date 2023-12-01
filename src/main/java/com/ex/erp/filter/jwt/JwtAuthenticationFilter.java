@@ -1,15 +1,19 @@
 package com.ex.erp.filter.jwt;
 
+import com.ex.erp.dto.response.ApiResponseCode;
+import com.ex.erp.dto.response.FilterExceptionResponse;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.service.cache.ClientCache;
 import com.ex.erp.service.security.TokenService;
 import com.ex.erp.tool.LogFactory;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,10 +44,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(token != null){
-            authenticationToken(token);
-            refreshToken(request, response);
+        try{
+            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if(token != null){
+                authenticationToken(token);
+                refreshToken(request, response);
+            }
+        }catch (SignatureException e){
+            LOG.error(e);
+            FilterExceptionResponse.error(response, ApiResponseCode.INVALID_SIGNATURE);
+            return;
+        }catch (AccessDeniedException e){
+            LOG.error(e);
+            FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
+            return;
         }
         filterChain.doFilter(request, response);
     }
