@@ -1,11 +1,15 @@
 package com.ex.erp.exception;
 
 import com.ex.erp.dto.response.ApiResponse;
+import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.dto.security.ClientIdentity;
+import com.ex.erp.tool.LogFactory;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.BindingResult;
@@ -18,7 +22,7 @@ import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
+    LogFactory LOG = new LogFactory(GlobalExceptionHandler.class);
     private MessageSource messageSource;
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
@@ -26,17 +30,31 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<ApiResponse> lockedExceptionHandler(Exception e){
+        LOG.error(e);
         return ApiResponse.error(HttpStatus.LOCKED, e.getMessage());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse> badCredentialsExceptionHandler(Exception e){
-        return ApiResponse.error(HttpStatus.UNAUTHORIZED, e.getMessage());
+        LOG.error(e);
+        return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> accessDeniedExceptionHandler(Exception e){
+        LOG.error(e);
+        return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ApiResponse> signatureExceptionHandler(Exception e){
+        LOG.error(e);
+        return ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex){
-        BindingResult result = ex.getBindingResult();
+    public ResponseEntity<ApiResponse> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e){
+        BindingResult result = e.getBindingResult();
         List<FieldError> fieldErrors = result.getFieldErrors();
         // Handle field errors and extract messages
         String errorMessage = "MethodArgumentNotValid";
@@ -51,7 +69,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> globalHandler(Exception e){
-        return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "Exception Type: " + e.getClass().getName() + "\nError:" + e.getMessage());
+        LOG.error(e);
+        return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown Error");
     }
 
     private Object[] resetArray(Object[] originalArguments){
