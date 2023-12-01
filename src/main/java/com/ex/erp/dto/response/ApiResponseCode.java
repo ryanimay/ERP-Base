@@ -18,20 +18,33 @@ public enum ApiResponseCode {
     RESET_PASSWORD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "response.resetPasswordError"),
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "response.invalidUsernameOrPassword"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "response.accessDenied"),
-    INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "response.invalidSignature");
+    INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "response.invalidSignature"),
+    MESSAGING_ERROR(CustomResponseEnum.MESSAGE_ERROR, "response.messageError");
+
+    private final int code;
+    private final String message;
     private final HttpStatus status;
     private final String customMessage;
 
     ApiResponseCode(HttpStatus status, String customMessage) {
+        this.code = status.value();
+        this.message = status.getReasonPhrase();
         this.status = status;
         this.customMessage = customMessage;
     }
 
+    ApiResponseCode(CustomResponseEnum customResponseEnum, String customMessage) {
+        this.code = customResponseEnum.getCode();
+        this.message = customResponseEnum.getMessage();
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;//自定義錯誤的httpStatus都是500
+        this.customMessage = customMessage;
+    }
+
     public int getCode(){
-        return status.value();
+        return this.code;
     }
 
     public String getMessage(){
-        return status.getReasonPhrase();
+        return this.message;
     }
 }
