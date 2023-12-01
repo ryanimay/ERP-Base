@@ -32,8 +32,8 @@ public class ClientController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest dto){
-        return clientService.register(dto);
+    public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest request){
+        return clientService.register(request);
     }
 
     @PostMapping("/login")
@@ -43,7 +43,7 @@ public class ClientController {
         return ApiResponse.success(token, client);
     }
 
-    @PostMapping("/resetPassword")
+    @PutMapping("/resetPassword")
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest resetRequest) throws MessagingException {
         return clientService.resetPassword(resetRequest);
     }
@@ -53,5 +53,9 @@ public class ClientController {
         return ApiResponse.success(clientService.list());
     }
 
+    @GetMapping("/getClient")
+    public ResponseEntity<ApiResponse> getClient(long id){
+        return clientService.findByUserId(id);
+    }
 
 }

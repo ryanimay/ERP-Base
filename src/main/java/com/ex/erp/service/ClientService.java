@@ -14,12 +14,14 @@ import com.ex.erp.tool.EncodeTool;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -126,5 +128,10 @@ public class ClientService {
             return ApiResponseCode.UNKNOWN_EMAIL;
         }
         return null;
+    }
+
+    public ResponseEntity<ApiResponse> findByUserId(long id) {
+        Optional<ClientModel> modelOption = clientRepository.findById(id);
+        return modelOption.map(ApiResponse::success).orElseGet(() -> ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null));
     }
 }
