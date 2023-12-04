@@ -132,6 +132,6 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> findByUserId(long id) {
         Optional<ClientModel> modelOption = clientRepository.findById(id);
-        return modelOption.map(ApiResponse::success).orElseGet(() -> ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null));
+        return modelOption.map(model -> ApiResponse.success(new ClientResponseModel(model))).orElseGet(() -> ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null));
     }
 }
