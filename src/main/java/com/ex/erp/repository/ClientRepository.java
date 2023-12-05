@@ -1,6 +1,5 @@
 package com.ex.erp.repository;
 
-import com.ex.erp.dto.request.ResetPasswordRequest;
 import com.ex.erp.model.ClientModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,6 +15,6 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
 
     boolean existsByEmail(String email);
     @Modifying
-    @Query("UPDATE ClientModel c SET c.password = :password WHERE c.username = :#{#request.username} AND  c.email = :#{#request.email}")
-    int updatePasswordByClient(@Param("password") String password, @Param("request") ResetPasswordRequest resetRequest);
+    @Query("UPDATE ClientModel c SET c.password = :password WHERE c.username = :username AND  c.email = :email")
+    int updatePasswordByClient(@Param("password") String password, @Param("username") String username, @Param("email") String email);
 }
