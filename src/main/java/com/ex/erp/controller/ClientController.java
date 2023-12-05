@@ -1,8 +1,6 @@
 package com.ex.erp.controller;
 
-import com.ex.erp.dto.request.LoginRequest;
-import com.ex.erp.dto.request.RegisterRequest;
-import com.ex.erp.dto.request.ResetPasswordRequest;
+import com.ex.erp.dto.request.*;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.service.ClientService;
@@ -58,4 +56,13 @@ public class ClientController {
         return clientService.findByUserId(id);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse> updateClient(@RequestBody @Valid UpdateClientInfoRequest request){
+        return clientService.updateUser(request);
+    }
+
+    @PutMapping("/updatePassword")
+    public ResponseEntity<ApiResponse> updatePassword(@RequestBody @Valid UpdatePasswordRequest request){
+        return clientService.updatePassword(request);
+    }
 }

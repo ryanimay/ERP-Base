@@ -1,26 +1,32 @@
 package com.ex.erp.service;
 
-import com.ex.erp.dto.request.LoginRequest;
-import com.ex.erp.dto.request.RegisterRequest;
-import com.ex.erp.dto.request.ResetPasswordRequest;
+import com.ex.erp.dto.request.*;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.dto.response.ClientResponseModel;
+import com.ex.erp.dto.security.ClientIdentity;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.model.mail.ResetPasswordModel;
 import com.ex.erp.repository.ClientRepository;
+import com.ex.erp.service.cache.ClientCache;
 import com.ex.erp.service.security.TokenService;
 import com.ex.erp.tool.EncodeTool;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,6 +37,17 @@ public class ClientService {
     private TokenService tokenService;
     private MailService mailService;
     private ResetPasswordModel resetPasswordModel;
+    private ClientCache clientCache;
+    private AuthenticationProvider authenticationProvider;
+
+    @Autowired
+    public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
+    }
+    @Autowired
+    public void setClientCache(ClientCache clientCache) {
+        this.clientCache = clientCache;
+    }
     @Autowired
     public void setRepository(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
@@ -82,7 +99,7 @@ public class ClientService {
 
         String password = encodeTool.randomPassword(10);
         Context context = mailService.createContext(password);
-        int result = updatePassword(passwordEncode(password), resetRequest);
+        int result = updatePassword(passwordEncode(password), resetRequest.getUsername(), resetRequest.getEmail());
 
         if(result == 1) {
             //更新成功才發送郵件
@@ -92,8 +109,30 @@ public class ClientService {
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
     }
 
-    public int updatePassword(String password, ResetPasswordRequest resetRequest){
-        return clientRepository.updatePasswordByClient(password, resetRequest);
+    public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request){
+        ClientResponseModel client = ClientIdentity.getUser();
+        if(checkIdentity(client, request)) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
+        int result = clientRepository.updatePasswordByClient(passwordEncode(request.getPassword()), client.getUsername(), client.getEmail());
+        if(result == 1) {
+            return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
+        }
+        return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
+    }
+
+    private boolean checkIdentity(ClientResponseModel client, UpdatePasswordRequest request) {
+        String username = client.getUsername();
+        if(!Objects.equals(username, request.getUsername())) return true;//不是本人拒絕更改
+        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getOldPassword());//比對舊帳密
+        try {
+            authenticationProvider.authenticate(authentication);
+        }catch (AuthenticationException e){
+            return true;
+        }
+        return false;
+    }
+
+    private int updatePassword(String password, String username, String email){
+        return clientRepository.updatePasswordByClient(password, username, email);
     }
 
     private String passwordEncode(String password){
@@ -133,5 +172,13 @@ public class ClientService {
     public ResponseEntity<ApiResponse> findByUserId(long id) {
         Optional<ClientModel> modelOption = clientRepository.findById(id);
         return modelOption.map(model -> ApiResponse.success(new ClientResponseModel(model))).orElseGet(() -> ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null));
+    }
+
+    public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
+        ClientModel client = clientCache.getClient(request.getUsername());
+        client.setUsername(request.getUsername());
+        client.setEmail(request.getEmail());
+        clientRepository.save(client);
+        return ApiResponse.success("OK");
     }
 }

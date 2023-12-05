@@ -15,6 +15,7 @@ public enum ApiResponseCode {
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.emailAlreadyExists"),
     UNKNOWN_EMAIL(HttpStatus.BAD_REQUEST, "response.unknownEmail"),
     RESET_PASSWORD_SUCCESS(HttpStatus.OK, "response.resetPasswordSuccess"),
+    UPDATE_PASSWORD_SUCCESS(HttpStatus.OK, "response.updatePasswordSuccess"),
     RESET_PASSWORD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "response.resetPasswordError"),
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "response.invalidUsernameOrPassword"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "response.accessDenied"),
