@@ -59,8 +59,13 @@ public class ClientController {
         return clientService.updatePassword(request);
     }
 
-    @PutMapping("/lockClient")
-    public ResponseEntity<ApiResponse> lockClient(@RequestBody LockClientRequest request){
+    @PutMapping("/clientLock")
+    public ResponseEntity<ApiResponse> clientLock(@RequestBody ClientStatusRequest request){
         return clientService.lockClient(request);
+    }
+
+    @PutMapping("/clientStatus")
+    public ResponseEntity<ApiResponse> clientStatus(@RequestBody ClientStatusRequest request){
+        return clientService.clientStatus(request);
     }
 }

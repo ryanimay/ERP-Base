@@ -3,6 +3,7 @@ package com.ex.erp.config.security;
 import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.dto.response.FilterExceptionResponse;
 import com.ex.erp.filter.jwt.JwtAuthenticationFilter;
+import com.ex.erp.filter.jwt.UserStatusFilter;
 import com.ex.erp.model.PermissionModel;
 import com.ex.erp.service.CacheService;
 import com.ex.erp.service.cache.ClientCache;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,7 +52,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter, UserStatusFilter userStatusFilter) throws Exception {
         cacheService.refreshAllCache();//啟動時刷新全部緩存
 
         //配置資料庫內permission表的所有API權限設定
@@ -60,11 +63,20 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(userStatusFilter, JwtAuthenticationFilter.class)
                 .exceptionHandling(exception ->
                         exception.accessDeniedHandler((request, response, accessDeniedException) ->
                                 FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED))
-                                .authenticationEntryPoint((request, response, authException) ->
-                                        FilterExceptionResponse.error(response, ApiResponseCode.INVALID_SIGNATURE)));
+                                .authenticationEntryPoint((request, response, authException) -> {
+                                    if(authException instanceof LockedException){
+                                        FilterExceptionResponse.error(response, ApiResponseCode.CLIENT_LOCKED);
+                                    }else if(authException instanceof DisabledException){
+                                        FilterExceptionResponse.error(response, ApiResponseCode.CLIENT_DISABLED);
+                                    }else{
+                                        FilterExceptionResponse.error(response, ApiResponseCode.INVALID_SIGNATURE);
+                                    }
+                                    }
+                                ));
 
         return http.build();
     }

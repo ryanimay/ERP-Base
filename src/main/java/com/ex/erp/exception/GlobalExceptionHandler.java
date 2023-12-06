@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -32,7 +33,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<ApiResponse> lockedExceptionHandler(Exception e){
         LOG.error(e);
-        return ApiResponse.error(HttpStatus.LOCKED, e.getMessage());
+        return ApiResponse.error(ApiResponseCode.CLIENT_LOCKED);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiResponse> disabledExceptionHandler(Exception e){
+        LOG.error(e);
+        return ApiResponse.error(ApiResponseCode.CLIENT_DISABLED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)

@@ -42,6 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.clientCache = clientCache;
     }
 
+    /**
+     * 針對已登入用戶後續存取api做token驗證和例外處理
+     * */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
@@ -51,12 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 refreshToken(request, response);
             }
         }catch (SignatureException e){
-            LOG.error(e);
-            FilterExceptionResponse.error(response, ApiResponseCode.INVALID_SIGNATURE);
+            exceptionResponse(e, response, ApiResponseCode.INVALID_SIGNATURE);
             return;
         }catch (AccessDeniedException e){
-            LOG.error(e);
-            FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
+            exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
             return;
         }
         filterChain.doFilter(request, response);
@@ -89,5 +90,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }else{
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
         }
+    }
+
+    private void exceptionResponse(Exception e, HttpServletResponse response, ApiResponseCode code) throws IOException {
+        LOG.error(e.getMessage());
+        FilterExceptionResponse.error(response, code);
     }
 }

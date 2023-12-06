@@ -20,7 +20,9 @@ public enum ApiResponseCode {
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "response.invalidUsernameOrPassword"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "response.accessDenied"),
     INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "response.invalidSignature"),
-    MESSAGING_ERROR(CustomResponseEnum.MESSAGE_ERROR, "response.messageError");
+    MESSAGING_ERROR(CustomResponseEnum.MESSAGE_ERROR, "response.messageError"),
+    CLIENT_LOCKED(HttpStatus.FORBIDDEN, "response.clientLocked"),
+    CLIENT_DISABLED(HttpStatus.FORBIDDEN, "response.disabled");
 
     private final int code;
     private final String message;
