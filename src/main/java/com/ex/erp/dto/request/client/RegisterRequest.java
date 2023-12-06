@@ -1,5 +1,6 @@
-package com.ex.erp.dto.request;
+package com.ex.erp.dto.request.client;
 
+import com.ex.erp.dto.request.IBaseDto;
 import com.ex.erp.model.ClientModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
