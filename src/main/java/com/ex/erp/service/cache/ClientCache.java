@@ -34,7 +34,7 @@ public class ClientCache {
         this.permissionService = permissionService;
     }
     @Autowired
-    public void setRoleService(RoleService roleService){
+    public void setRoleService(@Lazy RoleService roleService){
         this.roleService = roleService;
     }
     @Autowired
