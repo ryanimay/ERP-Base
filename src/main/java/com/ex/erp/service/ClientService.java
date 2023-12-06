@@ -1,6 +1,6 @@
 package com.ex.erp.service;
 
-import com.ex.erp.dto.request.*;
+import com.ex.erp.dto.request.client.*;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.response.ApiResponseCode;
 import com.ex.erp.dto.response.ClientResponseModel;
@@ -80,8 +80,10 @@ public class ClientService {
         return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
     }
 
-    public HttpHeaders login(LoginRequest request){
-        return tokenService.createToken(request);
+    public ResponseEntity<ApiResponse> login(LoginRequest request){
+        HttpHeaders token = tokenService.createToken(request);
+        ClientResponseModel client = new ClientResponseModel(clientCache.getClient(request.getUsername()));
+        return ApiResponse.success(token, client);
     }
 
     public List<ClientResponseModel> list() {
@@ -179,6 +181,11 @@ public class ClientService {
         client.setUsername(request.getUsername());
         client.setEmail(request.getEmail());
         clientRepository.save(client);
+        return ApiResponse.success("OK");
+    }
+
+    public ResponseEntity<ApiResponse> lockClient(LockClientRequest request) {
+        clientRepository.lockClientById(request.getClientId(), request.isStatus());
         return ApiResponse.success("OK");
     }
 }

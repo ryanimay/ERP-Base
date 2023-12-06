@@ -1,4 +1,4 @@
-package com.ex.erp.dto.request;
+package com.ex.erp.dto.request.client;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

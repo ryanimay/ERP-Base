@@ -1,14 +1,11 @@
 package com.ex.erp.controller;
 
-import com.ex.erp.dto.request.*;
+import com.ex.erp.dto.request.client.*;
 import com.ex.erp.dto.response.ApiResponse;
-import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.service.ClientService;
-import com.ex.erp.service.cache.ClientCache;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/client")
 public class ClientController {
     private final ClientService clientService;
-    private final ClientCache clientCache;
 
     @Autowired
-    public ClientController(ClientService service, ClientCache clientCache) {
+    public ClientController(ClientService service) {
         this.clientService = service;
-        this.clientCache = clientCache;
     }
 
     @GetMapping("/opValid")
@@ -36,9 +31,7 @@ public class ClientController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody @Valid LoginRequest request){
-        HttpHeaders token = clientService.login(request);
-        ClientResponseModel client = new ClientResponseModel(clientCache.getClient(request.getUsername()));
-        return ApiResponse.success(token, client);
+        return clientService.login(request);
     }
 
     @PutMapping("/resetPassword")
@@ -64,5 +57,10 @@ public class ClientController {
     @PutMapping("/updatePassword")
     public ResponseEntity<ApiResponse> updatePassword(@RequestBody @Valid UpdatePasswordRequest request){
         return clientService.updatePassword(request);
+    }
+
+    @PutMapping("/lockClient")
+    public ResponseEntity<ApiResponse> lockClient(@RequestBody LockClientRequest request){
+        return clientService.lockClient(request);
     }
 }
