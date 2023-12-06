@@ -1,6 +1,6 @@
 package com.ex.erp.model;
 
-import com.ex.erp.dto.security.PermissionDto;
+import com.ex.erp.dto.security.RolePermissionDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,10 +35,10 @@ public class RoleModel implements IBaseModel {
     }
 
     //存簡單資料就好，剔除父類
-    public Set<PermissionDto> getPermissionsDto() {
+    public Set<RolePermissionDto> getRolePermissionsDto() {
         Set<PermissionModel> permissionSet = getPermissions();
-        Set<PermissionDto> dtoResult = new HashSet<>();
-        permissionSet.forEach(model -> dtoResult.add(new PermissionDto(model)));
+        Set<RolePermissionDto> dtoResult = new HashSet<>();
+        permissionSet.forEach(model -> dtoResult.add(new RolePermissionDto(model)));
         return dtoResult;
     }
 }

@@ -1,5 +1,7 @@
 package com.ex.erp.config.security;
 
+import com.ex.erp.dto.response.ApiResponseCode;
+import com.ex.erp.dto.response.FilterExceptionResponse;
 import com.ex.erp.filter.jwt.JwtAuthenticationFilter;
 import com.ex.erp.model.PermissionModel;
 import com.ex.erp.service.CacheService;
@@ -20,6 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.util.Collections;
 import java.util.List;
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -55,7 +59,12 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception ->
+                        exception.accessDeniedHandler((request, response, accessDeniedException) ->
+                                FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED))
+                                .authenticationEntryPoint((request, response, authException) ->
+                                        FilterExceptionResponse.error(response, ApiResponseCode.INVALID_SIGNATURE)));
 
         return http.build();
     }
@@ -76,7 +85,8 @@ public class SecurityConfig {
                 if("*".equals(authority)){
                     request.requestMatchers(url).permitAll();
                 }else{
-                    request.requestMatchers(url).hasAuthority(authority);
+                    //每個權限節點包含所有父節點都可以通過
+                    request.requestMatchers(antMatcher(url)).hasAnyAuthority(permission.getAuthoritiesIncludeParents().toArray(new String[0]));
                 }
             }
         });

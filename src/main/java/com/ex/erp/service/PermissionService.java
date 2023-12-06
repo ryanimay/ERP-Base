@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @Transactional
@@ -25,8 +27,8 @@ public class PermissionService {
 
     //排序由子->父
     private List<PermissionModel> sortPermissions(List<PermissionModel> permissions){
-        Map<Long, List<PermissionModel>> map = new HashMap<>();
-        //把每個節點的父節點當key，value為所有對應的子節點
+        Map<Long, List<PermissionModel>> map = new ConcurrentHashMap<>();
+        //把每個節點的父節點當key，value為所有對應的子節點Map<父, List<子>()>
         for(PermissionModel model : permissions){
             long parentsId = model.getParentId();
             map.putIfAbsent(parentsId, new ArrayList<>());
@@ -37,20 +39,32 @@ public class PermissionService {
 
     //按分層排序，用bfs
     private List<PermissionModel> bfsSort(Map<Long, List<PermissionModel>> map) {
-        List<PermissionModel> resultList = new ArrayList<>();
-        Queue<PermissionModel> queue = new LinkedList<>();
+        List<PermissionModel> resultList = new ArrayList<>(map.size());
+        Queue<PermissionModel> queue = new ConcurrentLinkedQueue<>();
         List<PermissionModel> rootPermissionModels = map.get(0L);//根節點從parentsId:0開始
         if(map.containsKey(0L) && !rootPermissionModels.isEmpty()){
             queue.addAll(rootPermissionModels);//根節點放進que
         }
         while(!queue.isEmpty() && !map.isEmpty()){
             PermissionModel model = queue.poll();
-            resultList.add(model);//從頭部開始取出放入result
             long id = model.getId();
             if(map.containsKey(id)){
-                queue.addAll(map.get(id));//把該節點下一層子節點放進que
-                map.remove(id);
+            List<PermissionModel> childNodes = map.get(id);
+                childNodes.forEach(node -> {
+//                    另一種方法:
+//                    Set<String> authoritiesIncludeParents = new HashSet<>(model.getAuthoritiesIncludeParents());
+//                    authoritiesIncludeParents.add(node.getAuthority());
+//                    node.setAuthoritiesIncludeParents(authoritiesIncludeParents);
+//                    queue.offer(node);//把該節點下一層子節點放進que
+
+                    Set<String> authoritiesIncludeParents = node.getAuthoritiesIncludeParents();
+                    authoritiesIncludeParents.addAll(model.getAuthoritiesIncludeParents());
+                    node.setAuthoritiesIncludeParents(authoritiesIncludeParents);
+                    queue.offer(node);//把該節點下一層子節點放進que
+                });
             }
+            map.remove(id);
+            resultList.add(model);//從頭部開始取出放入result
         }
         return resultList;
     }

@@ -6,6 +6,7 @@ import com.ex.erp.model.RoleModel;
 import com.ex.erp.service.ClientService;
 import com.ex.erp.service.PermissionService;
 import com.ex.erp.service.RoleService;
+import com.ex.erp.tool.JsonTool;
 import com.ex.erp.tool.LogFactory;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,13 +68,13 @@ public class ClientCache {
     @Cacheable(key = "'permissionCache'")
     public List<PermissionModel> getPermission() {
         List<PermissionModel> allPermission = permissionService.findAll();
-        LOG.info("all permission: {0}", allPermission);
+        LOG.info("all permission: {0}", JsonTool.toJson(allPermission));
         return allPermission;
     }
 
     //角色擁有權限
     @Cacheable(key = "'rolePermission_' + #role.id")
     public Collection<? extends GrantedAuthority> getRolePermission(RoleModel role) {
-        return role.getPermissionsDto();
+        return role.getRolePermissionsDto();
     }
 }
