@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
@@ -178,6 +179,7 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
         ClientModel client = clientCache.getClient(request.getUsername());
+        if(client == null) throw new UsernameNotFoundException("User Not Found");
         client.setUsername(request.getUsername());
         client.setEmail(request.getEmail());
         clientRepository.save(client);

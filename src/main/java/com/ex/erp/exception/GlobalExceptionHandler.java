@@ -14,6 +14,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -64,6 +65,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> messagingExceptionHandler(Exception e){
         LOG.error(e);
         return ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponse> usernameNotFoundExceptionHandler(Exception e){
+        LOG.error(e);
+        return ApiResponse.error(ApiResponseCode.USERNAME_NOT_EXIST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
