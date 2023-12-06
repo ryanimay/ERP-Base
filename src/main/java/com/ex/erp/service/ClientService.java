@@ -184,8 +184,17 @@ public class ClientService {
         return ApiResponse.success("OK");
     }
 
-    public ResponseEntity<ApiResponse> lockClient(LockClientRequest request) {
-        clientRepository.lockClientById(request.getClientId(), request.isStatus());
+    public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {
+        String username = request.getUsername();
+        clientRepository.lockClientByIdAndUsername(request.getClientId(), username, request.isStatus());
+        clientCache.refreshClient(username);
+        return ApiResponse.success("OK");
+    }
+
+    public ResponseEntity<ApiResponse> clientStatus(ClientStatusRequest request) {
+        String username = request.getUsername();
+        clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
+        clientCache.refreshClient(username);
         return ApiResponse.success("OK");
     }
 }
