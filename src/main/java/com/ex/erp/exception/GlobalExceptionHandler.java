@@ -33,43 +33,43 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<ApiResponse> lockedExceptionHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.CLIENT_LOCKED);
     }
 
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<ApiResponse> disabledExceptionHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.CLIENT_DISABLED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse> badCredentialsExceptionHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse> accessDeniedExceptionHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
     }
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ApiResponse> signatureExceptionHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
     }
 
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<ApiResponse> messagingExceptionHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponse> usernameNotFoundExceptionHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.USERNAME_NOT_EXIST);
     }
 
@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> globalHandler(Exception e){
-        LOG.error(e);
+        LOG.error(e.getMessage());
         return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown Error");
     }
 

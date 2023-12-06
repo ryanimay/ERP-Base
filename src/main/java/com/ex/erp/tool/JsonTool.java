@@ -11,7 +11,7 @@ public class JsonTool {
         try{
             json = mapper.writeValueAsString(obj);
         }catch (JsonProcessingException e){
-            LOG.error("轉換Json發生錯誤: {0}", e);
+            LOG.error("轉換Json發生錯誤: {0}", e.getMessage());
         }
         return json;
     }
