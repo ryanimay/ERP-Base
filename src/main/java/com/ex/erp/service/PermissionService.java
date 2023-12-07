@@ -101,6 +101,12 @@ public class PermissionService {
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
     }
 
+    //從緩存拿
+    public ResponseEntity<ApiResponse> getPermissionTreeCache() {
+        PermissionTreeResponse permissionTree = clientCache.getPermissionTree();
+        return ApiResponse.success(ApiResponseCode.SUCCESS, permissionTree);
+    }
+
     public PermissionTreeResponse getPermissionTree() {
         List<PermissionModel> allPermission = permissionRepository.findAll();
         Map<Long, List<PermissionModel>> parentChildMap = getParentChildMap(allPermission);
