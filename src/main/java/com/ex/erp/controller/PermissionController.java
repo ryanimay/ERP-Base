@@ -21,4 +21,9 @@ public class PermissionController {
     public ResponseEntity<ApiResponse> rolePermission(long roleId){
         return permissionService.getRolePermission(roleId);
     }
+
+    @GetMapping("/tree")
+    public ResponseEntity<ApiResponse> tree(){
+        return permissionService.getPermissionTreeCache();
+    }
 }
