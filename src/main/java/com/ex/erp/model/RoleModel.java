@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoleModel implements IBaseModel {
+    @Serial
+    private static final long serialVersionUID = -5831980508981736029L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -29,6 +32,10 @@ public class RoleModel implements IBaseModel {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<PermissionModel> permissions = new HashSet<>();
+
+    public RoleModel(String roleName) {
+        this.roleName = roleName;
+    }
 
     public RoleModel(long id) {
         this.id = id;

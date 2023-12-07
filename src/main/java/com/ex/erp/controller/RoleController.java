@@ -1,6 +1,6 @@
 package com.ex.erp.controller;
 
-import com.ex.erp.dto.request.role.UpdateRoleRequest;
+import com.ex.erp.dto.request.role.RoleRequest;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,12 @@ public class RoleController {
         return roleService.roleNameList();
     }
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse> update(@RequestBody UpdateRoleRequest request){
+    public ResponseEntity<ApiResponse> update(@RequestBody RoleRequest request){
         return roleService.updateName(request);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<ApiResponse> add(@RequestBody RoleRequest request){
+        return roleService.addRole(request);
     }
 }
