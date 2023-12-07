@@ -79,6 +79,9 @@ public class ClientCache {
         LOG.info("all permission: {0}", JsonTool.toJson(allPermission));
         return allPermission;
     }
+    @CacheEvict(key = "'permissionCache'")
+    public void refreshPermission() {
+    }
 
     //角色擁有權限
     @Cacheable(key = "'rolePermission_' + #role.id")
