@@ -1,6 +1,6 @@
 package com.ex.erp.service;
 
-import com.ex.erp.dto.request.role.UpdateRoleRequest;
+import com.ex.erp.dto.request.role.RoleRequest;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.response.role.RoleListResponse;
 import com.ex.erp.enums.response.ApiResponseCode;
@@ -40,11 +40,11 @@ public class RoleService {
         return ApiResponse.success(roleListResponses);
     }
 
-    public ResponseEntity<ApiResponse> updateName(UpdateRoleRequest request) {
+    public ResponseEntity<ApiResponse> updateName(RoleRequest request) {
         Long id = request.getId();
         String name = request.getName();
-        Optional<RoleModel> roleModel = roleRepository.findByRoleName(name);
-        if(roleModel.isPresent() && roleModel.get().getId() != id) return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
+        ResponseEntity<ApiResponse> response = checkRoleName(name, id);
+        if(response != null) return response;
 
         RoleModel model = clientCache.getRole().get(id);
         if(model != null){
@@ -55,5 +55,21 @@ public class RoleService {
         }
 
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+    }
+
+    public ResponseEntity<ApiResponse> addRole(RoleRequest request) {
+        String name = request.getName();
+        ResponseEntity<ApiResponse> response = checkRoleName(name, null);
+        if(response != null) return response;
+        roleRepository.save(new RoleModel(name));
+        clientCache.refreshRole();
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    private ResponseEntity<ApiResponse> checkRoleName(String name, Long id){
+        Optional<RoleModel> roleModel = roleRepository.findByRoleName(name);
+        if(roleModel.isPresent() &&
+                (id == null || roleModel.get().getId() != id)) return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
+        return null;
     }
 }
