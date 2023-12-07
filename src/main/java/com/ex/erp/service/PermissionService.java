@@ -1,5 +1,6 @@
 package com.ex.erp.service;
 
+import com.ex.erp.dto.request.permission.BanRequest;
 import com.ex.erp.dto.request.permission.PermissionTreeResponse;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.security.RolePermissionDto;
@@ -128,5 +129,11 @@ public class PermissionService {
             });
             return null;
         });
+    }
+
+    public ResponseEntity<ApiResponse> ban(BanRequest request) {
+        permissionRepository.updateStatusById(request.getId(), request.isStatus());
+        clientCache.refreshPermission();
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

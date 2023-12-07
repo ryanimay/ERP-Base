@@ -94,11 +94,15 @@ public class SecurityConfig {
             for (PermissionModel permission : permissions) {
                 String authority = permission.getAuthority();
                 String url = permission.getUrl();
-                if("*".equals(authority)){
-                    request.requestMatchers(url).permitAll();
+                if(permission.getStatus()){
+                    if("*".equals(authority)){
+                        request.requestMatchers(url).permitAll();
+                    }else{
+                        //每個權限節點包含所有父節點都可以通過
+                        request.requestMatchers(antMatcher(url)).hasAnyAuthority(permission.getAuthoritiesIncludeParents().toArray(new String[0]));
+                    }
                 }else{
-                    //每個權限節點包含所有父節點都可以通過
-                    request.requestMatchers(antMatcher(url)).hasAnyAuthority(permission.getAuthoritiesIncludeParents().toArray(new String[0]));
+                    request.requestMatchers(url).denyAll();//ban url
                 }
             }
         });
