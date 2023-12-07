@@ -1,4 +1,4 @@
-package com.ex.erp.dto.response;
+package com.ex.erp.enums.response;
 
 public enum CustomResponseEnum {
     MESSAGE_ERROR(1000, "unknown mail error")

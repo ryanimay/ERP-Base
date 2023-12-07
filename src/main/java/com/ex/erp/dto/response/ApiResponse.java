@@ -1,6 +1,7 @@
 package com.ex.erp.dto.response;
 
 import com.ex.erp.dto.security.ClientIdentity;
+import com.ex.erp.enums.response.ApiResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
 package com.ex.erp.config.security;
 
-import com.ex.erp.dto.response.ApiResponseCode;
+import com.ex.erp.enums.response.ApiResponseCode;
 import com.ex.erp.dto.response.FilterExceptionResponse;
 import com.ex.erp.filter.jwt.JwtAuthenticationFilter;
 import com.ex.erp.filter.jwt.UserStatusFilter;

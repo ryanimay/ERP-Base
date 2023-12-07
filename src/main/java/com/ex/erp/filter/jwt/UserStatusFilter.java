@@ -1,6 +1,6 @@
 package com.ex.erp.filter.jwt;
 
-import com.ex.erp.dto.response.ApiResponseCode;
+import com.ex.erp.enums.response.ApiResponseCode;
 import com.ex.erp.dto.response.FilterExceptionResponse;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.tool.LogFactory;

@@ -1,6 +1,6 @@
 package com.ex.erp;
 
-import com.ex.erp.dto.response.ApiResponseCode;
+import com.ex.erp.enums.response.ApiResponseCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;

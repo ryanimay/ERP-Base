@@ -1,4 +1,4 @@
-package com.ex.erp.dto.response;
+package com.ex.erp.enums.response;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
