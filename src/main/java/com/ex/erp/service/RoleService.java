@@ -72,4 +72,9 @@ public class RoleService {
                 (id == null || roleModel.get().getId() != id)) return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
         return null;
     }
+
+    public ResponseEntity<ApiResponse> deleteById(RoleRequest request) {
+        roleRepository.deleteById(request.getId());
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
 }
