@@ -1,5 +1,7 @@
 package com.ex.erp.service.cache;
 
+import com.ex.erp.dto.request.permission.PermissionTreeResponse;
+import com.ex.erp.dto.security.RolePermissionDto;
 import com.ex.erp.model.ClientModel;
 import com.ex.erp.model.PermissionModel;
 import com.ex.erp.model.RoleModel;
@@ -14,13 +16,12 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +33,7 @@ public class ClientCache {
     private RoleService roleService;
     private PermissionService permissionService;
     @Autowired
-    public void setPermissionService(PermissionService permissionService){
+    public void setPermissionService(@Lazy PermissionService permissionService){
         this.permissionService = permissionService;
     }
     @Autowired
@@ -81,7 +82,14 @@ public class ClientCache {
 
     //角色擁有權限
     @Cacheable(key = "'rolePermission_' + #role.id")
-    public Collection<? extends GrantedAuthority> getRolePermission(RoleModel role) {
+    public Set<RolePermissionDto> getRolePermission(RoleModel role) {
         return role.getRolePermissionsDto();
+    }
+    @Cacheable(key = "'permissionTree'")
+    public PermissionTreeResponse getPermissionTree() {
+        return permissionService.getPermissionTree();
+    }
+    @CacheEvict(key = "'permissionTree'")
+    public void refreshPermissionTree() {
     }
 }

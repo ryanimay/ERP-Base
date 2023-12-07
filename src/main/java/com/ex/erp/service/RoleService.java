@@ -77,4 +77,9 @@ public class RoleService {
         roleRepository.deleteById(request.getId());
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
+
+    public RoleModel findById(long roleId) {
+        Optional<RoleModel> role = roleRepository.findById(roleId);
+        return role.orElse(null);
+    }
 }

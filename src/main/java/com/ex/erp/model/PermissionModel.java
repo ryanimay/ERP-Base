@@ -28,6 +28,8 @@ public class PermissionModel implements IBaseModel{
     private String info;
     @Column(name = "url")
     private String url;
+    @Column(name = "display_order")
+    private Integer displayOrder;
 
     @ManyToOne
     @JoinColumn(name = "parentsId")
