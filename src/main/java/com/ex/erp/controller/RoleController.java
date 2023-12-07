@@ -29,4 +29,9 @@ public class RoleController {
     public ResponseEntity<ApiResponse> add(@RequestBody RoleRequest request){
         return roleService.addRole(request);
     }
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<ApiResponse> remove(@RequestBody RoleRequest request){
+        return roleService.deleteById(request);
+    }
 }
