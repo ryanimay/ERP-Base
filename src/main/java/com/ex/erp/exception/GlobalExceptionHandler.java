@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> globalHandler(Exception e){
-        LOG.error(e.getMessage());
+        LOG.error(e);//未知錯誤全展開比較好排查
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
 
