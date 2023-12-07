@@ -2,7 +2,7 @@ package com.ex.erp.service;
 
 import com.ex.erp.dto.request.client.*;
 import com.ex.erp.dto.response.ApiResponse;
-import com.ex.erp.dto.response.ApiResponseCode;
+import com.ex.erp.enums.response.ApiResponseCode;
 import com.ex.erp.dto.response.ClientResponseModel;
 import com.ex.erp.dto.security.ClientIdentity;
 import com.ex.erp.model.ClientModel;
