@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @CacheConfig(cacheNames = "client")
@@ -60,8 +62,13 @@ public class ClientCache {
     }
 
     @Cacheable(key = "'roleCache'")
-    public List<RoleModel>  getRole() {
-        return roleService.findAll();
+    public Map<Long, RoleModel> getRole() {
+        List<RoleModel> allRoles = roleService.findAll();
+        return allRoles.stream().collect(Collectors.toMap(RoleModel::getId, role -> role));
+    }
+
+    @CacheEvict(key = "'roleCache'")
+    public void refreshRole() {
     }
 
     //返回結構是由父->子

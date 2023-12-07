@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> globalHandler(Exception e){
         LOG.error(e.getMessage());
-        return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown Error");
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
 
     private Object[] resetArray(Object[] originalArguments){

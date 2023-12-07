@@ -2,6 +2,7 @@ package com.ex.erp.controller;
 
 import com.ex.erp.dto.request.client.*;
 import com.ex.erp.dto.response.ApiResponse;
+import com.ex.erp.enums.response.ApiResponseCode;
 import com.ex.erp.service.ClientService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ public class ClientController {
 
     @GetMapping("/opValid")
     public ResponseEntity<ApiResponse> opValid(){
-        return ApiResponse.success("OK");
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     @PostMapping("/register")

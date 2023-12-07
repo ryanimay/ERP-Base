@@ -22,7 +22,11 @@ public enum ApiResponseCode {
     INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "response.invalidSignature"),
     MESSAGING_ERROR(CustomResponseEnum.MESSAGE_ERROR, "response.messageError"),
     CLIENT_LOCKED(HttpStatus.FORBIDDEN, "response.clientLocked"),
-    CLIENT_DISABLED(HttpStatus.FORBIDDEN, "response.disabled");
+    CLIENT_DISABLED(HttpStatus.FORBIDDEN, "response.disabled"),
+    NAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.nameAlreadyExists"),
+    SUCCESS(HttpStatus.OK, "response.success"),
+    UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "response.unknownError"),
+    ;
 
     private final int code;
     private final String message;

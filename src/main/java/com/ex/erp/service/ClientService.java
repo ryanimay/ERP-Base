@@ -183,20 +183,20 @@ public class ClientService {
         client.setUsername(request.getUsername());
         client.setEmail(request.getEmail());
         clientRepository.save(client);
-        return ApiResponse.success("OK");
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {
         String username = request.getUsername();
         clientRepository.lockClientByIdAndUsername(request.getClientId(), username, request.isStatus());
         clientCache.refreshClient(username);
-        return ApiResponse.success("OK");
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     public ResponseEntity<ApiResponse> clientStatus(ClientStatusRequest request) {
         String username = request.getUsername();
         clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
         clientCache.refreshClient(username);
-        return ApiResponse.success("OK");
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }
