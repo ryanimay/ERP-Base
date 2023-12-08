@@ -2,6 +2,7 @@ package com.ex.erp.service;
 
 import com.ex.erp.dto.request.permission.BanRequest;
 import com.ex.erp.dto.request.permission.PermissionTreeResponse;
+import com.ex.erp.dto.request.permission.SecurityConfirmRequest;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.dto.security.RolePermissionDto;
 import com.ex.erp.enums.response.ApiResponseCode;
@@ -9,6 +10,7 @@ import com.ex.erp.model.PermissionModel;
 import com.ex.erp.repository.PermissionRepository;
 import com.ex.erp.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 @Transactional
 public class PermissionService {
+    @Value("${security.password}")
+    private static String securityPassword;
     private PermissionRepository permissionRepository;
     private ClientCache clientCache;
     private RoleService roleService;
@@ -135,5 +139,10 @@ public class PermissionService {
         permissionRepository.updateStatusById(request.getId(), request.isStatus());
         clientCache.refreshPermission();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public ResponseEntity<ApiResponse> securityConfirm(SecurityConfirmRequest request) {
+        if(securityPassword.equals(request.getSecurityPassword())) return ApiResponse.success(ApiResponseCode.SUCCESS);
+        return ApiResponse.error(ApiResponseCode.SECURITY_ERROR);
     }
 }
