@@ -1,14 +1,12 @@
 package com.ex.erp.controller;
 
 import com.ex.erp.dto.request.permission.BanRequest;
+import com.ex.erp.dto.request.permission.SecurityConfirmRequest;
 import com.ex.erp.dto.response.ApiResponse;
 import com.ex.erp.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/permission")
@@ -32,5 +30,11 @@ public class PermissionController {
     @PutMapping("/ban")
     public ResponseEntity<ApiResponse> ban(BanRequest request){
         return permissionService.ban(request);
+    }
+
+
+    @PostMapping("/securityConfirm")
+    public ResponseEntity<ApiResponse> securityConfirm(SecurityConfirmRequest request){
+        return permissionService.securityConfirm(request);
     }
 }

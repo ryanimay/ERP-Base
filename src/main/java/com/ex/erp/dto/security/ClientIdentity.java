@@ -20,7 +20,7 @@ import java.util.Map;
 public class ClientIdentity {
 
     @Value("${system.default.locale}")
-    private String defaultLocaleString;
+    private static String defaultLocaleString;
     public static Locale defaultLocale;
     @PostConstruct
     private void init() {
