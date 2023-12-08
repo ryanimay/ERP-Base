@@ -2,6 +2,7 @@ package com.erp.base.config.security;
 
 import com.erp.base.dto.response.FilterExceptionResponse;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.filter.jwt.DenyPermissionFilter;
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.filter.jwt.UserStatusFilter;
 import com.erp.base.model.PermissionModel;
@@ -52,7 +53,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter, UserStatusFilter userStatusFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter, UserStatusFilter userStatusFilter, DenyPermissionFilter denyPermissionFilter) throws Exception {
         cacheService.refreshAllCache();//啟動時刷新全部緩存
 
         //配置資料庫內permission表的所有API權限設定
@@ -62,7 +63,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(denyPermissionFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(authFilter, DenyPermissionFilter.class)
                 .addFilterAfter(userStatusFilter, JwtAuthenticationFilter.class)
                 .exceptionHandling(exception ->
                         exception.accessDeniedHandler((request, response, accessDeniedException) ->
@@ -88,21 +90,17 @@ public class SecurityConfig {
 
     //動態設定所有權限
     private void configurePermission(HttpSecurity http) throws Exception {
+        List<PermissionModel> permissions = clientCache.getPermission();
+        Collections.reverse(permissions);//調頭，從子權限開始設定，不然會被父權限擋掉
         http.authorizeHttpRequests(request -> {
-            List<PermissionModel> permissions = clientCache.getPermission();//寫在每次的請求內，這樣才可以靠刷新緩存改變權限
-            Collections.reverse(permissions);//調頭，從子權限開始設定，不然會被父權限擋掉
             for (PermissionModel permission : permissions) {
                 String authority = permission.getAuthority();
                 String url = permission.getUrl();
-                if(permission.getStatus()){
-                    if("*".equals(authority)){
-                        request.requestMatchers(url).permitAll();
-                    }else{
-                        //每個權限節點包含所有父節點都可以通過
-                        request.requestMatchers(antMatcher(url)).hasAnyAuthority(permission.getAuthoritiesIncludeParents().toArray(new String[0]));
-                    }
+                if("*".equals(authority)){
+                    request.requestMatchers(url).permitAll();
                 }else{
-                    request.requestMatchers(url).denyAll();//ban url
+                    //每個權限節點包含所有父節點都可以通過
+                    request.requestMatchers(antMatcher(url)).hasAnyAuthority(permission.getAuthoritiesIncludeParents().toArray(new String[0]));
                 }
             }
         });
