@@ -11,4 +11,6 @@ public interface PermissionRepository extends JpaRepository<PermissionModel, Lon
     @Modifying
     @Query("UPDATE PermissionModel p SET p.status = :status WHERE p.id = :id")
     void updateStatusById(long id, boolean status);
+    @Query("SELECT p.status FROM PermissionModel p WHERE p.url = :requestUrl")
+    Boolean checkPermissionIfDeny(String requestUrl);
 }

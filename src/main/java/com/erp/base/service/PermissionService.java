@@ -145,4 +145,10 @@ public class PermissionService {
         if(securityPassword.equals(request.getSecurityPassword())) return ApiResponse.success(ApiResponseCode.SUCCESS);
         return ApiResponse.error(ApiResponseCode.SECURITY_ERROR);
     }
+
+    public ApiResponseCode checkPermissionIfDeny(String requestedUrl) {
+        Boolean result = permissionRepository.checkPermissionIfDeny(requestedUrl);
+        if(result == null || !result) return ApiResponseCode.ACCESS_DENIED;
+        return null;
+    }
 }

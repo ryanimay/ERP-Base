@@ -28,7 +28,7 @@ public class PermissionController {
     }
 
     @PutMapping("/ban")
-    public ResponseEntity<ApiResponse> ban(BanRequest request){
+    public ResponseEntity<ApiResponse> ban(@RequestBody BanRequest request){
         return permissionService.ban(request);
     }
 
