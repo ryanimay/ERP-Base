@@ -33,6 +33,7 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
             if(code != null) {
                 LOG.error("request path: [{0}] is Disable", requestedUrl);
                 FilterExceptionResponse.error(response, code);
+                return;
             }
         }
 

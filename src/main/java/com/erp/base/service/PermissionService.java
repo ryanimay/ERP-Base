@@ -142,13 +142,13 @@ public class PermissionService {
     }
 
     public ResponseEntity<ApiResponse> securityConfirm(SecurityConfirmRequest request) {
-        if(securityPassword.equals(request.getSecurityPassword())) return ApiResponse.success(ApiResponseCode.SUCCESS);
-        return ApiResponse.error(ApiResponseCode.SECURITY_ERROR);
+        if(securityPassword.equals(request.getSecurityPassword())) return ApiResponse.success(ApiResponseCode.SUCCESS, true);
+        return ApiResponse.error(ApiResponseCode.SECURITY_ERROR, false);
     }
 
     public ApiResponseCode checkPermissionIfDeny(String requestedUrl) {
         Boolean result = permissionRepository.checkPermissionIfDeny(requestedUrl);
-        if(result == null || !result) return ApiResponseCode.ACCESS_DENIED;
+        if(!result) return ApiResponseCode.ACCESS_DENIED;
         return null;
     }
 }
