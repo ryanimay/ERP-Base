@@ -1,0 +1,712 @@
+{
+	"info": {
+		"_postman_id": "953f71da-8ff6-4ce0-b28f-2450d0e8ace6",
+		"name": "ERP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31146439"
+	},
+	"item": [
+		{
+			"name": "client",
+			"item": [
+				{
+					"name": "opvalid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/opValid",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"opValid"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "12345678900",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "1234567890123456789",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"ryanimay840121\",\r\n    \"password\":\"Au4a8300au4a8300\",\r\n    \"email\":\"ryanimay840121@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"ryanimay840121\",\r\n    \"password\":\"rishEkdoXl\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resetPassword",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"ryanimay840121\",\r\n    \"email\":\"ryanimay840121@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/resetPassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"resetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTg1MTIzOSwiZXhwIjoxNzAxODUzMDM5LCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.uwaCTgSbbhbXC2fITdIPzXYLVrtVErjkuAiMNzpL-9M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE4NTEyMzksImV4cCI6MTcwMTg3MjgzOSwidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.80jmjrhgyQnuvlkAxgWRU9DIc9zGVmO5H-k9Um-VeLw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getClient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTgzNDc5NSwiZXhwIjoxNzAxODM2NTk1LCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.NrujACbgcsF7wqAD6ySTD6Cl2uRdLuiEdtRTXBNKS7k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE4MzQ3OTUsImV4cCI6MTcwMTg1NjM5NSwidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9._3efetRWh6T1MRb4iZpoLE9CQpgQoiNQlxFKOTS_0T0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/getClient?id=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"getClient"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"\",\r\n    \"email\":\"ryan@esound.com.tw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "clientLock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTg1MTIzOSwiZXhwIjoxNzAxODUzMDM5LCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.uwaCTgSbbhbXC2fITdIPzXYLVrtVErjkuAiMNzpL-9M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE4NTEyMzksImV4cCI6MTcwMTg3MjgzOSwidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.80jmjrhgyQnuvlkAxgWRU9DIc9zGVmO5H-k9Um-VeLw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"clientId\":6,\r\n    \"username\":\"ryanimay840121\",\r\n    \"status\":false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/clientLock",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"clientLock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "clientStatus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTg1MTM4OSwiZXhwIjoxNzAxODUzMTg5LCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.CjlICuItyDlhGVXbBzX8CdSv5bW_y2ymsMea6OahiHM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE4NTEzODksImV4cCI6MTcwMTg3Mjk4OSwidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.i97YPGSSfWrh6FLXroFmsYwmlB10IMs1Li4pXGNFXAc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"clientId\":6,\r\n    \"username\":\"ryanimay840121\",\r\n    \"status\":false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/client/clientStatus",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"client",
+								"clientStatus"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "role",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTkxNTIzMiwiZXhwIjoxNzAxOTE3MDMyLCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.YDbr8QXA9ZqLnDybzvJPtkLTm_adezGPvfu10V-yFXM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE5MTUyMzMsImV4cCI6MTcwMTkzNjgzMywidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9._IPd2BUQaGAoAQuq0ne5qtdqdnQOtqtjGVGq7TSId5Q",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/role/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"role",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTkxODk1MCwiZXhwIjoxNzAxOTIwNzUwLCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.yuVuuOyeQCOIF4povZCpS8ggBmFtAz_3dyDTGyIk6wM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE5MTg5NTAsImV4cCI6MTcwMTk0MDU1MCwidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.j8JUC94y7E8badoUQ9T_PfFXznZkly1KfeqQ0X5wftQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"1\",\r\n    \"name\":\"Basic\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/role/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"role",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTkzODIzNCwiZXhwIjoxNzAxOTQwMDM0LCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.b4swbGufd3KPvRndDMCd6w4F6kYfQ_2xo7040IRz8_8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE5MzgyMzQsImV4cCI6MTcwMTk1OTgzNCwidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.K7rUqszoFB5K9wsE1tSknTxowxbVksDqE_mHAjtVcCM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Basic01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/role/add",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"role",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTkyNjU4NCwiZXhwIjoxNzAxOTI4Mzg0LCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.E8Qn-mKKlFxL60-j9rimS5gdUVnFFWe6vK9UsmwBZzU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE5MjY1ODQsImV4cCI6MTcwMTk0ODE4NCwidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.el0aQpb4xTrC5H1Sfrk2MXICHNSORl6KC-TQ1h-FeEg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/erp_base/role/remove",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"role",
+								"remove"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "permission",
+			"item": [
+				{
+					"name": "role",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTk0MTIyMywiZXhwIjoxNzAxOTQzMDIzLCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.N3n8D_mlFor4iqfl879O4y3-o9vxNn62EEOwfN9rBYc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE5NDEyMjMsImV4cCI6MTcwMTk2MjgyMywidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.IDMXLAZTCV67jD81sC-h2tzy6uw3B_szPA6xAii9Rrk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/permission/role?roleId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"permission",
+								"role"
+							],
+							"query": [
+								{
+									"key": "roleId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tree",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTk0MTIyMywiZXhwIjoxNzAxOTQzMDIzLCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.N3n8D_mlFor4iqfl879O4y3-o9vxNn62EEOwfN9rBYc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE5NDEyMjMsImV4cCI6MTcwMTk2MjgyMywidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.IDMXLAZTCV67jD81sC-h2tzy6uw3B_szPA6xAii9Rrk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/permission/tree",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"permission",
+								"tree"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ban",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/permission/ban",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"permission",
+								"ban"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "securityConfirm",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTk0MTIyMywiZXhwIjoxNzAxOTQzMDIzLCJ1c2VybmFtZSI6InJ5YW5pbWF5ODQwMTIxIn0.N3n8D_mlFor4iqfl879O4y3-o9vxNn62EEOwfN9rBYc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDE5NDEyMjMsImV4cCI6MTcwMTk2MjgyMywidXNlcm5hbWUiOiJyeWFuaW1heTg0MDEyMSJ9.IDMXLAZTCV67jD81sC-h2tzy6uw3B_szPA6xAii9Rrk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/permission/securityConfirm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"permission",
+								"securityConfirm"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cache",
+			"item": [
+				{
+					"name": "refresh",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLUFjY2Vzcy1Ub2tlbiIsImlhdCI6MTcwMTA2NjAzMywiZXhwIjoxNzAxMDY3ODMzLCJ1c2VybmFtZSI6InRlc3QxIn0.3XUf-lXYcgij-x-3kLXbKLM257yiA_dUekBGFnvNDpg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYLVJlZnJlc2gtVG9rZW4iLCJpYXQiOjE3MDEwNjYwMzMsImV4cCI6MTcwMTA4NzYzMywidXNlcm5hbWUiOiJ0ZXN0MSJ9.WoMhQk6WABmcc1e67J6a1mQaOGq7vclo2lhACeHEOLo",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/cache/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"cache",
+								"refresh"
+							],
+							"query": [
+								{
+									"key": "cacheName",
+									"value": "permissionCache",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
