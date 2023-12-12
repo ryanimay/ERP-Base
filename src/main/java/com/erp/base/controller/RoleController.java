@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/role")
 public class RoleController {
     private final RoleService roleService;
     @Autowired
@@ -16,21 +15,21 @@ public class RoleController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/list")
+    @GetMapping(Router.ROLE.LIST)
     public ResponseEntity<ApiResponse> list(){
         return roleService.roleNameList();
     }
-    @PutMapping("/update")
+    @PutMapping(Router.ROLE.UPDATE)
     public ResponseEntity<ApiResponse> update(@RequestBody RoleRequest request){
         return roleService.updateName(request);
     }
 
-    @PostMapping("/add")
+    @PostMapping(Router.ROLE.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody RoleRequest request){
         return roleService.addRole(request);
     }
 
-    @DeleteMapping("/remove")
+    @DeleteMapping(Router.ROLE.REMOVE)
     public ResponseEntity<ApiResponse> remove(@RequestBody RoleRequest request){
         return roleService.deleteById(request);
     }

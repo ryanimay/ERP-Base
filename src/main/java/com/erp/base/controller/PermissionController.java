@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/permission")
 public class PermissionController {
     private PermissionService permissionService;
     @Autowired
@@ -17,23 +16,23 @@ public class PermissionController {
         this.permissionService = permissionService;
     }
     
-    @GetMapping("/role")
+    @GetMapping(Router.PERMISSION.ROLE)
     public ResponseEntity<ApiResponse> rolePermission(long roleId){
         return permissionService.getRolePermission(roleId);
     }
 
-    @GetMapping("/tree")
+    @GetMapping(Router.PERMISSION.TREE)
     public ResponseEntity<ApiResponse> tree(){
         return permissionService.getPermissionTreeCache();
     }
 
-    @PutMapping("/ban")
+    @PutMapping(Router.PERMISSION.BAN)
     public ResponseEntity<ApiResponse> ban(@RequestBody BanRequest request){
         return permissionService.ban(request);
     }
 
 
-    @PostMapping("/securityConfirm")
+    @PostMapping(Router.PERMISSION.SECURITY_CONFIRM)
     public ResponseEntity<ApiResponse> securityConfirm(@RequestBody SecurityConfirmRequest request){
         return permissionService.securityConfirm(request);
     }

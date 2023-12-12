@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/client")
 public class ClientController {
     private final ClientService clientService;
 
@@ -20,52 +19,52 @@ public class ClientController {
         this.clientService = service;
     }
 
-    @GetMapping("/opValid")
+    @GetMapping(Router.CLIENT.OP_VALID)
     public ResponseEntity<ApiResponse> opValid(){
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
-    @PostMapping("/register")
+    @PostMapping(Router.CLIENT.REGISTER)
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest request){
         return clientService.register(request);
     }
 
-    @PostMapping("/login")
+    @PostMapping(Router.CLIENT.LOGIN)
     public ResponseEntity<ApiResponse> login(@RequestBody @Valid LoginRequest request){
         return clientService.login(request);
     }
 
-    @PutMapping("/resetPassword")
+    @PutMapping(Router.CLIENT.RESET_PASSWORD)
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest resetRequest) throws MessagingException {
         return clientService.resetPassword(resetRequest);
     }
 
-    @GetMapping("/list")
+    @GetMapping(Router.CLIENT.LIST)
     public ResponseEntity<ApiResponse> clientList(){
         return ApiResponse.success(clientService.list());
     }
 
-    @GetMapping("/getClient")
+    @GetMapping(Router.CLIENT.GET_CLIENT)
     public ResponseEntity<ApiResponse> getClient(long id){
         return clientService.findByUserId(id);
     }
 
-    @PutMapping("/update")
+    @PutMapping(Router.CLIENT.UPDATE)
     public ResponseEntity<ApiResponse> updateClient(@RequestBody @Valid UpdateClientInfoRequest request){
         return clientService.updateUser(request);
     }
 
-    @PutMapping("/updatePassword")
+    @PutMapping(Router.CLIENT.UPDATE_PASSWORD)
     public ResponseEntity<ApiResponse> updatePassword(@RequestBody @Valid UpdatePasswordRequest request){
         return clientService.updatePassword(request);
     }
 
-    @PutMapping("/clientLock")
+    @PutMapping(Router.CLIENT.CLIENT_LOCK)
     public ResponseEntity<ApiResponse> clientLock(@RequestBody ClientStatusRequest request){
         return clientService.lockClient(request);
     }
 
-    @PutMapping("/clientStatus")
+    @PutMapping(Router.CLIENT.CLIENT_STATUS)
     public ResponseEntity<ApiResponse> clientStatus(@RequestBody ClientStatusRequest request){
         return clientService.clientStatus(request);
     }
