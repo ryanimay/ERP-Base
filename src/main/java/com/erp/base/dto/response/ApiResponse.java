@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 public class ApiResponse {
 
-    private static MessageSource messageSource;
+    private static ThreadLocal<MessageSource> messageSourceThreadLocal = new ThreadLocal<>();
     private int code;
     private String message;
     private Object data;
@@ -30,7 +31,7 @@ public class ApiResponse {
         this.code = responseCode.getCode();
         this.message = responseCode.getMessage();
         String customMessage = responseCode.getCustomMessage();
-        String formatMsg = messageSource.getMessage(customMessage, null, ClientIdentity.getLocale());
+        String formatMsg = getCurrentMessageSource().getMessage(customMessage, null, ClientIdentity.getLocale());
         this.data = formatMsg == null ? customMessage : formatMsg;
     }
 
@@ -69,7 +70,24 @@ public class ApiResponse {
         return ResponseEntity.status(responseCode.getStatus()).body(new ApiResponse(responseCode));
     }
 
+    public static ResponseEntity<ApiResponse> error(ApiResponseCode responseCode, Object data){
+        return ResponseEntity.status(responseCode.getStatus()).body(new ApiResponse(responseCode, data));
+    }
+
     public static void setMessageResource(MessageSource source) {
-        messageSource = source;
+        messageSourceThreadLocal.set(source);
+    }
+
+    private static MessageSource getCurrentMessageSource() {
+        MessageSource messageSource = messageSourceThreadLocal.get();
+        if(messageSource == null){
+            ResourceBundleMessageSource  resource = new ResourceBundleMessageSource();
+            resource.setBasename("message");
+            resource.setDefaultLocale(ClientIdentity.defaultLocale);
+            resource.setDefaultEncoding("UTF-8");
+            messageSourceThreadLocal.set(resource);
+            return resource;
+        }
+        return messageSource;
     }
 }
