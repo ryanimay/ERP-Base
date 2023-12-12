@@ -8,11 +8,9 @@ import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/cache")
 public class CacheController {
     LogFactory LOG = new LogFactory(CacheController.class);
     private CacheService cacheService;
@@ -21,7 +19,7 @@ public class CacheController {
         this.cacheService = cacheService;
     }
 
-    @GetMapping("/refresh")
+    @GetMapping(Router.CACHE.REFRESH)
     public ResponseEntity<ApiResponse> refresh(String cacheKey){
         if(StringUtils.isNotEmpty(cacheKey)){
 
