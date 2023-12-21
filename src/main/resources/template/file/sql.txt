@@ -14,7 +14,7 @@ insert into permission values('client:update',	3,	'更新用戶',	'/client/updat
 insert into permission values('client:updatePassword',	3,	'更新用戶密碼',	'/client/updatePassword', null, 1)
 insert into permission values('client:clientLock',	3,	'用戶鎖定/解鎖',	'/client/clientLock', null, 1)
 insert into permission values('client:clientStatus',	3,	'用戶啟用/停用',	'/client/clientStatus', null, 1)
-insert into permission values('role:list',	4,	'角色列表',	'/role/list', null, 1)
+insert into permission values('*',	4,	'角色列表',	'/role/list', null, 1)
 insert into permission values('role:update',	4,	'角色編輯',	'/role/update', null, 1)
 insert into permission values('role:add',	4,	'角色新增',	'/role/add', null, 1)
 insert into permission values('role:remove',	4,	'角色刪除',	'/role/remove', null, 1)
