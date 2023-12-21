@@ -100,7 +100,7 @@ public class ClientService {
         ApiResponseCode code = checkResetPassword(resetRequest);
         if(code != null) return ApiResponse.error(code);
 
-        String password = encodeTool.randomPassword(10);
+        String password = encodeTool.randomPassword(18) + "**";
         Context context = mailService.createContext(password);
         int result = updatePassword(passwordEncode(password), resetRequest.getUsername(), resetRequest.getEmail());
 
