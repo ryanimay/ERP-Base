@@ -2,6 +2,7 @@ package com.erp.base.dto.request.client;
 
 import com.erp.base.dto.request.IBaseDto;
 import com.erp.base.model.ClientModel;
+import com.erp.base.model.RoleModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -30,12 +31,14 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
     @NotBlank(message = "client.emailNotEmpty")
     @Email(message = "client.invalidEmailFormat")
     private String email;
+    private Long roleId;
 
     public ClientModel toModel() {
         ClientModel model = new ClientModel();
         model.setUsername(username);
         model.setPassword(password);
         model.setEmail(email);
+        if(roleId != null)model.setRole(new RoleModel(roleId));
         return model;
     }
 }
