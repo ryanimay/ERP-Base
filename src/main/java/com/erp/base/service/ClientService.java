@@ -183,7 +183,7 @@ public class ClientService {
         client.setUsername(request.getUsername());
         client.setEmail(request.getEmail());
         clientRepository.save(client);
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(client));
     }
 
     public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {
