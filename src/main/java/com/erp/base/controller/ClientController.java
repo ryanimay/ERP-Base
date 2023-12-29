@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.dto.request.PageRequestParam;
 import com.erp.base.dto.request.client.*;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.enums.response.ApiResponseCode;
@@ -40,8 +41,8 @@ public class ClientController {
     }
 
     @GetMapping(Router.CLIENT.LIST)
-    public ResponseEntity<ApiResponse> clientList(){
-        return ApiResponse.success(clientService.list());
+    public ResponseEntity<ApiResponse> clientList(@ModelAttribute PageRequestParam param){
+        return ApiResponse.success(clientService.list(param));
     }
 
     @GetMapping(Router.CLIENT.GET_CLIENT)

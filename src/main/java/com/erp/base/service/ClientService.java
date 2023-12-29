@@ -1,8 +1,10 @@
 package com.erp.base.service;
 
+import com.erp.base.dto.request.PageRequestParam;
 import com.erp.base.dto.request.client.*;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.dto.response.ClientResponseModel;
+import com.erp.base.dto.response.PageResponse;
 import com.erp.base.dto.security.ClientIdentity;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientModel;
@@ -14,6 +16,7 @@ import com.erp.base.tool.EncodeTool;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -93,9 +95,9 @@ public class ClientService {
         return ApiResponse.success(token, client);
     }
 
-    public List<ClientResponseModel> list() {
-        List<ClientModel> allClient = clientRepository.findAll();
-        return allClient.stream().map(ClientResponseModel::new).toList();
+    public PageResponse<ClientResponseModel> list(PageRequestParam param) {
+        Page<ClientModel> allClient = clientRepository.findAll(param.getPage());
+        return new PageResponse<>(allClient, ClientResponseModel.class);
     }
 
     public ClientModel findByUsername(String username) {
