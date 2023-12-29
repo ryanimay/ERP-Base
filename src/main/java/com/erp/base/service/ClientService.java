@@ -45,35 +45,41 @@ public class ClientService {
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
+
     @Autowired
     public void setClientCache(ClientCache clientCache) {
         this.clientCache = clientCache;
     }
+
     @Autowired
     public void setRepository(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
+
     @Autowired
     public void setEncodeTool(EncodeTool encodeTool) {
         this.encodeTool = encodeTool;
     }
+
     @Autowired
-    public void setTokenService(TokenService tokenService){
+    public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
     }
+
     @Autowired
-    public void setMailService(MailService mailService){
+    public void setMailService(MailService mailService) {
         this.mailService = mailService;
     }
+
     @Autowired
-    public void setResetPasswordModel(ResetPasswordModel resetPasswordModel){
+    public void setResetPasswordModel(ResetPasswordModel resetPasswordModel) {
         this.resetPasswordModel = resetPasswordModel;
     }
 
     public ResponseEntity<ApiResponse> register(RegisterRequest dto) {
         // 檢查使用者資料庫參數
         ApiResponseCode code = verifyRegistration(dto);
-        if(code != null) return ApiResponse.error(code);
+        if (code != null) return ApiResponse.error(code);
 
         dto.setPassword(passwordEncode(dto.getPassword()));
         clientRepository.save(dto.toModel());
@@ -81,7 +87,7 @@ public class ClientService {
         return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
     }
 
-    public ResponseEntity<ApiResponse> login(LoginRequest request){
+    public ResponseEntity<ApiResponse> login(LoginRequest request) {
         HttpHeaders token = tokenService.createToken(request);
         ClientResponseModel client = new ClientResponseModel(clientCache.getClient(request.getUsername()));
         return ApiResponse.success(token, client);
@@ -98,13 +104,13 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> resetPassword(ResetPasswordRequest resetRequest) throws MessagingException {
         ApiResponseCode code = checkResetPassword(resetRequest);
-        if(code != null) return ApiResponse.error(code);
+        if (code != null) return ApiResponse.error(code);
 
         String password = encodeTool.randomPassword(18) + "**";
         Context context = mailService.createContext(password);
         int result = updatePassword(passwordEncode(password), resetRequest.getUsername(), resetRequest.getEmail());
 
-        if(result == 1) {
+        if (result == 1) {
             //更新成功才發送郵件
             mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context);
             return ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
@@ -112,33 +118,33 @@ public class ClientService {
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
     }
 
-    public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request){
-        ClientResponseModel client = ClientIdentity.getUser();
-        if(checkIdentity(client, request)) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
+    public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
+        ClientModel client = ClientIdentity.getUser();
+        if (checkIdentity(client, request)) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         int result = clientRepository.updatePasswordByClient(passwordEncode(request.getPassword()), client.getUsername(), client.getEmail());
-        if(result == 1) {
+        if (result == 1) {
             return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
     }
 
-    private boolean checkIdentity(ClientResponseModel client, UpdatePasswordRequest request) {
+    private boolean checkIdentity(ClientModel client, UpdatePasswordRequest request) {
         String username = client.getUsername();
-        if(!Objects.equals(username, request.getUsername())) return true;//不是本人拒絕更改
+        if (!Objects.equals(username, request.getUsername())) return true;//不是本人拒絕更改
         Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getOldPassword());//比對舊帳密
         try {
             authenticationProvider.authenticate(authentication);
-        }catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             return true;
         }
         return false;
     }
 
-    private int updatePassword(String password, String username, String email){
+    private int updatePassword(String password, String username, String email) {
         return clientRepository.updatePasswordByClient(password, username, email);
     }
 
-    private String passwordEncode(String password){
+    private String passwordEncode(String password) {
         return encodeTool.passwordEncode(password);
     }
 
@@ -179,7 +185,7 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
         ClientModel client = clientCache.getClient(request.getUsername());
-        if(client == null) throw new UsernameNotFoundException("User Not Found");
+        if (client == null) throw new UsernameNotFoundException("User Not Found");
         client.setUsername(request.getUsername());
         client.setEmail(request.getEmail());
         clientRepository.save(client);
