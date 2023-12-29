@@ -8,7 +8,10 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class UpdatePasswordRequest extends LoginRequest{
+public class UpdatePasswordRequest {
+
+    @NotBlank(message = "client.userNameNotEmpty")
+    private String username;
 
     @NotBlank(message = "client.passwordNotEmpty")
     private String oldPassword;
