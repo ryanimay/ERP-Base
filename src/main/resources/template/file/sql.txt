@@ -22,3 +22,9 @@ insert into permission values('permission:role',	5,	'角色對應權限',	'/perm
 insert into permission values('permission:tree',	5,	'權限樹',	'/permission/tree', null, 1)
 insert into permission values('permission:ban',	5,	'權限禁用',	'/permission/ban', null, 1)
 insert into permission values('permission:securityConfirm',	5,	'安全認證',	'/permission/securityConfirm', null, 1)
+
+insert into role values('basic01')
+insert into role values('basic02')
+insert into role values('basic03')
+
+insert into role_permission values(1, 1)
