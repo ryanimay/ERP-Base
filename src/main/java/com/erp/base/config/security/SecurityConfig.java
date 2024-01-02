@@ -90,19 +90,19 @@ public class SecurityConfig {
 
     //動態設定所有權限
     private void configurePermission(HttpSecurity http) throws Exception {
-        List<PermissionModel> permissions = clientCache.getPermission();
-        Collections.reverse(permissions);//調頭，從子權限開始設定，不然會被父權限擋掉
-        http.authorizeHttpRequests(request -> {
-            for (PermissionModel permission : permissions) {
-                String authority = permission.getAuthority();
-                String url = permission.getUrl();
-                if("*".equals(authority)){
-                    request.requestMatchers(url).permitAll();
-                }else{
-                    //每個權限節點包含所有父節點都可以通過
-                    request.requestMatchers(antMatcher(url)).hasAnyAuthority(permission.getAuthoritiesIncludeParents().toArray(new String[0]));
-                }
-            }
-        });
+//        List<PermissionModel> permissions = clientCache.getPermission();
+//        Collections.reverse(permissions);//調頭，從子權限開始設定，不然會被父權限擋掉
+//        http.authorizeHttpRequests(request -> {
+//            for (PermissionModel permission : permissions) {
+//                String authority = permission.getAuthority();
+//                String url = permission.getUrl();
+//                if("*".equals(authority)){
+//                    request.requestMatchers(url).permitAll();
+//                }else{
+//                    //每個權限節點包含所有父節點都可以通過
+//                    request.requestMatchers(antMatcher(url)).hasAnyAuthority(permission.getAuthoritiesIncludeParents().toArray(new String[0]));
+//                }
+//            }
+//        });
     }
 }

@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Map<String, Object> tokenDetail = tokenService.parseToken(accessToken);
         String username = (String) tokenDetail.get("username");
         ClientModel client = clientCache.getClient(username);
-        Collection<? extends GrantedAuthority> rolePermission = clientCache.getRolePermission(client.getRole());
+        Collection<? extends GrantedAuthority> rolePermission = null;//clientCache.getRolePermission(client.getRole());
         HashMap<String, Object> principalMap = new HashMap<>();
         principalMap.put(PRINCIPAL_CLIENT, client);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);

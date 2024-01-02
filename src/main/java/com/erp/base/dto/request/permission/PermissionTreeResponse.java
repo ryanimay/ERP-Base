@@ -19,20 +19,18 @@ public class PermissionTreeResponse implements Serializable {
     private static final long serialVersionUID = -5831980508981731523L;
     private long id;
     private String info;
-    private Integer order;
     private List<PermissionTreeResponse> childTree;
 
     public PermissionTreeResponse(PermissionModel model) {
         this.id = model.getId();
         this.info = model.getInfo();
-        this.order = model.getDisplayOrder();
         childTree = new ArrayList<>();
     }
 
     //遞迴排序所有分支
     public void sortChildTree(){
-        childTree.sort(Comparator.comparing(PermissionTreeResponse::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
-        childTree.forEach(PermissionTreeResponse::sortChildTree);
+//        childTree.sort(Comparator.comparing(PermissionTreeResponse::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
+//        childTree.forEach(PermissionTreeResponse::sortChildTree);
     }
 
     public void addChildTree(PermissionTreeResponse node) {

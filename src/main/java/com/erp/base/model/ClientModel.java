@@ -5,8 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
-@Table(name="client")
+@Table(name = "client")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,17 +29,17 @@ public class ClientModel implements IBaseModel {
     private boolean isLock = false;
     @Column(name = "email", unique = true)
     private String email;
+    @Column(name = "last_login_time")
+    private LocalDateTime lastLoginTime;
+    @Column(name = "create_time")
+    private LocalDateTime createTime = LocalDateTime.now();
+    @Column(name = "create_by")
+    private Long createBy;
 
-    @ManyToOne
-    @JoinColumn(name = "roleId", nullable = false, referencedColumnName = "id")
-    private RoleModel role;
-
-    @PrePersist
-    public void prePersist(){
-        if(role == null) role = defaultRole();
-    }
-
-    private RoleModel defaultRole() {
-        return new RoleModel(1);
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<RoleModel> roles = new HashSet<>();
 }

@@ -48,9 +48,10 @@ public class ClientCache {
     //有關使用者資訊，不存密碼
     @Cacheable(key = "'clientCache_' + #username")
     public ClientModel getClient(String username) {
-        ClientModel model = clientService.findByUsername(username);
-        Hibernate.initialize(model.getRole().getPermissions());//確保保存在redis的實體完整加載
-        return model;
+//        ClientModel model = clientService.findByUsername(username);
+//        Hibernate.initialize(model.getRole().getPermissions());//確保保存在redis的實體完整加載
+//        return model;
+        return null;
     }
 
     @CacheEvict(key = "'clientCache_' + #username")
@@ -90,7 +91,7 @@ public class ClientCache {
     }
     @Cacheable(key = "'permissionTree'")
     public PermissionTreeResponse getPermissionTree() {
-        return permissionService.getPermissionTree();
+        return null;
     }
     @CacheEvict(key = "'permissionTree'")
     public void refreshPermissionTree() {

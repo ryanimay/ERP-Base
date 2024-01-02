@@ -13,7 +13,7 @@ import java.util.Collection;
 @Setter
 @Transactional
 public class UserDetailImpl implements UserDetails {
-    private com.erp.base.model.ClientModel ClientModel;
+    private ClientModel ClientModel;
     private ClientCache ClientCache;
 
     public UserDetailImpl(ClientModel clientModel, ClientCache clientCache) {
@@ -48,7 +48,7 @@ public class UserDetailImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return ClientCache.getRolePermission(ClientModel.getRole());
+        return null;
     }
 
     @Override
