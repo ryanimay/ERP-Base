@@ -19,14 +19,12 @@ public class RolePermissionDto implements GrantedAuthority, Serializable {
     private String authority;
     private String info;
     private String url;
-    private long parentId;
 
     public RolePermissionDto(PermissionModel model) {
         this.id = model.getId();
         this.authority = model.getAuthority();
         this.info = model.getInfo();
         this.url = model.getUrl();
-        this.parentId = model.getParentId();
     }
 
     @Override

@@ -20,4 +20,4 @@ SpringSecurity筆記:https://hackmd.io/@S1MNxjTORYSfAfivxMlEQw/rykdZBNEa
 權限都改為多對多  
 i18n僅保留中/英  
 目標比較明確了，主結構會按照下列去完成  
-![img.png](img.png)
+![img.png](src/main/resources/template/file/img.png)

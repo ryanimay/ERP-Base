@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 使用者資訊，不存密碼
  * */
@@ -16,7 +19,7 @@ public class ClientResponseModel implements Serializable {
 
     private long id;
     private String username;
-    private long roleId;
+    private List<Long> roleId = new ArrayList<>();
     private boolean isActive;
     private boolean isLock;
     private String email;
@@ -24,7 +27,7 @@ public class ClientResponseModel implements Serializable {
     public ClientResponseModel(ClientModel clientModel) {
         this.id = clientModel.getId();
         this.username = clientModel.getUsername();
-        this.roleId = clientModel.getRole().getId();
+        clientModel.getRoles().forEach(role -> roleId.add(role.getId()));
         this.isActive = clientModel.isActive();
         this.isLock = clientModel.isLock();
         this.email = clientModel.getEmail();

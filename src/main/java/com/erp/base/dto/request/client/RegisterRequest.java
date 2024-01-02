@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,7 +40,10 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
         model.setUsername(username);
         model.setPassword(password);
         model.setEmail(email);
-        if(roleId != null)model.setRole(new RoleModel(roleId));
+        if(roleId != null){
+            Set<RoleModel> role = model.getRoles();
+            role.add(new RoleModel(roleId));
+        }
         return model;
     }
 }

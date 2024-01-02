@@ -25,7 +25,7 @@ public class RoleModel implements IBaseModel {
     @Column(name = "roleName", nullable = false)
     private String roleName;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),
