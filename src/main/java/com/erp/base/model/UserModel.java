@@ -27,7 +27,7 @@ public class UserModel implements IBaseModel {
     private boolean isActive = true;
     @Column(name = "is_lock", nullable = false)
     private boolean isLock = false;
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
     @Column(name = "last_login_time")
     private LocalDateTime lastLoginTime;
