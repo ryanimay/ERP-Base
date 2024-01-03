@@ -7,6 +7,7 @@ import com.erp.base.dto.response.ClientResponseModel;
 import com.erp.base.dto.response.PageResponse;
 import com.erp.base.dto.security.ClientIdentity;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.RoleModel;
 import com.erp.base.model.UserModel;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
@@ -30,8 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -43,6 +46,7 @@ public class ClientService {
     private ResetPasswordModel resetPasswordModel;
     private ClientCache clientCache;
     private AuthenticationProvider authenticationProvider;
+    private RoleService roleService;
 
     @Autowired
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
@@ -72,6 +76,11 @@ public class ClientService {
     @Autowired
     public void setMailService(MailService mailService) {
         this.mailService = mailService;
+    }
+
+    @Autowired
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
     }
 
     @Autowired
@@ -193,10 +202,14 @@ public class ClientService {
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
         UserModel client = clientCache.getClient(request.getUsername());
         if (client == null) throw new UsernameNotFoundException("User Not Found");
-        client.setUsername(request.getUsername());
         client.setEmail(request.getEmail());
+        client.setRoles(getRoles(request.getRoles()));
         clientRepository.save(client);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(client));
+    }
+
+    private Set<RoleModel> getRoles(List<Long> roles){
+        return roleService.getRolesById(roles);
     }
 
     public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {

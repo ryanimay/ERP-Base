@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -81,5 +82,9 @@ public class RoleService {
     public RoleModel findById(long roleId) {
         Optional<RoleModel> role = roleRepository.findById(roleId);
         return role.orElse(null);
+    }
+
+    public Set<RoleModel> getRolesById(List<Long> roles) {
+        return roleRepository.findByIdIn(roles);
     }
 }
