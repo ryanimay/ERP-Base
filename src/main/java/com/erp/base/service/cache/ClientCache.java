@@ -1,7 +1,7 @@
 package com.erp.base.service.cache;
 
 import com.erp.base.dto.request.permission.PermissionTreeResponse;
-import com.erp.base.model.ClientModel;
+import com.erp.base.model.UserModel;
 import com.erp.base.model.PermissionModel;
 import com.erp.base.model.RoleModel;
 import com.erp.base.service.PermissionService;
@@ -10,7 +10,6 @@ import com.erp.base.tool.JsonTool;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.dto.security.RolePermissionDto;
 import com.erp.base.service.ClientService;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -47,7 +46,7 @@ public class ClientCache {
 
     //有關使用者資訊，不存密碼
     @Cacheable(key = "'clientCache_' + #username")
-    public ClientModel getClient(String username) {
+    public UserModel getClient(String username) {
 //        ClientModel model = clientService.findByUsername(username);
 //        Hibernate.initialize(model.getRole().getPermissions());//確保保存在redis的實體完整加載
 //        return model;

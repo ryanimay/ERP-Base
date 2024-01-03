@@ -1,7 +1,7 @@
 package com.erp.base.dto.request.client;
 
 import com.erp.base.dto.request.IBaseDto;
-import com.erp.base.model.ClientModel;
+import com.erp.base.model.UserModel;
 import com.erp.base.model.RoleModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest implements IBaseDto<ClientModel> {
+public class RegisterRequest implements IBaseDto<UserModel> {
     @NotBlank(message = "client.userNameNotEmpty")
     @Size(min = 6, max = 20, message = "client.userNameSize")
     private String username;
@@ -35,8 +35,8 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
     private String email;
     private Long roleId;
 
-    public ClientModel toModel() {
-        ClientModel model = new ClientModel();
+    public UserModel toModel() {
+        UserModel model = new UserModel();
         model.setUsername(username);
         model.setPassword(password);
         model.setEmail(email);

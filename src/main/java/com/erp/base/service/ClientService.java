@@ -7,7 +7,7 @@ import com.erp.base.dto.response.ClientResponseModel;
 import com.erp.base.dto.response.PageResponse;
 import com.erp.base.dto.security.ClientIdentity;
 import com.erp.base.enums.response.ApiResponseCode;
-import com.erp.base.model.ClientModel;
+import com.erp.base.model.UserModel;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.cache.ClientCache;
@@ -96,11 +96,11 @@ public class ClientService {
     }
 
     public PageResponse<ClientResponseModel> list(PageRequestParam param) {
-        Page<ClientModel> allClient = clientRepository.findAll(param.getPage());
+        Page<UserModel> allClient = clientRepository.findAll(param.getPage());
         return new PageResponse<>(allClient, ClientResponseModel.class);
     }
 
-    public ClientModel findByUsername(String username) {
+    public UserModel findByUsername(String username) {
         return clientRepository.findByUsername(username);
     }
 
@@ -121,7 +121,7 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
-        ClientModel client = ClientIdentity.getUser();
+        UserModel client = ClientIdentity.getUser();
         if (checkIdentity(client, request)) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         int result = clientRepository.updatePasswordByClient(passwordEncode(request.getPassword()), client.getUsername(), client.getEmail());
         if (result == 1) {
@@ -130,7 +130,7 @@ public class ClientService {
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
     }
 
-    private boolean checkIdentity(ClientModel client, UpdatePasswordRequest request) {
+    private boolean checkIdentity(UserModel client, UpdatePasswordRequest request) {
         String username = client.getUsername();
         if (!Objects.equals(username, request.getUsername())) return true;//不是本人拒絕更改
         Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getOldPassword());//比對舊帳密
@@ -181,12 +181,12 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> findByUserId(long id) {
-        Optional<ClientModel> modelOption = clientRepository.findById(id);
+        Optional<UserModel> modelOption = clientRepository.findById(id);
         return modelOption.map(model -> ApiResponse.success(new ClientResponseModel(model))).orElseGet(() -> ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null));
     }
 
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
-        ClientModel client = clientCache.getClient(request.getUsername());
+        UserModel client = clientCache.getClient(request.getUsername());
         if (client == null) throw new UsernameNotFoundException("User Not Found");
         client.setUsername(request.getUsername());
         client.setEmail(request.getEmail());

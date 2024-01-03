@@ -10,11 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "client")
+@Table(name = "user")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientModel implements IBaseModel {
+public class UserModel implements IBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,7 +34,7 @@ public class ClientModel implements IBaseModel {
     @Column(name = "create_time")
     private LocalDateTime createTime = LocalDateTime.now();
     @Column(name = "create_by")
-    private Long createBy;
+    private long createBy;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
