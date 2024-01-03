@@ -1,7 +1,7 @@
 package com.erp.base.dto.security;
 
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
-import com.erp.base.model.ClientModel;
+import com.erp.base.model.UserModel;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -28,8 +28,8 @@ public class ClientIdentity {
     }
     private static final String EMPTY_USER = "anonymousUser";//SpringSecurity預設未登入使用者字段
 
-    public static ClientModel getUser(){
-        return (ClientModel) getPrincipal(JwtAuthenticationFilter.PRINCIPAL_CLIENT);
+    public static UserModel getUser(){
+        return (UserModel) getPrincipal(JwtAuthenticationFilter.PRINCIPAL_CLIENT);
     }
 
     public static Locale getLocale(){

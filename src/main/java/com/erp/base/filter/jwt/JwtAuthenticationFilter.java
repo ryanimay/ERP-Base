@@ -1,7 +1,7 @@
 package com.erp.base.filter.jwt;
 
 import com.erp.base.dto.response.FilterExceptionResponse;
-import com.erp.base.model.ClientModel;
+import com.erp.base.model.UserModel;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.security.TokenService;
@@ -70,7 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = token.replace("Bearer ", "");
         Map<String, Object> tokenDetail = tokenService.parseToken(accessToken);
         String username = (String) tokenDetail.get("username");
-        ClientModel client = clientCache.getClient(username);
+        UserModel client = clientCache.getClient(username);
         Collection<? extends GrantedAuthority> rolePermission = null;//clientCache.getRolePermission(client.getRole());
         HashMap<String, Object> principalMap = new HashMap<>();
         principalMap.put(PRINCIPAL_CLIENT, client);

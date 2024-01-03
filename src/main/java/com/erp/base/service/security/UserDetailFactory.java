@@ -1,6 +1,6 @@
 package com.erp.base.service.security;
 
-import com.erp.base.model.ClientModel;
+import com.erp.base.model.UserModel;
 import com.erp.base.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class UserDetailFactory {
     public void setCache(ClientCache ClientCache) {
         this.ClientCache = ClientCache;
     }
-    public UserDetailImpl build( ClientModel client) {
+    public UserDetailImpl build( UserModel client) {
         return new UserDetailImpl(client, ClientCache);
     }
 }

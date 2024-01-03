@@ -1,6 +1,6 @@
 package com.erp.base.service.security;
 
-import com.erp.base.model.ClientModel;
+import com.erp.base.model.UserModel;
 import com.erp.base.service.cache.ClientCache;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,32 +13,32 @@ import java.util.Collection;
 @Setter
 @Transactional
 public class UserDetailImpl implements UserDetails {
-    private ClientModel ClientModel;
+    private UserModel UserModel;
     private ClientCache ClientCache;
 
-    public UserDetailImpl(ClientModel clientModel, ClientCache clientCache) {
-        ClientModel = clientModel;
+    public UserDetailImpl(UserModel userModel, ClientCache clientCache) {
+        UserModel = userModel;
         ClientCache = clientCache;
     }
 
     @Override
     public String getUsername() {
-        return ClientModel.getUsername();
+        return UserModel.getUsername();
     }
 
     @Override
     public String getPassword() {
-        return ClientModel.getPassword();
+        return UserModel.getPassword();
     }
 
     @Override
     public boolean isEnabled() {
-        return ClientModel.isActive();
+        return UserModel.isActive();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return !ClientModel.isLock();
+        return !UserModel.isLock();
     }
 
     @Override
