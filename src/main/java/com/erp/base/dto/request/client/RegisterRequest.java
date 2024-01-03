@@ -1,6 +1,7 @@
 package com.erp.base.dto.request.client;
 
 import com.erp.base.dto.request.IBaseDto;
+import com.erp.base.dto.security.ClientIdentity;
 import com.erp.base.model.RoleModel;
 import com.erp.base.model.UserModel;
 import jakarta.validation.constraints.NotBlank;
@@ -24,6 +25,7 @@ public class RegisterRequest implements IBaseDto<UserModel> {
         UserModel model = new UserModel();
         model.setUsername(username);
         model.setPassword(username);
+        model.setCreateBy(ClientIdentity.getUser().getId());
         Set<RoleModel> role = model.getRoles();
         //default 1
         role.add(new RoleModel((Long)Objects.requireNonNullElse(roleId, 1)));
