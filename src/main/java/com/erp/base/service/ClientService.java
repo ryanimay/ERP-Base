@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -91,8 +92,15 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> login(LoginRequest request) {
         HttpHeaders token = tokenService.createToken(request);
-        ClientResponseModel client = new ClientResponseModel(clientCache.getClient(request.getUsername()));
+        UserModel user = clientCache.getClient(request.getUsername());
+        ClientResponseModel client = new ClientResponseModel(user);
+        updateLastLoginTime(user);
         return ApiResponse.success(token, client);
+    }
+
+    private void updateLastLoginTime(UserModel user) {
+        user.setLastLoginTime(LocalDateTime.now());
+        clientRepository.save(user);
     }
 
     public PageResponse<ClientResponseModel> list(PageRequestParam param) {
