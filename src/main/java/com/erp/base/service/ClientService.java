@@ -162,9 +162,6 @@ public class ClientService {
         // 檢查使用者名稱是否已存在
         if (isUsernameExists(dto.getUsername())) {
             return ApiResponseCode.USERNAME_ALREADY_EXIST;
-        }// 檢查使用者Email是否已存在
-        if (isEmailExists(dto.getEmail())) {
-            return ApiResponseCode.EMAIL_ALREADY_EXIST;
         }
         return null;
     }
