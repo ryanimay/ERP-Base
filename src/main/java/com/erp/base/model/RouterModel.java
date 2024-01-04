@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * 前端路由
  */
@@ -25,4 +29,12 @@ public class RouterModel {
     private String components;
     @Column(name = "metas")
     private String metas;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "router_role",
+            joinColumns = @JoinColumn(name = "router_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<RoleModel> roles = new HashSet<>();
 }
