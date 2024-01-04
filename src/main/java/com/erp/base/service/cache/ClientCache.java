@@ -1,15 +1,13 @@
 package com.erp.base.service.cache;
 
-import com.erp.base.dto.request.permission.PermissionTreeResponse;
-import com.erp.base.model.UserModel;
+import com.erp.base.dto.security.RolePermissionDto;
 import com.erp.base.model.PermissionModel;
 import com.erp.base.model.RoleModel;
+import com.erp.base.model.UserModel;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
 import com.erp.base.tool.JsonTool;
 import com.erp.base.tool.LogFactory;
-import com.erp.base.dto.security.RolePermissionDto;
-import com.erp.base.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,9 +16,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +24,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class ClientCache {
     LogFactory LOG = new LogFactory(ClientCache.class);
-    private ClientService clientService;
     private RoleService roleService;
     private PermissionService permissionService;
     @Autowired
@@ -38,10 +33,6 @@ public class ClientCache {
     @Autowired
     public void setRoleService(@Lazy RoleService roleService){
         this.roleService = roleService;
-    }
-    @Autowired
-    public void setClientService(@Lazy ClientService clientService){
-        this.clientService = clientService;
     }
 
     //有關使用者資訊，不存密碼
@@ -72,7 +63,6 @@ public class ClientCache {
     public void refreshRole() {
     }
 
-    //返回結構是由父->子
     @Cacheable(key = "'permissionCache'")
     public List<PermissionModel> getPermission() {
         List<PermissionModel> allPermission = permissionService.findAll();
@@ -82,17 +72,25 @@ public class ClientCache {
     @CacheEvict(key = "'permissionCache'")
     public void refreshPermission() {
     }
+    @Cacheable(key = "'permissionMap'")
+    public Map<String, List<PermissionModel>> getPermissionMap() {
+        List<PermissionModel> allPermission = permissionService.findAll();
+        Map<String, List<PermissionModel>> map = new HashMap<>();
+        for(PermissionModel permission : allPermission){
+            String key = permission.getAuthority().split(":")[0];
+            List<PermissionModel> list = map.computeIfAbsent(key, k -> new ArrayList<>());
+            list.add(permission);
+        }
+        return map;
+    }
+    @CacheEvict(key = "'permissionMap'")
+    public void refreshPermissionMap() {
+    }
 
     //角色擁有權限
-    @Cacheable(key = "'rolePermission_' + #role.id")
-    public Set<RolePermissionDto> getRolePermission(RoleModel role) {
+    @Cacheable(key = "'rolePermission_' + #id")
+    public Set<RolePermissionDto> getRolePermission(long id) {
+        RoleModel role = roleService.findById(id);
         return role.getRolePermissionsDto();
-    }
-    @Cacheable(key = "'permissionTree'")
-    public PermissionTreeResponse getPermissionTree() {
-        return null;
-    }
-    @CacheEvict(key = "'permissionTree'")
-    public void refreshPermissionTree() {
     }
 }

@@ -31,7 +31,7 @@ public interface Router {
     interface PERMISSION{
         String PERMISSION = "/permission";
         String ROLE = PERMISSION + "/role";
-        String TREE = PERMISSION + "/tree";
+        String LIST = PERMISSION + "/list";
         String BAN = PERMISSION + "/ban";
         String SECURITY_CONFIRM = PERMISSION + "/securityConfirm";
     }

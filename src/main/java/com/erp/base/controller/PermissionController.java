@@ -15,15 +15,15 @@ public class PermissionController {
     public void setPermissionService(PermissionService permissionService){
         this.permissionService = permissionService;
     }
-    
+
+    @GetMapping(Router.PERMISSION.LIST)
+    public ResponseEntity<ApiResponse> list(){
+        return permissionService.getPermissionList();
+    }
+
     @GetMapping(Router.PERMISSION.ROLE)
     public ResponseEntity<ApiResponse> rolePermission(long roleId){
         return permissionService.getRolePermission(roleId);
-    }
-
-    @GetMapping(Router.PERMISSION.TREE)
-    public ResponseEntity<ApiResponse> tree(){
-        return permissionService.getPermissionTreeCache();
     }
 
     @PutMapping(Router.PERMISSION.BAN)
