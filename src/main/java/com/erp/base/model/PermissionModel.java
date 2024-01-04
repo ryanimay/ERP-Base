@@ -23,4 +23,8 @@ public class PermissionModel implements IBaseModel {
     private String url;
     @Column(name = "status", nullable = false)
     private Boolean status = true;
+
+    public PermissionModel(long id) {
+        this.id = id;
+    }
 }
