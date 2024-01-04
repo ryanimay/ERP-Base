@@ -81,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private Collection<? extends GrantedAuthority> getRolePermission(Set<RoleModel> roles) {
         Set<RolePermissionDto> set = new HashSet<>();
         for(RoleModel role : roles){
-            set.addAll(clientCache.getRolePermission(role));
+            set.addAll(clientCache.getRolePermission(role.getId()));
         }
         return set;
     }

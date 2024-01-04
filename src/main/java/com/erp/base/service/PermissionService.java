@@ -1,7 +1,6 @@
 package com.erp.base.service;
 
 import com.erp.base.dto.request.permission.BanRequest;
-import com.erp.base.dto.request.permission.PermissionTreeResponse;
 import com.erp.base.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.dto.security.RolePermissionDto;
@@ -15,10 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -27,11 +23,6 @@ public class PermissionService {
     private String securityPassword;
     private PermissionRepository permissionRepository;
     private ClientCache clientCache;
-    private RoleService roleService;
-    @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
     @Autowired
     public void setClientCache(ClientCache clientCache) {
         this.clientCache = clientCache;
@@ -47,25 +38,20 @@ public class PermissionService {
     }
 
     public ResponseEntity<ApiResponse> getRolePermission(long roleId) {
-        PermissionTreeResponse permissionTree = clientCache.getPermissionTree();
-        Map<String, Object> map = new HashMap<>();
-        map.put("tree", permissionTree);
-
-        Set<RolePermissionDto> rolePermission = clientCache.getRolePermission(roleService.findById(roleId));
+        Set<RolePermissionDto> rolePermission = clientCache.getRolePermission(roleId);
         List<Long> rolePermissionList = rolePermission.stream().map(RolePermissionDto::getId).toList();
-        map.put("rolePermissions", rolePermissionList);
-        return ApiResponse.success(ApiResponseCode.SUCCESS, map);
+        return ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionList);
     }
 
-    //從緩存拿
-    public ResponseEntity<ApiResponse> getPermissionTreeCache() {
-        PermissionTreeResponse permissionTree = clientCache.getPermissionTree();
-        return ApiResponse.success(ApiResponseCode.SUCCESS, permissionTree);
+    public ResponseEntity<ApiResponse> getPermissionList() {
+        Map<String, List<PermissionModel>> map = clientCache.getPermissionMap();
+        return ApiResponse.success(ApiResponseCode.SUCCESS, map);
     }
 
     public ResponseEntity<ApiResponse> ban(BanRequest request) {
         permissionRepository.updateStatusById(request.getId(), request.isStatus());
         clientCache.refreshPermission();
+        clientCache.refreshPermissionMap();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
