@@ -1,6 +1,8 @@
 package com.erp.base.filter.jwt;
 
 import com.erp.base.dto.response.FilterExceptionResponse;
+import com.erp.base.dto.security.RolePermissionDto;
+import com.erp.base.model.RoleModel;
 import com.erp.base.model.UserModel;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.service.cache.ClientCache;
@@ -22,9 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -71,11 +71,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Map<String, Object> tokenDetail = tokenService.parseToken(accessToken);
         String username = (String) tokenDetail.get("username");
         UserModel client = clientCache.getClient(username);
-        Collection<? extends GrantedAuthority> rolePermission = null;//clientCache.getRolePermission(client.getRole());
+        Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
         HashMap<String, Object> principalMap = new HashMap<>();
         principalMap.put(PRINCIPAL_CLIENT, client);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private Collection<? extends GrantedAuthority> getRolePermission(Set<RoleModel> roles) {
+        Set<RolePermissionDto> set = new HashSet<>();
+        for(RoleModel role : roles){
+            set.addAll(clientCache.getRolePermission(role));
+        }
+        return set;
     }
 
     /**
