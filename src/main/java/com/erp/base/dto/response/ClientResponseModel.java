@@ -23,6 +23,7 @@ public class ClientResponseModel implements Serializable {
     private boolean isActive;
     private boolean isLock;
     private String email;
+    private boolean mustUpdatePassword;
 
     public ClientResponseModel(UserModel userModel) {
         this.id = userModel.getId();
@@ -31,5 +32,6 @@ public class ClientResponseModel implements Serializable {
         this.isActive = userModel.isActive();
         this.isLock = userModel.isLock();
         this.email = userModel.getEmail();
+        this.mustUpdatePassword = userModel.isMustUpdatePassword();
     }
 }
