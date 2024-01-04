@@ -26,4 +26,8 @@ public class RouterController {
         return routerService.fullList();
     }
 
+    @GetMapping(Router.ROUTER.ROLE)
+    public ResponseEntity<ApiResponse> roleRouter(long roleId){
+        return routerService.getRoleRouter(roleId);
+    }
 }

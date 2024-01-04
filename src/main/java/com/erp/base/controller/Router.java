@@ -42,6 +42,7 @@ public interface Router {
         String ROUTER = "/router";
         String CONFIG_LIST = ROUTER + "/configList";
         String LIST = ROUTER + "/list";
+        String ROLE = ROUTER + "/role";
     }
 
 }
