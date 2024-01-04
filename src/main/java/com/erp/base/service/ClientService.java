@@ -1,6 +1,6 @@
 package com.erp.base.service;
 
-import com.erp.base.dto.request.PageRequestParam;
+import com.erp.base.dto.request.ClientListRequest;
 import com.erp.base.dto.request.client.*;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.dto.response.ClientResponseModel;
@@ -113,8 +113,18 @@ public class ClientService {
         clientRepository.save(user);
     }
 
-    public PageResponse<ClientResponseModel> list(PageRequestParam param) {
-        Page<UserModel> allClient = clientRepository.findAll(param.getPage());
+    public PageResponse<ClientResponseModel> list(ClientListRequest param) {
+        Page<UserModel> allClient = null;
+        if(param.getId() == null && param.getName() == null){
+            allClient = clientRepository.findAll(param.getPage());
+        }else{
+            if(param.getType() == 1){
+                allClient = clientRepository.findByIdContaining(param.getId(), param.getPage());
+            }else if(param.getType() == 2){
+                allClient = clientRepository.findByUsernameContaining(param.getName(), param.getPage());
+            }
+        }
+        assert allClient != null;
         return new PageResponse<>(allClient, ClientResponseModel.class);
     }
 
