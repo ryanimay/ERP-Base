@@ -2,6 +2,7 @@ package com.erp.base.controller;
 
 import com.erp.base.dto.request.role.RolePermissionRequest;
 import com.erp.base.dto.request.role.RoleRequest;
+import com.erp.base.dto.request.role.RoleRouterRequest;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,10 @@ public class RoleController {
     @DeleteMapping(Router.ROLE.REMOVE)
     public ResponseEntity<ApiResponse> remove(@RequestBody RoleRequest request){
         return roleService.deleteById(request);
+    }
+
+    @PostMapping(Router.ROLE.ROLE_ROUTER)
+    public ResponseEntity<ApiResponse> roleRouter(@RequestBody RoleRouterRequest request){
+        return roleService.updateRoleRouter(request);
     }
 }

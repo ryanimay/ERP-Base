@@ -41,4 +41,8 @@ public class RouterModel {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
     private RouterModel parent;
+
+    public RouterModel(Long id) {
+        this.id = id;
+    }
 }

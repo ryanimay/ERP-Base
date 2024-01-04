@@ -2,11 +2,13 @@ package com.erp.base.service;
 
 import com.erp.base.dto.request.role.RolePermissionRequest;
 import com.erp.base.dto.request.role.RoleRequest;
+import com.erp.base.dto.request.role.RoleRouterRequest;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.dto.response.role.RoleListResponse;
 import com.erp.base.model.PermissionModel;
 import com.erp.base.model.RoleModel;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.RouterModel;
 import com.erp.base.repository.RoleRepository;
 import com.erp.base.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +96,15 @@ public class RoleService {
         RoleModel roleModel = clientCache.getRole().get(id);
         Set<PermissionModel> permissionSet = request.getPermissionSet();
         roleModel.setPermissions(permissionSet);
+        roleRepository.save(roleModel);
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public ResponseEntity<ApiResponse> updateRoleRouter(RoleRouterRequest request) {
+        Long id = request.getId();
+        RoleModel roleModel = clientCache.getRole().get(id);
+        Set<RouterModel> set = request.getRouterSet();
+        roleModel.setRouters(set);
         roleRepository.save(roleModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }

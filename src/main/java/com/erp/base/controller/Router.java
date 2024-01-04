@@ -26,8 +26,9 @@ public interface Router {
         String LIST = ROLE + "/list";
         String UPDATE = ROLE + "/update";
         String ADD = ROLE + "/add";
-        String ROLE_PERMISSION = ROLE + "/rolePermission";
         String REMOVE = ROLE + "/remove";
+        String ROLE_PERMISSION = ROLE + "/rolePermission";
+        String ROLE_ROUTER = ROLE + "/roleRouter";
     }
 
     interface PERMISSION{
