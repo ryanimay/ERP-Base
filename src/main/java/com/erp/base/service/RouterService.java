@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -56,5 +53,11 @@ public class RouterService {
             }
         }
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
+    }
+    //返回routerIds
+    public ResponseEntity<ApiResponse> getRoleRouter(long roleId) {
+        Set<RouterModel> rolePermission = clientCache.getRoleRouter(roleId);
+        List<Long> rolePermissionList = rolePermission.stream().map(RouterModel::getId).toList();
+        return ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionList);
     }
 }

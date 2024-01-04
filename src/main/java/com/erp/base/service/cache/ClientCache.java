@@ -100,6 +100,12 @@ public class ClientCache {
         RoleModel role = roleService.findById(id);
         return role.getRolePermissionsDto();
     }
+    //角色可訪問路由
+    @Cacheable(key = "'roleRouter_' + #id")
+    public Set<RouterModel> getRoleRouter(long id) {
+        RoleModel role = roleService.findById(id);
+        return role.getRouters();
+    }
 
     @Cacheable(key = "'routers'")
     public List<RouterModel> getRouters() {
