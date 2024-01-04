@@ -1,6 +1,7 @@
 package com.erp.base.controller;
 
 public interface Router {
+
     interface CACHE{
         String CACHE = "/cache";
         String REFRESH = CACHE + "/refresh";
@@ -35,6 +36,11 @@ public interface Router {
         String LIST = PERMISSION + "/list";
         String BAN = PERMISSION + "/ban";
         String SECURITY_CONFIRM = PERMISSION + "/securityConfirm";
+    }
+
+    interface ROUTER{
+        String ROUTER = "/router";
+        String CONFIG_LIST = ROUTER + "/configList";
     }
 
 }

@@ -1,6 +1,7 @@
 package com.erp.base.model;
 
 import com.erp.base.dto.security.RolePermissionDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +33,10 @@ public class RoleModel implements IBaseModel {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<PermissionModel> permissions = new HashSet<>();
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "roles")
+    private Set<RouterModel> routers = new HashSet<>();
 
     public RoleModel(String roleName) {
         this.roleName = roleName;

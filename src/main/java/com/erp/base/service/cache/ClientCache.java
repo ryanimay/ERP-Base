@@ -3,9 +3,11 @@ package com.erp.base.service.cache;
 import com.erp.base.dto.security.RolePermissionDto;
 import com.erp.base.model.PermissionModel;
 import com.erp.base.model.RoleModel;
+import com.erp.base.model.RouterModel;
 import com.erp.base.model.UserModel;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
+import com.erp.base.service.RouterService;
 import com.erp.base.tool.JsonTool;
 import com.erp.base.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,11 @@ public class ClientCache {
     LogFactory LOG = new LogFactory(ClientCache.class);
     private RoleService roleService;
     private PermissionService permissionService;
+    private RouterService routerService;
+    @Autowired
+    public void setRouterService(@Lazy RouterService routerService){
+        this.routerService = routerService;
+    }
     @Autowired
     public void setPermissionService(@Lazy PermissionService permissionService){
         this.permissionService = permissionService;
@@ -92,5 +99,14 @@ public class ClientCache {
     public Set<RolePermissionDto> getRolePermission(long id) {
         RoleModel role = roleService.findById(id);
         return role.getRolePermissionsDto();
+    }
+
+    @Cacheable(key = "'routers'")
+    public List<RouterModel> getRouters() {
+        return routerService.findAll();
+    }
+
+    @CacheEvict(key = "'routers'")
+    public void refreshRouters() {
     }
 }

@@ -37,4 +37,8 @@ public class RouterModel {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleModel> roles = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parent_id")
+    private RouterModel parent;
 }
