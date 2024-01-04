@@ -14,8 +14,8 @@ public interface ClientRepository extends JpaRepository<UserModel, Long> {
 
     boolean existsByEmail(String email);
     @Modifying
-    @Query("UPDATE UserModel c SET c.password = :password WHERE c.username = :username AND c.email = :email")
-    int updatePasswordByClient( String password, String username, String email);
+    @Query("UPDATE UserModel c SET c.password = :password, c.mustUpdatePassword = :status WHERE c.username = :username AND c.email = :email")
+    int updatePasswordByClient( String password, boolean status, String username, String email);
     @Modifying
     @Query("UPDATE UserModel c SET c.isLock = :status WHERE c.id = :clientId AND c.username = :username")
     void lockClientByIdAndUsername(long clientId, String username, boolean status);

@@ -35,6 +35,8 @@ public class UserModel implements IBaseModel {
     private LocalDateTime createTime = LocalDateTime.now();
     @Column(name = "create_by")
     private long createBy;
+    @Column(name = "must_update_password")
+    private boolean mustUpdatePassword = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

@@ -47,6 +47,7 @@ public class ClientService {
     private ClientCache clientCache;
     private AuthenticationProvider authenticationProvider;
     private RoleService roleService;
+    private static final String RESET_PREFIX = "##";
 
     @Autowired
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
@@ -126,10 +127,10 @@ public class ClientService {
         if (code != null) return ApiResponse.error(code);
 
         String username = resetRequest.getUsername();
-        String password = encodeTool.randomPassword(18) + "**";
+        String password = RESET_PREFIX + encodeTool.randomPassword(18);
 
         Context context = mailService.createContext(username, password);
-        int result = updatePassword(passwordEncode(password), username, resetRequest.getEmail());
+        int result = updatePassword(passwordEncode(password), true, username, resetRequest.getEmail());
 
         if (result == 1) {
             //更新成功才發送郵件
@@ -142,7 +143,7 @@ public class ClientService {
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
         UserModel client = ClientIdentity.getUser();
         if (checkIdentity(client, request)) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
-        int result = clientRepository.updatePasswordByClient(passwordEncode(request.getPassword()), client.getUsername(), client.getEmail());
+        int result = updatePassword(passwordEncode(request.getPassword()), false, client.getUsername(), client.getEmail());
         if (result == 1) {
             return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
         }
@@ -161,8 +162,8 @@ public class ClientService {
         return false;
     }
 
-    private int updatePassword(String password, String username, String email) {
-        return clientRepository.updatePasswordByClient(password, username, email);
+    private int updatePassword(String password, boolean status, String username, String email) {
+        return clientRepository.updatePasswordByClient(password, status, username, email);
     }
 
     private String passwordEncode(String password) {
