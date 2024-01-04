@@ -125,9 +125,11 @@ public class ClientService {
         ApiResponseCode code = checkResetPassword(resetRequest);
         if (code != null) return ApiResponse.error(code);
 
+        String username = resetRequest.getUsername();
         String password = encodeTool.randomPassword(18) + "**";
-        Context context = mailService.createContext(password);
-        int result = updatePassword(passwordEncode(password), resetRequest.getUsername(), resetRequest.getEmail());
+
+        Context context = mailService.createContext(username, password);
+        int result = updatePassword(passwordEncode(password), username, resetRequest.getEmail());
 
         if (result == 1) {
             //更新成功才發送郵件
