@@ -1,8 +1,10 @@
 package com.erp.base.service;
 
+import com.erp.base.dto.request.role.RolePermissionRequest;
 import com.erp.base.dto.request.role.RoleRequest;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.dto.response.role.RoleListResponse;
+import com.erp.base.model.PermissionModel;
 import com.erp.base.model.RoleModel;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.repository.RoleRepository;
@@ -69,8 +71,7 @@ public class RoleService {
 
     private ResponseEntity<ApiResponse> checkRoleName(String name, Long id){
         Optional<RoleModel> roleModel = roleRepository.findByRoleName(name);
-        if(roleModel.isPresent() &&
-                (id == null || roleModel.get().getId() != id)) return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
+        if(roleModel.isPresent() && roleModel.get().getId() != id) return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
         return null;
     }
 
@@ -86,5 +87,14 @@ public class RoleService {
 
     public Set<RoleModel> getRolesById(List<Long> roles) {
         return roleRepository.findByIdIn(roles);
+    }
+
+    public ResponseEntity<ApiResponse> updateRolePermission(RolePermissionRequest request) {
+        Long id = request.getId();
+        RoleModel roleModel = clientCache.getRole().get(id);
+        Set<PermissionModel> permissionSet = request.getPermissionSet();
+        roleModel.setPermissions(permissionSet);
+        roleRepository.save(roleModel);
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

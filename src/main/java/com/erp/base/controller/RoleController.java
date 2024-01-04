@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.dto.request.role.RolePermissionRequest;
 import com.erp.base.dto.request.role.RoleRequest;
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.service.RoleService;
@@ -27,6 +28,11 @@ public class RoleController {
     @PostMapping(Router.ROLE.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody RoleRequest request){
         return roleService.addRole(request);
+    }
+
+    @PostMapping(Router.ROLE.ROLE_PERMISSION)
+    public ResponseEntity<ApiResponse> rolePermission(@RequestBody RolePermissionRequest request){
+        return roleService.updateRolePermission(request);
     }
 
     @DeleteMapping(Router.ROLE.REMOVE)
