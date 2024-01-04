@@ -21,4 +21,9 @@ public class RouterController {
         return routerService.configList();
     }
 
+    @GetMapping(Router.ROUTER.LIST)
+    public ResponseEntity<ApiResponse> list() {
+        return routerService.fullList();
+    }
+
 }

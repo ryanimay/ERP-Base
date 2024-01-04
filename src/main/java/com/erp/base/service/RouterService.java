@@ -2,6 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.dto.response.ApiResponse;
 import com.erp.base.dto.response.RouterConfigResponse;
+import com.erp.base.dto.response.RouterResponse;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.RouterModel;
 import com.erp.base.repository.RouterRepository;
@@ -11,7 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -35,9 +39,22 @@ public class RouterService {
         List<RouterConfigResponse> routerConfigResponses =
                 routers
                 .stream()
-                .filter(routerModel -> routerModel.getParent() != null)
+                .filter(routerModel -> routerModel.getParent() != null)//不管分層
                 .map(RouterConfigResponse::new)
                 .toList();
         return ApiResponse.success(ApiResponseCode.SUCCESS, routerConfigResponses);
+    }
+
+    public ResponseEntity<ApiResponse> fullList() {
+        List<RouterModel> routers = clientCache.getRouters();
+        Map<String, List<RouterResponse>> map = new HashMap<>();
+        for (RouterModel router : routers) {
+            RouterModel parent = router.getParent();
+            if(parent != null){
+                List<RouterResponse> list = map.computeIfAbsent(parent.getName(), k -> new ArrayList<>());
+                list.add(new RouterResponse(router));
+            }
+        }
+        return ApiResponse.success(ApiResponseCode.SUCCESS, map);
     }
 }
