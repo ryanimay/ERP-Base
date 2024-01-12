@@ -21,7 +21,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
             LOG.warn("UserNotFound");
             return false;
         }
-        attributes.put("userId", user.getId());//方便後續靠userId送資料
+        attributes.put("simpUser", user.getId());//方便後續靠userId送資料
         return true;
     }
 
