@@ -13,6 +13,7 @@ import java.util.Map;
 @Component
 public class UserHandshakeInterceptor implements HandshakeInterceptor {
     LogFactory LOG = new LogFactory(UserHandshakeInterceptor.class);
+    private static final String DEFAULT_USER_KEY = "simpUser";
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
@@ -21,7 +22,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
             LOG.warn("UserNotFound");
             return false;
         }
-        attributes.put("simpUser", user.getId());//方便後續靠userId送資料
+        attributes.put(DEFAULT_USER_KEY, user.getId());//方便後續靠userId送資料
         return true;
     }
 
