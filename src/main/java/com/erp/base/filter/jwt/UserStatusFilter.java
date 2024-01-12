@@ -1,8 +1,8 @@
 package com.erp.base.filter.jwt;
 
-import com.erp.base.model.UserModel;
+import com.erp.base.model.entity.UserModel;
 import com.erp.base.enums.response.ApiResponseCode;
-import com.erp.base.dto.response.FilterExceptionResponse;
+import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.tool.LogFactory;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

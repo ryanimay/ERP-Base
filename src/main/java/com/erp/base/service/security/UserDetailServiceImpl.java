@@ -1,6 +1,6 @@
 package com.erp.base.service.security;
 
-import com.erp.base.model.UserModel;
+import com.erp.base.model.entity.UserModel;
 import com.erp.base.service.ClientService;
 import com.erp.base.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.erp.base.controller;
 
-import com.erp.base.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.RouterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

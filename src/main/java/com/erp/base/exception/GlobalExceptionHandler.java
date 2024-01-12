@@ -1,7 +1,7 @@
 package com.erp.base.exception;
 
-import com.erp.base.dto.response.ApiResponse;
-import com.erp.base.dto.security.ClientIdentity;
+import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.ClientIdentity;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.tool.LogFactory;
 import io.jsonwebtoken.security.SignatureException;

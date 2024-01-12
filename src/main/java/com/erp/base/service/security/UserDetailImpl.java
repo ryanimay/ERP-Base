@@ -1,6 +1,6 @@
 package com.erp.base.service.security;
 
-import com.erp.base.model.UserModel;
+import com.erp.base.model.entity.UserModel;
 import com.erp.base.service.cache.ClientCache;
 import lombok.Getter;
 import lombok.Setter;

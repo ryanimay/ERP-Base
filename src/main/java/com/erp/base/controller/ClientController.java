@@ -1,8 +1,8 @@
 package com.erp.base.controller;
 
-import com.erp.base.dto.request.ClientListRequest;
-import com.erp.base.dto.request.client.*;
-import com.erp.base.dto.response.ApiResponse;
+import com.erp.base.model.dto.request.ClientListRequest;
+import com.erp.base.model.dto.request.client.*;
+import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.service.ClientService;
 import jakarta.mail.MessagingException;

@@ -1,9 +1,9 @@
 package com.erp.base.controller;
 
-import com.erp.base.dto.request.role.RolePermissionRequest;
-import com.erp.base.dto.request.role.RoleRequest;
-import com.erp.base.dto.request.role.RoleRouterRequest;
-import com.erp.base.dto.response.ApiResponse;
+import com.erp.base.model.dto.request.role.RolePermissionRequest;
+import com.erp.base.model.dto.request.role.RoleRequest;
+import com.erp.base.model.dto.request.role.RoleRouterRequest;
+import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

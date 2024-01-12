@@ -1,6 +1,6 @@
 package com.erp.base.service.security;
 
-import com.erp.base.dto.request.client.LoginRequest;
+import com.erp.base.model.dto.request.client.LoginRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;

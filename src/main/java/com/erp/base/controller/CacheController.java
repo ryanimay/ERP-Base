@@ -1,6 +1,6 @@
 package com.erp.base.controller;
 
-import com.erp.base.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.service.CacheService;
 import com.erp.base.tool.LogFactory;
