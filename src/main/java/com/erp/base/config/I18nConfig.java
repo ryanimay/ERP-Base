@@ -1,7 +1,7 @@
 package com.erp.base.config;
 
-import com.erp.base.dto.response.ApiResponse;
-import com.erp.base.dto.security.ClientIdentity;
+import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.ClientIdentity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;

@@ -1,10 +1,10 @@
 package com.erp.base.service.cache;
 
-import com.erp.base.dto.security.RolePermissionDto;
-import com.erp.base.model.PermissionModel;
-import com.erp.base.model.RoleModel;
-import com.erp.base.model.RouterModel;
-import com.erp.base.model.UserModel;
+import com.erp.base.model.dto.security.RolePermissionDto;
+import com.erp.base.model.entity.PermissionModel;
+import com.erp.base.model.entity.RoleModel;
+import com.erp.base.model.entity.RouterModel;
+import com.erp.base.model.entity.UserModel;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
 import com.erp.base.service.RouterService;

@@ -1,8 +1,8 @@
 package com.erp.base.controller;
 
-import com.erp.base.dto.request.permission.BanRequest;
-import com.erp.base.dto.request.permission.SecurityConfirmRequest;
-import com.erp.base.dto.response.ApiResponse;
+import com.erp.base.model.dto.request.permission.BanRequest;
+import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
+import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

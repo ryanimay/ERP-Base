@@ -1,11 +1,11 @@
 package com.erp.base.config.security;
 
-import com.erp.base.dto.response.FilterExceptionResponse;
+import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.filter.jwt.DenyPermissionFilter;
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.filter.jwt.UserStatusFilter;
-import com.erp.base.model.PermissionModel;
+import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;

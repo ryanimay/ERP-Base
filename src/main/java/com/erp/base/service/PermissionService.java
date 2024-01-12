@@ -1,11 +1,11 @@
 package com.erp.base.service;
 
-import com.erp.base.dto.request.permission.BanRequest;
-import com.erp.base.dto.request.permission.SecurityConfirmRequest;
-import com.erp.base.dto.response.ApiResponse;
-import com.erp.base.dto.security.RolePermissionDto;
+import com.erp.base.model.dto.request.permission.BanRequest;
+import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
+import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.enums.response.ApiResponseCode;
-import com.erp.base.model.PermissionModel;
+import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.repository.PermissionRepository;
 import com.erp.base.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;

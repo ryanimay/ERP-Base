@@ -1,10 +1,10 @@
 package com.erp.base.service;
 
-import com.erp.base.dto.response.ApiResponse;
-import com.erp.base.dto.response.RouterConfigResponse;
-import com.erp.base.dto.response.RouterResponse;
+import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.RouterConfigResponse;
+import com.erp.base.model.dto.response.RouterResponse;
 import com.erp.base.enums.response.ApiResponseCode;
-import com.erp.base.model.RouterModel;
+import com.erp.base.model.entity.RouterModel;
 import com.erp.base.repository.RouterRepository;
 import com.erp.base.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
