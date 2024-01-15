@@ -15,19 +15,17 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NotificationModel {
+public class NotificationModel implements IBaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
-    @Column(name = "to")
-    private long to;
     @Column(name = "info")
     private String info;
     @ManyToOne
     @JoinColumn(name="router_id")
     private RouterModel router;
-    @Column(name = "status")
+    @Column(name = "status")//已處理
     private boolean status = true;
     @Column(name = "global")
     private boolean global = false;
@@ -35,13 +33,4 @@ public class NotificationModel {
     private LocalDateTime createTime = LocalDateTime.now();
     @Column(name = "create_By")
     private long createBy = 0;
-
-    public String getRouterName() {
-        return router.getName();
-    }
-
-    public void setRouterName(String name) {
-        if(router == null) router = new RouterModel();
-        this.router.setName(name);
-    }
 }

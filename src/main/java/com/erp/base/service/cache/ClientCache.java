@@ -5,6 +5,7 @@ import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.RouterModel;
 import com.erp.base.model.entity.UserModel;
+import com.erp.base.service.ClientService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
 import com.erp.base.service.RouterService;
@@ -29,6 +30,11 @@ public class ClientCache {
     private RoleService roleService;
     private PermissionService permissionService;
     private RouterService routerService;
+    private ClientService clientService;
+    @Autowired
+    public void setClientService(@Lazy ClientService clientService) {
+        this.clientService = clientService;
+    }
     @Autowired
     public void setRouterService(@Lazy RouterService routerService){
         this.routerService = routerService;
@@ -45,10 +51,7 @@ public class ClientCache {
     //有關使用者資訊，不存密碼
     @Cacheable(key = "'clientCache_' + #username")
     public UserModel getClient(String username) {
-//        ClientModel model = clientService.findByUsername(username);
-//        Hibernate.initialize(model.getRole().getPermissions());//確保保存在redis的實體完整加載
-//        return model;
-        return null;
+        return clientService.findByUsername(username);
     }
 
     @CacheEvict(key = "'clientCache_' + #username")

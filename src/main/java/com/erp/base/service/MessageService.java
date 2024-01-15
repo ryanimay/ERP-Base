@@ -19,7 +19,7 @@ public class MessageService {
         messagingTemplate.convertAndSend(message.getTopic(), message);
     }
 
-    public void sendToUser(MessageModel message){
+    public void sendTo(MessageModel message){
         messagingTemplate.convertAndSendToUser(message.getTo(), message.getTopic(), message);
     }
 }
