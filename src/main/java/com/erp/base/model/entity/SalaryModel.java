@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.YearMonth;
+import java.time.LocalDate;
 /**
  * 薪資
  */
@@ -15,16 +15,16 @@ import java.time.YearMonth;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalaryModel {
+public class SalaryModel implements IBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserModel user;
     @Column(name = "time", nullable = false)
-    private String time;
+    private LocalDate time = LocalDate.now();
     //本薪
     @Column(name = "base_salary", precision = 10, scale = 2)
     private BigDecimal baseSalary = BigDecimal.valueOf(0);
@@ -40,14 +40,9 @@ public class SalaryModel {
     //健保
     @Column(name = "national_health_insurance", precision = 10, scale = 2)
     private BigDecimal nationalHealthInsurance = BigDecimal.valueOf(0);
-
-    public YearMonth getYearMonth() {
-        return YearMonth.parse(time);
-    }
-
-    public void setYearMonth(YearMonth yearMonth) {
-        this.time = yearMonth.toString();
-    }
+    //基底
+    @Column(name = "root")
+    private boolean root = false;
     //總扣除額
     public BigDecimal getReduceTotal(){
         return laborInsurance.add(nationalHealthInsurance);

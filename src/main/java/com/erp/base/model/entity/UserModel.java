@@ -50,4 +50,8 @@ public class UserModel implements IBaseModel {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "notifications_id"))
     private Set<NotificationModel> notifications = new HashSet<>();
+
+    public UserModel(long id) {
+        this.id = id;
+    }
 }

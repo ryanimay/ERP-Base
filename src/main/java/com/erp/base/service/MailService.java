@@ -1,6 +1,7 @@
 package com.erp.base.service;
 
 import com.erp.base.model.mail.BaseMailModel;
+import com.erp.base.model.mail.FileModel;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class MailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendMail(String address, BaseMailModel mailModel, Context context) throws MessagingException {
+    public void sendMail(String address, BaseMailModel mailModel, Context context, FileModel fileModel) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
@@ -31,6 +32,10 @@ public class MailService {
         helper.setSubject(mailModel.getSubjectName());
         String tmp = templateEngine.process(mailModel.getMailTemplatePath(), context);
         helper.setText(tmp, true);
+        //添加附件
+        if(fileModel != null){
+                helper.addAttachment(fileModel.getFileName(), fileModel.getDataSource());
+        }
 
         mailSender.send(mimeMessage);
     }
