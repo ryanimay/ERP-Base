@@ -48,10 +48,20 @@ public interface Router {
 
     interface SALARY{
         String SALARY = "/salary";
-        String ROOTS = "/roots";
-        String ROOT_BY = "/rootBy";
-        String EDIT_ROOT = "/editRoot";
+        String ROOTS = SALARY + "/roots";
+        String ROOT_BY = SALARY + "/rootBy";
+        String EDIT_ROOT = SALARY + "/editRoot";
         String GET = SALARY + "/get";
         String INFO = SALARY + "/info";
+    }
+
+    interface PERFORMANCE{
+        String PERFORMANCE = "/performance";
+        String ALL_LIST = PERFORMANCE + "/allList";
+        String LIST = PERFORMANCE + "/list";
+        String ADD = PERFORMANCE + "/add";
+        String UPDATE = PERFORMANCE + "/update";
+        String REMOVE = PERFORMANCE + "/remove";
+        String ACCEPT = PERFORMANCE + "/accept";
     }
 }

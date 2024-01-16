@@ -2,7 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
-import com.erp.base.model.dto.request.ClientListRequest;
+import com.erp.base.model.dto.request.client.ClientListRequest;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
