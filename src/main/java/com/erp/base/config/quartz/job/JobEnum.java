@@ -3,7 +3,8 @@ package com.erp.base.config.quartz.job;
 import org.quartz.Job;
 
 public enum JobEnum {
-    SALARY(SalaryCalculationJob.class, "0 0 10 30 * ?")
+    SALARY(SalaryCalculationJob.class, "0 0 10 30 * ?"),
+    ATTEND(AttendJob.class, "0 0 0 * * ?")
     ;
     private final Class<? extends Job> jobClazz;
     private final String cron;

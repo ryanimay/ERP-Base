@@ -64,4 +64,10 @@ public interface Router {
         String REMOVE = PERFORMANCE + "/remove";
         String ACCEPT = PERFORMANCE + "/accept";
     }
+
+    interface ATTEND{
+        String ATTEND = "/attend";
+        String SIGN_IN = ATTEND + "/signIn";
+        String SIGN_OUT = ATTEND + "/signOut";
+    }
 }

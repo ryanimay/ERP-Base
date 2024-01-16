@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -237,5 +238,9 @@ public class ClientService {
         clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
         clientCache.refreshClient(username);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public Set<UserModel> findActiveUserAndNotExistAttend() {
+        return clientRepository.findActiveUserAndNotExistAttend(LocalDate.now());
     }
 }

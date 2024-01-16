@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.Set;
+
 @Repository
 public interface ClientRepository extends JpaRepository<UserModel, Long> {
     UserModel findByUsername(String userName);
@@ -28,4 +31,8 @@ public interface ClientRepository extends JpaRepository<UserModel, Long> {
     Page<UserModel> findByIdContaining(Long id, PageRequest page);
 
     Page<UserModel> findByUsernameContaining(String name, PageRequest page);
+    @Query("SELECT u FROM UserModel u WHERE u.isActive AND u.isLock = false " +
+            "AND NOT EXISTS " +
+            "(SELECT a FROM AttendModel a WHERE a.date = :date AND a.user = u)")
+    Set<UserModel> findActiveUserAndNotExistAttend(LocalDate date);
 }
