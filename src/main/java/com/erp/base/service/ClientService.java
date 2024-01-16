@@ -144,7 +144,7 @@ public class ClientService {
 
         if (result == 1) {
             //更新成功才發送郵件
-            mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context);
+            mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context, null);
             return ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);

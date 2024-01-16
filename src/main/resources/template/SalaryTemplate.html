@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Slip</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+        }
+
+        .header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .employee-details {
+            margin-top: 20px;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #mark{
+            line-height: 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Salary Slip</h1>
+</div>
+
+<div class="employee-details">
+    <h2>Employee Details</h2>
+    <p th:text="${data[0]}"></p>
+    <p th:text="${data[1]}"></p>
+    <!-- Add other employee details as needed -->
+</div>
+
+<div class="total">
+    <p>Total Salary: <span th:text="${data[2]}"></span></p>
+</div>
+<hr>
+<div id="mark">
+    <p>Company Name:XXX</p>
+    <p>Company Tel:XXX-OOOOOOOO</p>
+    <p>Company Email:XXX@gmail.com</p>
+</div>
+</body>
+</html>

@@ -46,4 +46,12 @@ public interface Router {
         String ROLE = ROUTER + "/role";
     }
 
+    interface SALARY{
+        String SALARY = "/salary";
+        String ROOTS = "/roots";
+        String ROOT_BY = "/rootBy";
+        String EDIT_ROOT = "/editRoot";
+        String GET = SALARY + "/get";
+        String INFO = SALARY + "/info";
+    }
 }
