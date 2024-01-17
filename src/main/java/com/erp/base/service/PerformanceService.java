@@ -71,7 +71,7 @@ public class PerformanceService {
     }
 
     private void sendMessage(UserModel user) {
-        NotificationModel notification = notificationService.createNotification(NotificationEnum.EDIT_SALARY_ROOT);
+        NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE);
         Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission();
         byHasAcceptPermission.forEach(id -> {
             MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
