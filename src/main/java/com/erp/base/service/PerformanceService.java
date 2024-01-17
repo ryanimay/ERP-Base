@@ -1,12 +1,16 @@
 package com.erp.base.service;
 
+import com.erp.base.config.websocket.WebsocketConstant;
+import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.AddPerformanceRequest;
 import com.erp.base.model.dto.request.performance.PerformanceListRequest;
 import com.erp.base.model.dto.request.performance.UpdatePerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
 import com.erp.base.model.entity.UserModel;
 import com.erp.base.repository.PerformanceRepository;
@@ -16,11 +20,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
 public class PerformanceService {
     private PerformanceRepository performanceRepository;
+    private MessageService messageService;
+    private NotificationService notificationService;
+    private ClientService clientService;
+    @Autowired
+    public void setClientService(ClientService clientService){
+        this.clientService = clientService;
+    }    @Autowired
+    public void setNotificationService(NotificationService notificationService){
+        this.notificationService = notificationService;
+    }
+    @Autowired
+    public void setMessageService(MessageService messageService){
+        this.messageService = messageService;
+    }
     @Autowired
     public void setPerformanceRepository(PerformanceRepository performanceRepository){
         this.performanceRepository = performanceRepository;
@@ -47,7 +66,17 @@ public class PerformanceService {
         }
         request.setCreateBy(user.getId());
         performanceRepository.save(request.toModel());
+        sendMessage(user);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    private void sendMessage(UserModel user) {
+        NotificationModel notification = notificationService.createNotification(NotificationEnum.EDIT_SALARY_ROOT);
+        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission();
+        byHasAcceptPermission.forEach(id -> {
+            MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            messageService.sendTo(messageModel);
+        });
     }
 
     public ResponseEntity<ApiResponse> save(UpdatePerformanceRequest request) {
