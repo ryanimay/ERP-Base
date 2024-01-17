@@ -1,12 +1,16 @@
 package com.erp.base.service;
 
+import com.erp.base.config.websocket.WebsocketConstant;
+import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.client.ClientListRequest;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.UserModel;
 import com.erp.base.model.mail.ResetPasswordModel;
@@ -48,7 +52,18 @@ public class ClientService {
     private ClientCache clientCache;
     private AuthenticationProvider authenticationProvider;
     private RoleService roleService;
+    private MessageService messageService;
+    private NotificationService notificationService;
     private static final String RESET_PREFIX = "##";
+
+    @Autowired
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
+    @Autowired
+    public void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @Autowired
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
@@ -219,7 +234,18 @@ public class ClientService {
         client.setEmail(request.getEmail());
         client.setRoles(getRoles(request.getRoles()));
         clientRepository.save(client);
+        //非本人就發送通知
+        checkUserOrSendMessage(client);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(client));
+    }
+
+    private void checkUserOrSendMessage(UserModel client) {
+        UserModel user = ClientIdentity.getUser();
+        if(user.getId() != client.getId()) {
+            NotificationModel notification = notificationService.createNotification(NotificationEnum.UPDATE_USER, user.getUsername());
+            MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(client.getId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            messageService.sendTo(messageModel);
+        }
     }
 
     private Set<RoleModel> getRoles(List<Long> roles){
