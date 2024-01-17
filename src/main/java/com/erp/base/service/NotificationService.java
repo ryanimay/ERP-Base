@@ -1,6 +1,9 @@
 package com.erp.base.service;
 
+import com.erp.base.enums.NotificationEnum;
+import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.entity.NotificationModel;
+import com.erp.base.model.entity.UserModel;
 import com.erp.base.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,5 +22,28 @@ public class NotificationService {
 
     public Set<NotificationModel> findGlobal() {
         return notificationRepository.findGlobal();
+    }
+    //保存通知
+    public void save(NotificationModel model) {
+        notificationRepository.save(model);
+    }
+
+    /**
+     *
+     * @param notificationEnum 對應的enum模板
+     * @param params 按順序放要替換的字元
+     * @return i18n翻譯完的通知
+     */
+    public NotificationModel createNotification(NotificationEnum notificationEnum, Object...params){
+        UserModel user = ClientIdentity.getUser();
+        NotificationModel build = NotificationModel.builder()
+                .info(notificationEnum.getInfo(params))
+                .router(notificationEnum.getRouterName())
+                .status(false)
+                .global(notificationEnum.getGlobal())
+                .createBy(user.getId())
+                .build();
+        save(build);
+        return build;
     }
 }

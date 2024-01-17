@@ -2,6 +2,7 @@ package com.erp.base.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class NotificationModel implements IBaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +24,8 @@ public class NotificationModel implements IBaseModel{
     private long id;
     @Column(name = "info")
     private String info;
-    @ManyToOne
-    @JoinColumn(name="router_id")
-    private RouterModel router;
+    @Column(name="router")
+    private String router;
     @Column(name = "status")//已處理
     private boolean status = true;
     @Column(name = "global")
