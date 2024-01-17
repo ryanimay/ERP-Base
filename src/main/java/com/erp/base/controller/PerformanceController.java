@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.AddPerformanceRequest;
 import com.erp.base.model.dto.request.performance.PerformanceListRequest;
 import com.erp.base.model.dto.request.performance.UpdatePerformanceRequest;
@@ -15,6 +16,11 @@ public class PerformanceController {
     @Autowired
     public void setPerformanceService(PerformanceService performanceService){
         this.performanceService = performanceService;
+    }
+
+    @GetMapping(Router.PERFORMANCE.PENDING_LIST)
+    public ResponseEntity<ApiResponse> pendingList(PageRequestParam request){
+        return performanceService.pendingList(request);
     }
 
     @GetMapping(Router.PERFORMANCE.ALL_LIST)

@@ -2,6 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.AddPerformanceRequest;
 import com.erp.base.model.dto.request.performance.PerformanceListRequest;
 import com.erp.base.model.dto.request.performance.UpdatePerformanceRequest;
@@ -55,12 +56,19 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> remove(Long eventId) {
-        performanceRepository.updateStateRemoved(eventId);
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        int i = performanceRepository.updateStateRemoved(eventId);
+        if(i ==1) return ApiResponse.success(ApiResponseCode.SUCCESS);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "removed:" + i);
     }
 
     public ResponseEntity<ApiResponse> accept(Long eventId) {
-        performanceRepository.updateStateAccept(eventId);
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        int i = performanceRepository.updateStateAccept(eventId);
+        if(i ==1) return ApiResponse.success(ApiResponseCode.SUCCESS);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "accept:" + i);
+    }
+
+    public ResponseEntity<ApiResponse> pendingList(PageRequestParam request) {
+        List<PerformanceModel> list = performanceRepository.findAllByStatus(request.getPage());
+        return ApiResponse.success(ApiResponseCode.SUCCESS, list);
     }
 }
