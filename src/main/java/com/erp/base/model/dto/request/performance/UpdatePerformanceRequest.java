@@ -7,12 +7,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdatePerformanceRequest extends AddPerformanceRequest implements IBaseDto<PerformanceModel> {
     private Long id;
+    private LocalDateTime createTime;
     @Override
     public PerformanceModel toModel() {
         PerformanceModel performanceModel = new PerformanceModel();
@@ -21,6 +24,7 @@ public class UpdatePerformanceRequest extends AddPerformanceRequest implements I
         performanceModel.setFixedBonus(this.getFixedBonus());
         performanceModel.setPerformanceRatio(this.getPerformanceRatio());
         performanceModel.setCreateBy(this.getCreateBy());
+        performanceModel.setCreateTime(createTime);
         performanceModel.setStatus(this.getStatus());
         return null;
     }

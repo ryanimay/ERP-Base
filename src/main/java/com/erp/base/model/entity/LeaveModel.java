@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 /**
  * 請假
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeaveModel {
+public class LeaveModel implements IBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -26,9 +25,9 @@ public class LeaveModel {
     @Column(name = "type", nullable = false)
     private String type; //請假類型
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startTime;
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endTime;
     @Column(name = "status", nullable = false)
     private String status;
     @Column(name = "info")
