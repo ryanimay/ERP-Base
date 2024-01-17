@@ -10,7 +10,8 @@ import java.util.Locale;
  * 固定創建通知的格式
  * */
 public enum NotificationEnum {
-    UPDATE_USER("notification.updateUser", "UserInfo", false)
+    UPDATE_USER("notification.updateUser", "UserInfo", false),
+    EDIT_SALARY_ROOT("notification.editSalaryRoot", "EditSalaryRoot", false)
     ;
     private final String info;
     private final String routerName;

@@ -1,9 +1,13 @@
 package com.erp.base.service;
 
+import com.erp.base.config.websocket.WebsocketConstant;
+import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.salary.EditSalaryRootRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.model.entity.UserModel;
 import com.erp.base.repository.SalaryRepository;
@@ -21,6 +25,16 @@ import java.util.Optional;
 @Transactional
 public class SalaryService {
     private SalaryRepository salaryRepository;
+    private MessageService messageService;
+    private NotificationService notificationService;
+    @Autowired
+    public void setNotificationService(NotificationService notificationService){
+        this.notificationService = notificationService;
+    }
+    @Autowired
+    public void setMessageService(MessageService messageService){
+        this.messageService = messageService;
+    }
     @Autowired
     public void setSalaryRepository(SalaryRepository salaryRepository){
         this.salaryRepository = salaryRepository;
@@ -38,7 +52,15 @@ public class SalaryService {
     public ResponseEntity<ApiResponse> editRoot(EditSalaryRootRequest editSalaryRootRequest) {
         SalaryModel salaryModel = editSalaryRootRequest.toModel();
         salaryRepository.save(salaryModel);
+        sendMessage(editSalaryRootRequest.getUserId());
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    private void sendMessage(Long userId) {
+        UserModel user = ClientIdentity.getUser();
+        NotificationModel notification = notificationService.createNotification(NotificationEnum.EDIT_SALARY_ROOT);
+        MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(userId), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+        messageService.sendTo(messageModel);
     }
 
     public ResponseEntity<ApiResponse> get() {
