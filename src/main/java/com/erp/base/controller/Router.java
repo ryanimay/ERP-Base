@@ -70,4 +70,14 @@ public interface Router {
         String SIGN_IN = ATTEND + "/signIn";
         String SIGN_OUT = ATTEND + "/signOut";
     }
+
+    interface LEAVE{
+        String LEAVE = "/leave";
+        String PENDING_LIST = LEAVE + "/pendingList";
+        String LIST = LEAVE + "/list";
+        String ADD = LEAVE + "/add";
+        String UPDATE = LEAVE + "/update";
+        String DELETE = LEAVE + "/delete";
+        String ACCEPT = LEAVE + "/accept";
+    }
 }
