@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
-
+/**
+ * 系統通知服務
+ * */
 @Service
 @Transactional
 public class NotificationService {
