@@ -1,11 +1,11 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
+import com.erp.base.controller.Router;
 import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
-import com.erp.base.model.dto.request.client.ClientListRequest;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
@@ -60,6 +60,7 @@ public class ClientService {
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
+
     @Autowired
     public void setMessageService(MessageService messageService) {
         this.messageService = messageService;
@@ -131,12 +132,12 @@ public class ClientService {
 
     public PageResponse<ClientResponseModel> list(ClientListRequest param) {
         Page<UserModel> allClient = null;
-        if(param.getId() == null && param.getName() == null){
+        if (param.getId() == null && param.getName() == null) {
             allClient = clientRepository.findAll(param.getPage());
-        }else{
-            if(param.getType() == 1){
+        } else {
+            if (param.getType() == 1) {
                 allClient = clientRepository.findByIdContaining(param.getId(), param.getPage());
-            }else if(param.getType() == 2){
+            } else if (param.getType() == 2) {
                 allClient = clientRepository.findByUsernameContaining(param.getName(), param.getPage());
             }
         }
@@ -241,14 +242,14 @@ public class ClientService {
 
     private void checkUserOrSendMessage(UserModel client) {
         UserModel user = ClientIdentity.getUser();
-        if(user.getId() != client.getId()) {
+        if (user.getId() != client.getId()) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.UPDATE_USER, user.getUsername());
             MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(client.getId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
         }
     }
 
-    private Set<RoleModel> getRoles(List<Long> roles){
+    private Set<RoleModel> getRoles(List<Long> roles) {
         return roleService.getRolesById(roles);
     }
 
@@ -268,5 +269,9 @@ public class ClientService {
 
     public Set<UserModel> findActiveUserAndNotExistAttend() {
         return clientRepository.findActiveUserAndNotExistAttend(LocalDate.now());
+    }
+
+    public Set<Long> findByHasAcceptPermission() {
+        return clientRepository.findByHasAcceptPermission(Router.PERFORMANCE.ACCEPT);
     }
 }
