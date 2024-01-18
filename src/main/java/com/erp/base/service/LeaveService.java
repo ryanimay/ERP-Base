@@ -104,7 +104,7 @@ public class LeaveService {
     }
 
     private LeaveModel updateOrSave(LeaveModel model, UserModel user){
-       model.setUser(user);
+        model.setUser(user);
         return leaveRepository.save(model);
     }
 }
