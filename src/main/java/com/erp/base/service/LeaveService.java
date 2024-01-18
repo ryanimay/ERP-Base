@@ -11,16 +11,17 @@ import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.leave.AddLeaveRequest;
 import com.erp.base.model.dto.request.leave.UpdateLeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.LeaveModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.UserModel;
 import com.erp.base.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -50,8 +51,8 @@ public class LeaveService {
     public ResponseEntity<ApiResponse> list(PageRequestParam page) {
         UserModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
-        List<LeaveModel> leaves = leaveRepository.findAllByUser(user.getId(), page.getPage());
-        return ApiResponse.success(ApiResponseCode.SUCCESS, leaves);
+        Page<LeaveModel> leaves = leaveRepository.findAllByUser(user.getId(), page.getPage());
+        return ApiResponse.success(new PageResponse<>(leaves, LeaveModel.class));
     }
 
     public ResponseEntity<ApiResponse> add(AddLeaveRequest request) {
@@ -99,8 +100,8 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
-        List<LeaveModel> allPending = leaveRepository.findAllByStatus(JobStatusEnum.PENDING.getName(), page.getPage());
-        return ApiResponse.success(ApiResponseCode.SUCCESS, allPending);
+        Page<LeaveModel> allPending = leaveRepository.findAllByStatus(JobStatusEnum.PENDING.getName(), page.getPage());
+        return ApiResponse.success(new PageResponse<>(allPending, LeaveModel.class));
     }
 
     private LeaveModel updateOrSave(LeaveModel model, UserModel user){
