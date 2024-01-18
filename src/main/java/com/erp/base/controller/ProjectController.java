@@ -1,11 +1,14 @@
 package com.erp.base.controller;
 
 import com.erp.base.model.dto.request.PageRequestParam;
+import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,4 +23,10 @@ public class ProjectController {
     public ResponseEntity<ApiResponse> list(PageRequestParam page){
         return projectService.list(page);
     }
+
+    @PostMapping(Router.PROJECT.ADD)
+    public ResponseEntity<ApiResponse> add(@RequestBody ProjectRequest request){
+        return projectService.add(request);
+    }
+
 }
