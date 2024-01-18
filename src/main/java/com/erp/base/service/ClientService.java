@@ -1,7 +1,6 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
-import com.erp.base.controller.Router;
 import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
@@ -271,7 +270,7 @@ public class ClientService {
         return clientRepository.findActiveUserAndNotExistAttend(LocalDate.now());
     }
 
-    public Set<Long> findByHasAcceptPermission() {
-        return clientRepository.findByHasAcceptPermission(Router.PERFORMANCE.ACCEPT);
+    public Set<Long> findByHasAcceptPermission(String router) {
+        return clientRepository.findByHasAcceptPermission(router);
     }
 }

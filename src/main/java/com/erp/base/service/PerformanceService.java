@@ -1,6 +1,7 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
+import com.erp.base.controller.Router;
 import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
@@ -32,7 +33,8 @@ public class PerformanceService {
     @Autowired
     public void setClientService(ClientService clientService){
         this.clientService = clientService;
-    }    @Autowired
+    }
+    @Autowired
     public void setNotificationService(NotificationService notificationService){
         this.notificationService = notificationService;
     }
@@ -66,13 +68,13 @@ public class PerformanceService {
         }
         request.setCreateBy(user.getId());
         performanceRepository.save(request.toModel());
-        sendMessage(user);
+        sendMessageToManger(user);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
-    private void sendMessage(UserModel user) {
-        NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE);
-        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission();
+    private void sendMessageToManger(UserModel user) {
+        NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE, user.getUsername());
+        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission(Router.PERFORMANCE.ACCEPT);
         byHasAcceptPermission.forEach(id -> {
             MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
