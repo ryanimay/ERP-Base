@@ -49,7 +49,7 @@ public class PerformanceController {
     }
 
     @PutMapping(Router.PERFORMANCE.ACCEPT)
-    public ResponseEntity<ApiResponse> accept(@RequestBody Long eventId){
-        return performanceService.accept(eventId);
+    public ResponseEntity<ApiResponse> accept(@RequestBody Long eventId, Long eventUserId){
+        return performanceService.accept(eventId, eventUserId);
     }
 }
