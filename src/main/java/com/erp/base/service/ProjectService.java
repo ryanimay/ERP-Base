@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class ProjectService {
@@ -35,5 +37,21 @@ public class ProjectService {
         projectModel.setCreateBy(user.getId());
         projectRepository.save(projectModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public ResponseEntity<ApiResponse> update(ProjectRequest request) {
+        Optional<ProjectModel> byId = projectRepository.findById(request.getId());
+        if(byId.isPresent()){
+            ProjectModel projectModel = byId.get();
+            projectModel.setName(request.getName());
+            projectModel.setType(request.getType());
+            projectModel.setStartTime(request.getStartTime());
+            projectModel.setEndTime(request.getEndTime());
+            projectModel.setInfo(request.getInfo());
+            projectModel.setManager(new UserModel(request.getManagerId()));
+            projectRepository.save(projectModel);
+            return ApiResponse.success(ApiResponseCode.SUCCESS);
+        }
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFound");
     }
 }
