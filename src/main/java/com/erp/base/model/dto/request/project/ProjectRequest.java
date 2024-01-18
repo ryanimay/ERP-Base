@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class ProjectRequest implements IBaseDto<ProjectModel> {
+    private Long id;
     private String name;
     private String type;//1.開發案 2.維護案
     private LocalDateTime startTime;

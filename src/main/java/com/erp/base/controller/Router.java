@@ -86,5 +86,6 @@ public interface Router {
         String PROJECT = "/project";
         String LIST = PROJECT + "/list";
         String ADD = PROJECT + "/add";
+        String UPDATE = PROJECT + "/update";
     }
 }
