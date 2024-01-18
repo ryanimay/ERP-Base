@@ -25,7 +25,7 @@ public class GenericSpecifications<T> {
                     predicates.add(criteriaBuilder.greaterThan(root.get(criteria.getKey()), criteria.getValue()));
                 } else if (criteria.getOperation().equalsIgnoreCase("<")) {
                     predicates.add(criteriaBuilder.lessThan(root.get(criteria.getKey()), criteria.getValue()));
-                } else if (criteria.getOperation().equalsIgnoreCase(":")) {
+                } else if (criteria.getOperation().equalsIgnoreCase("=")) {
                     if (root.get(criteria.getKey()).getJavaType() == String.class) {
                         predicates.add(criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%"));
                     } else {
