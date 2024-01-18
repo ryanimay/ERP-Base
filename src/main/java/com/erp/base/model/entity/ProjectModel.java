@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectModel {
+public class ProjectModel implements IBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,7 +24,7 @@ public class ProjectModel {
     @Column(name = "type")
     private String type;//1.開發案 2.維護案
     @Column(name = "create_time")
-    private LocalDateTime createTime;
+    private LocalDateTime createTime = LocalDateTime.now();
     @Column(name = "create_by")
     private long createBy;
     @Column(name = "start_time")
@@ -37,5 +37,5 @@ public class ProjectModel {
     @JoinColumn(name = "manager_id")
     private UserModel Manager;
     @Column(name = "status", nullable = false)
-    private String status;//1.代辦 2.進行中 3.結案
+    private String status = "1";//1.代辦 2.進行中 3.結案
 }
