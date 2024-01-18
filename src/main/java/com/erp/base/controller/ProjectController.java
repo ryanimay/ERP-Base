@@ -30,4 +30,14 @@ public class ProjectController {
     public ResponseEntity<ApiResponse> update(@RequestBody ProjectRequest request){
         return projectService.update(request);
     }
+
+    @PutMapping(Router.PROJECT.START)
+    public ResponseEntity<ApiResponse> start(@RequestBody Long projectId){
+        return projectService.start(projectId);
+    }
+
+    @PutMapping(Router.PROJECT.DONE)
+    public ResponseEntity<ApiResponse> done(@RequestBody Long projectId){
+        return projectService.done(projectId);
+    }
 }
