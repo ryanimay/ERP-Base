@@ -12,7 +12,8 @@ import java.util.Locale;
 public enum NotificationEnum {
     UPDATE_USER("notification.updateUser", "UserInfo", false),
     EDIT_SALARY_ROOT("notification.editSalaryRoot", "EditSalaryRoot", false),
-    ADD_PERFORMANCE("notification.addPerformance", "AddPerformance", false)
+    ADD_PERFORMANCE("notification.addPerformance", "AddPerformance", false),
+    ACCEPT_PERFORMANCE("notification.acceptPerformance", "AcceptPerformance", false)
     ;
     private final String info;
     private final String routerName;

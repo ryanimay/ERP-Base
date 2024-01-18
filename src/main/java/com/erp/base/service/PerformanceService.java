@@ -90,9 +90,15 @@ public class PerformanceService {
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "removed:" + i);
     }
 
-    public ResponseEntity<ApiResponse> accept(Long eventId) {
+    public ResponseEntity<ApiResponse> accept(Long eventId, Long eventUserId) {
         int i = performanceRepository.updateStateAccept(eventId);
-        if(i ==1) return ApiResponse.success(ApiResponseCode.SUCCESS);
+        if(i == 1) {
+            NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_PERFORMANCE);
+            UserModel user = ClientIdentity.getUser();
+            MessageModel messageModel = new MessageModel(user.getUsername(), eventUserId.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            messageService.sendTo(messageModel);
+            return ApiResponse.success(ApiResponseCode.SUCCESS);
+        }
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "accept:" + i);
     }
 
