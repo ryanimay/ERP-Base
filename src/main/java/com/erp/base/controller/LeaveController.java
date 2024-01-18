@@ -38,12 +38,12 @@ public class LeaveController {
     }
 
     @DeleteMapping(Router.LEAVE.DELETE)
-    public ResponseEntity<ApiResponse> delete(@RequestBody long id){
+    public ResponseEntity<ApiResponse> delete(@RequestBody Long id){
         return leaveService.delete(id);
     }
 
     @PostMapping(Router.LEAVE.ACCEPT)
-    public ResponseEntity<ApiResponse> accept(@RequestBody long id){
-        return leaveService.accept(id);
+    public ResponseEntity<ApiResponse> accept(@RequestBody Long id, Long eventUserId){
+        return leaveService.accept(id, eventUserId);
     }
 }
