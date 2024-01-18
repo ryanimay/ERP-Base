@@ -81,4 +81,9 @@ public interface Router {
         String DELETE = LEAVE + "/delete";
         String ACCEPT = LEAVE + "/accept";
     }
+
+    interface PROJECT{
+        String PROJECT = "/project";
+        String LIST = PROJECT + "/list";
+    }
 }

@@ -22,7 +22,7 @@ public class ProjectModel {
     @Column(name = "name")
     private String name;
     @Column(name = "type")
-    private String type;
+    private String type;//1.開發案 2.維護案
     @Column(name = "create_time")
     private LocalDateTime createTime;
     @Column(name = "create_by")
@@ -37,5 +37,5 @@ public class ProjectModel {
     @JoinColumn(name = "manager_id")
     private UserModel Manager;
     @Column(name = "status", nullable = false)
-    private String status;
+    private String status;//1.代辦 2.進行中 3.結案
 }

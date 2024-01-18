@@ -26,8 +26,9 @@ public class PageResponse<C> {
         this.totalPage = page.getTotalPages();
         this.totalElements = page.getTotalElements();
     }
-
+    @SuppressWarnings("unchecked")
     private C convertTo(Object obj, Class<C> clazz) {
+        if (clazz.isInstance(obj)) return (C)obj;
         try {
             Constructor<C> constructor = clazz.getDeclaredConstructor(obj.getClass());
             return constructor.newInstance(obj);
