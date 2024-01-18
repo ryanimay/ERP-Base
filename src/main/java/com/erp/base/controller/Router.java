@@ -90,4 +90,9 @@ public interface Router {
         String START = PROJECT + "/start";
         String DONE = PROJECT + "/done";
     }
+
+    interface PROCUREMENT{
+        String PROCUREMENT = "/procurement";
+        String LIST = PROCUREMENT + "/list";
+    }
 }

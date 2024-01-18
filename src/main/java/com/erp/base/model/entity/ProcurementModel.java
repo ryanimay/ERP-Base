@@ -21,6 +21,8 @@ public class ProcurementModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
+    @Column(name = "type")//1.進 2.出
+    private int type;
     @Column(name = "name")
     private String name;
     @Column(name = "price")
