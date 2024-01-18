@@ -86,9 +86,15 @@ public class LeaveService {
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "delete: " + i);
     }
 
-    public ResponseEntity<ApiResponse> accept(long id) {
+    public ResponseEntity<ApiResponse> accept(long id, Long eventUserId) {
         int i = leaveRepository.accept(id, JobStatusEnum.PENDING.getName(), JobStatusEnum.APPROVED.getName());
-        if(i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
+        if(i == 1) {
+            NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
+            UserModel user = ClientIdentity.getUser();
+            MessageModel messageModel = new MessageModel(user.getUsername(), eventUserId.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            messageService.sendTo(messageModel);
+            return ApiResponse.success(ApiResponseCode.SUCCESS);
+        }
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "accept: " + i);
     }
 
