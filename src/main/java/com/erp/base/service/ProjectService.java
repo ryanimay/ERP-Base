@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -45,13 +46,23 @@ public class ProjectService {
             ProjectModel projectModel = byId.get();
             projectModel.setName(request.getName());
             projectModel.setType(request.getType());
-            projectModel.setStartTime(request.getStartTime());
-            projectModel.setEndTime(request.getEndTime());
+            projectModel.setScheduledStartTime(request.getScheduledStartTime());
+            projectModel.setScheduledEndTime(request.getScheduledEndTime());
             projectModel.setInfo(request.getInfo());
             projectModel.setManager(new UserModel(request.getManagerId()));
             projectRepository.save(projectModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFound");
+    }
+
+    public ResponseEntity<ApiResponse> start(Long projectId) {
+        projectRepository.start(projectId, LocalDateTime.now());
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public ResponseEntity<ApiResponse> done(Long projectId) {
+        projectRepository.done(projectId, LocalDateTime.now());
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

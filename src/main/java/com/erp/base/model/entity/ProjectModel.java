@@ -31,6 +31,10 @@ public class ProjectModel implements IBaseModel {
     private LocalDateTime startTime;
     @Column(name = "end_time")
     private LocalDateTime endTime;
+    @Column(name = "scheduled_start_time")
+    private LocalDateTime scheduledStartTime;
+    @Column(name = "scheduled_end_time")
+    private LocalDateTime scheduledEndTime;
     @Column(name = "info")
     private String info;
     @ManyToOne
