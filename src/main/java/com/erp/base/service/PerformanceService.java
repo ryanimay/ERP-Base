@@ -11,16 +11,17 @@ import com.erp.base.model.dto.request.performance.AddPerformanceRequest;
 import com.erp.base.model.dto.request.performance.PerformanceListRequest;
 import com.erp.base.model.dto.request.performance.UpdatePerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
 import com.erp.base.model.entity.UserModel;
 import com.erp.base.repository.PerformanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -48,8 +49,8 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> getAllList(PerformanceListRequest request) {
-        List<PerformanceModel> allPerformance = performanceRepository.findAllPerformance(request.getUserId(), request.getStartTime(), request.getEndTime(), request.getPage());
-        return ApiResponse.success(ApiResponseCode.SUCCESS, allPerformance);
+        Page<PerformanceModel> allPerformance = performanceRepository.findAllPerformance(request.getUserId(), request.getStartTime(), request.getEndTime(), request.getPage());
+        return ApiResponse.success(new PageResponse<>(allPerformance, PerformanceModel.class));
     }
 
     public ResponseEntity<ApiResponse> getList(PerformanceListRequest request) {
@@ -105,7 +106,7 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam request) {
-        List<PerformanceModel> list = performanceRepository.findAllByStatus(request.getPage());
-        return ApiResponse.success(ApiResponseCode.SUCCESS, list);
+        Page<PerformanceModel> list = performanceRepository.findAllByStatus(request.getPage());
+        return ApiResponse.success(new PageResponse<>(list, PerformanceModel.class));
     }
 }
