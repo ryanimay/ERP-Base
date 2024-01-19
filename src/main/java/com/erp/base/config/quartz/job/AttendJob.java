@@ -4,6 +4,7 @@ import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.AttendService;
 import com.erp.base.service.ClientService;
+import lombok.NoArgsConstructor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.util.Set;
  * 刷新每日打卡紀錄
  * */
 @Component
+@NoArgsConstructor
 public class AttendJob implements Job {
     private ClientService clientService;
     private AttendService attendService;

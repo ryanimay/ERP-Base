@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface PerformanceRepository extends JpaRepository<PerformanceModel, Long> {
-    @Query("SELECT P FROM PerformanceModel p " +
+    @Query("SELECT p FROM PerformanceModel p " +
             "WHERE (:userId IS NULL OR p.user.id = :userId) " +
             "AND p.createTime >= :startTime " +
             "AND p.createTime <= :endTime")
@@ -23,6 +23,6 @@ public interface PerformanceRepository extends JpaRepository<PerformanceModel, L
     @Modifying
     @Query("UPDATE PerformanceModel p SET p.status = 2 WHERE p.id = :eventId AND p.status = 1")
     int updateStateAccept(Long eventId);
-    @Query("SELECT P FROM PerformanceModel p WHERE p.status = 1")
+    @Query("SELECT p FROM PerformanceModel p WHERE p.status = 1")
     Page<PerformanceModel> findAllByStatus(PageRequest page);
 }

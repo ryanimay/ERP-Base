@@ -7,6 +7,7 @@ import com.erp.base.service.MailService;
 import com.erp.base.service.SalaryService;
 import com.erp.base.tool.LogFactory;
 import jakarta.mail.MessagingException;
+import lombok.NoArgsConstructor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@NoArgsConstructor
 public class SalaryCalculationJob implements Job {
     LogFactory LOG = new LogFactory(SalaryCalculationJob.class);
     private SalaryService salaryService;

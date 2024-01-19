@@ -38,7 +38,7 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
             "(SELECT a FROM AttendModel a WHERE a.date = :date AND a.user = u)")
     Set<ClientModel> findActiveUserAndNotExistAttend(LocalDate date);
     @Query("SELECT u.id FROM ClientModel u JOIN u.roles r JOIN r.permissions p WHERE p.url = :permission")
-    Set<Long> findByHasAcceptPermission(String router);
+    Set<Long> findByHasAcceptPermission(String permission);
     @Query("SELECT u.id, u.username FROM ClientModel u")
     List<ClientNameObject> findAllNameAndId();
 }
