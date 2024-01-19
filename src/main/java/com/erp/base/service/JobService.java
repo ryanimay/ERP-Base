@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -43,5 +40,19 @@ public class JobService {
         jobModel.setCreateBy(user.getId());
         jobRepository.save(jobModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public ResponseEntity<ApiResponse> update(JobRequest request) {
+        Optional<JobModel> byId = jobRepository.findById(request.getId());
+        if(byId.isPresent()){
+            JobModel model = byId.get();
+            model.setInfo(request.getInfo());
+            if(request.getUserId() != null) model.setUser(new UserModel(request.getUserId()));
+            model.setStartTime(request.getStartTime());
+            model.setEndTime(request.getEndTime());
+            model.setStatus(request.getStatus());
+            jobRepository.save(model);
+        }
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
 }
