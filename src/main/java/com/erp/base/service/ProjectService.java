@@ -7,7 +7,7 @@ import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.ProjectModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,7 +33,7 @@ public class ProjectService {
     }
 
     public ResponseEntity<ApiResponse> add(ProjectRequest request) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         ProjectModel projectModel = request.toModel();
         projectModel.setCreateBy(user.getId());
         projectRepository.save(projectModel);
@@ -50,7 +50,7 @@ public class ProjectService {
             projectModel.setScheduledStartTime(request.getScheduledStartTime());
             projectModel.setScheduledEndTime(request.getScheduledEndTime());
             projectModel.setInfo(request.getInfo());
-            projectModel.setManager(new UserModel(request.getManagerId()));
+            projectModel.setManager(new ClientModel(request.getManagerId()));
             projectRepository.save(projectModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }

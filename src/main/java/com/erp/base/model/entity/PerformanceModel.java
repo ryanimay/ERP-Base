@@ -24,7 +24,7 @@ public class PerformanceModel implements IBaseModel {
     private String event;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserModel user;
+    private ClientModel user;
     @Column(name = "fixed_bonus", precision = 10, scale = 2)
     private BigDecimal fixedBonus;
     @Column(name = "performance_ratio", precision = 3, scale = 1)

@@ -39,7 +39,7 @@ public class ProjectModel implements IBaseModel {
     private String info;
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private UserModel Manager;
+    private ClientModel Manager;
     @Column(name = "status", nullable = false)
     private String status = "1";//1.代辦 2.進行中 3.結案
 }

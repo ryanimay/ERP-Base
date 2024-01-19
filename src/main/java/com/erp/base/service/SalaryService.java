@@ -9,7 +9,7 @@ import com.erp.base.model.dto.request.salary.EditSalaryRootRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.SalaryModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.SalaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,14 +57,14 @@ public class SalaryService {
     }
 
     private void sendMessage(Long userId) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         NotificationModel notification = notificationService.createNotification(NotificationEnum.EDIT_SALARY_ROOT);
         MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(userId), WebsocketConstant.TOPIC.NOTIFICATION, notification);
         messageService.sendTo(messageModel);
     }
 
     public ResponseEntity<ApiResponse> get() {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null) {
             return ApiResponse.success(ApiResponseCode.UNKNOWN_ERROR, "UserNotFound");
         }

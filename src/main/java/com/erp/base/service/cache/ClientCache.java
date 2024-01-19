@@ -5,7 +5,7 @@ import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.RouterModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
@@ -51,7 +51,7 @@ public class ClientCache {
 
     //有關使用者資訊，不存密碼
     @Cacheable(key = "'clientCache_' + #username")
-    public UserModel getClient(String username) {
+    public ClientModel getClient(String username) {
         return clientService.findByUsername(username);
     }
 

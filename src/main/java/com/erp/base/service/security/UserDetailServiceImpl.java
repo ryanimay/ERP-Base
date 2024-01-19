@@ -1,6 +1,6 @@
 package com.erp.base.service.security;
 
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
 import com.erp.base.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserModel client = clientService.findByUsername(username);
+        ClientModel client = clientService.findByUsername(username);
         if (client == null) {
             LOG.warn("Cant find user: {0}", username);
             throw new UsernameNotFoundException("Cant find user:" + username);

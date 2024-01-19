@@ -12,7 +12,7 @@ import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.cache.ClientCache;
@@ -119,19 +119,19 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> login(LoginRequest request) {
         HttpHeaders token = tokenService.createToken(request);
-        UserModel user = clientCache.getClient(request.getUsername());
+        ClientModel user = clientCache.getClient(request.getUsername());
         ClientResponseModel client = new ClientResponseModel(user);
         updateLastLoginTime(user);
         return ApiResponse.success(token, client);
     }
 
-    private void updateLastLoginTime(UserModel user) {
+    private void updateLastLoginTime(ClientModel user) {
         user.setLastLoginTime(LocalDateTime.now());
         clientRepository.save(user);
     }
 
     public PageResponse<ClientResponseModel> list(ClientListRequest param) {
-        Page<UserModel> allClient = null;
+        Page<ClientModel> allClient = null;
         if (param.getId() == null && param.getName() == null) {
             allClient = clientRepository.findAll(param.getPage());
         } else {
@@ -145,7 +145,7 @@ public class ClientService {
         return new PageResponse<>(allClient, ClientResponseModel.class);
     }
 
-    public UserModel findByUsername(String username) {
+    public ClientModel findByUsername(String username) {
         return clientRepository.findByUsername(username);
     }
 
@@ -168,7 +168,7 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
-        UserModel client = ClientIdentity.getUser();
+        ClientModel client = ClientIdentity.getUser();
         if (checkIdentity(client, request)) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         int result = updatePassword(passwordEncode(request.getPassword()), false, client.getUsername(), client.getEmail());
         if (result == 1) {
@@ -177,7 +177,7 @@ public class ClientService {
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
     }
 
-    private boolean checkIdentity(UserModel client, UpdatePasswordRequest request) {
+    private boolean checkIdentity(ClientModel client, UpdatePasswordRequest request) {
         String username = client.getUsername();
         if (!Objects.equals(username, request.getUsername())) return true;//不是本人拒絕更改
         Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getOldPassword());//比對舊帳密
@@ -225,12 +225,12 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> findByUserId(long id) {
-        Optional<UserModel> modelOption = clientRepository.findById(id);
+        Optional<ClientModel> modelOption = clientRepository.findById(id);
         return modelOption.map(model -> ApiResponse.success(new ClientResponseModel(model))).orElseGet(() -> ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null));
     }
 
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
-        UserModel client = clientCache.getClient(request.getUsername());
+        ClientModel client = clientCache.getClient(request.getUsername());
         if (client == null) throw new UsernameNotFoundException("User Not Found");
         client.setEmail(request.getEmail());
         client.setRoles(getRoles(request.getRoles()));
@@ -240,8 +240,8 @@ public class ClientService {
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(client));
     }
 
-    private void checkUserOrSendMessage(UserModel client) {
-        UserModel user = ClientIdentity.getUser();
+    private void checkUserOrSendMessage(ClientModel client) {
+        ClientModel user = ClientIdentity.getUser();
         if (user.getId() != client.getId()) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.UPDATE_USER, user.getUsername());
             MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(client.getId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
@@ -267,7 +267,7 @@ public class ClientService {
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
-    public Set<UserModel> findActiveUserAndNotExistAttend() {
+    public Set<ClientModel> findActiveUserAndNotExistAttend() {
         return clientRepository.findActiveUserAndNotExistAttend(LocalDate.now());
     }
 

@@ -3,7 +3,7 @@ package com.erp.base.model.dto.request.salary;
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.SalaryModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,7 +34,7 @@ public class EditSalaryRootRequest implements IBaseDto<SalaryModel> {
     public SalaryModel toModel() {
         SalaryModel salaryModel = new SalaryModel();
         salaryModel.setId(id);
-        salaryModel.setUser(new UserModel(userId));
+        salaryModel.setUser(new ClientModel(userId));
         salaryModel.setBaseSalary(baseSalary);
         salaryModel.setBonus(bonus);
         salaryModel.setLaborInsurance(laborInsurance);
