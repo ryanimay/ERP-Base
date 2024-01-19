@@ -14,7 +14,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.PerformanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,7 +54,7 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> getList(PerformanceListRequest request) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null){
             return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "User Not Found");
         }
@@ -63,7 +63,7 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> add(AddPerformanceRequest request) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null){
             return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "User Not Found");
         }
@@ -73,7 +73,7 @@ public class PerformanceService {
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
-    private void sendMessageToManger(UserModel user) {
+    private void sendMessageToManger(ClientModel user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE, user.getUsername());
         Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission(Router.PERFORMANCE.ACCEPT);
         byHasAcceptPermission.forEach(id -> {
@@ -97,7 +97,7 @@ public class PerformanceService {
         int i = performanceRepository.updateStateAccept(eventId);
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_PERFORMANCE);
-            UserModel user = ClientIdentity.getUser();
+            ClientModel user = ClientIdentity.getUser();
             MessageModel messageModel = new MessageModel(user.getUsername(), eventUserId.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);

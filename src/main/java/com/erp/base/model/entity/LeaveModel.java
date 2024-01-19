@@ -21,7 +21,7 @@ public class LeaveModel implements IBaseModel {
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserModel user;
+    private ClientModel user;
     @Column(name = "type", nullable = false)
     private String type; //請假類型
     @Column(name = "start_date", nullable = false)

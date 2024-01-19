@@ -1,6 +1,6 @@
 package com.erp.base.model.dto.response;
 
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,13 +25,13 @@ public class ClientResponseModel implements Serializable {
     private String email;
     private boolean mustUpdatePassword;
 
-    public ClientResponseModel(UserModel userModel) {
-        this.id = userModel.getId();
-        this.username = userModel.getUsername();
-        userModel.getRoles().forEach(role -> roleId.add(role.getId()));
-        this.isActive = userModel.isActive();
-        this.isLock = userModel.isLock();
-        this.email = userModel.getEmail();
-        this.mustUpdatePassword = userModel.isMustUpdatePassword();
+    public ClientResponseModel(ClientModel clientModel) {
+        this.id = clientModel.getId();
+        this.username = clientModel.getUsername();
+        clientModel.getRoles().forEach(role -> roleId.add(role.getId()));
+        this.isActive = clientModel.isActive();
+        this.isLock = clientModel.isLock();
+        this.email = clientModel.getEmail();
+        this.mustUpdatePassword = clientModel.isMustUpdatePassword();
     }
 }

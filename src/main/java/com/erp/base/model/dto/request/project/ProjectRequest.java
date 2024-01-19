@@ -3,7 +3,7 @@ package com.erp.base.model.dto.request.project;
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.ProjectModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -27,7 +27,7 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
         projectModel.setScheduledStartTime(scheduledStartTime);
         projectModel.setScheduledEndTime(scheduledEndTime);
         projectModel.setInfo(info);
-        projectModel.setManager(new UserModel(managerId));
+        projectModel.setManager(new ClientModel(managerId));
         return projectModel;
     }
 

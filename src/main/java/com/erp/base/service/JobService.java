@@ -5,7 +5,7 @@ import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.JobModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ public class JobService {
     }
 
     public ResponseEntity<ApiResponse> add(JobRequest request) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         JobModel jobModel = request.toModel();
         if(jobModel.getUser() == null) jobModel.setUser(user);
         jobModel.setCreateBy(user.getId());
@@ -47,7 +47,7 @@ public class JobService {
         if(byId.isPresent()){
             JobModel model = byId.get();
             model.setInfo(request.getInfo());
-            if(request.getUserId() != null) model.setUser(new UserModel(request.getUserId()));
+            if(request.getUserId() != null) model.setUser(new ClientModel(request.getUserId()));
             model.setStartTime(request.getStartTime());
             model.setEndTime(request.getEndTime());
             model.setStatus(request.getStatus());

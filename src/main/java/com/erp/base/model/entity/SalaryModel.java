@@ -22,7 +22,7 @@ public class SalaryModel implements IBaseModel {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserModel user;
+    private ClientModel user;
     @Column(name = "time", nullable = false)
     private LocalDate time = LocalDate.now();
     //本薪

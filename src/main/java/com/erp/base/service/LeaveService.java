@@ -14,7 +14,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.LeaveModel;
 import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,14 +49,14 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> list(PageRequestParam page) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
         Page<LeaveModel> leaves = leaveRepository.findAllByUser(user.getId(), page.getPage());
         return ApiResponse.success(new PageResponse<>(leaves, LeaveModel.class));
     }
 
     public ResponseEntity<ApiResponse> add(AddLeaveRequest request) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
         LeaveModel entity = request.toModel();
         LeaveModel saved = updateOrSave(entity, user);
@@ -64,7 +64,7 @@ public class LeaveService {
         return ApiResponse.success(ApiResponseCode.SUCCESS, saved);
     }
 
-    private void sendMessageToManager(UserModel user) {
+    private void sendMessageToManager(ClientModel user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_LEAVE, user.getUsername());
         Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission(Router.LEAVE.ACCEPT);
         byHasAcceptPermission.forEach(id -> {
@@ -74,7 +74,7 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> update(UpdateLeaveRequest request) {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
         LeaveModel entity = request.toModel();
         LeaveModel saved = updateOrSave(entity, user);
@@ -91,7 +91,7 @@ public class LeaveService {
         int i = leaveRepository.accept(id, JobStatusEnum.PENDING.getName(), JobStatusEnum.APPROVED.getName());
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
-            UserModel user = ClientIdentity.getUser();
+            ClientModel user = ClientIdentity.getUser();
             MessageModel messageModel = new MessageModel(user.getUsername(), eventUserId.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -104,7 +104,7 @@ public class LeaveService {
         return ApiResponse.success(new PageResponse<>(allPending, LeaveModel.class));
     }
 
-    private LeaveModel updateOrSave(LeaveModel model, UserModel user){
+    private LeaveModel updateOrSave(LeaveModel model, ClientModel user){
         model.setUser(user);
         return leaveRepository.save(model);
     }

@@ -24,7 +24,7 @@ public class JobModel implements IBaseModel {
     private String info;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserModel user;
+    private ClientModel user;
     @Column(name = "start_time")
     private LocalDateTime startTime;
     @Column(name = "end_time")

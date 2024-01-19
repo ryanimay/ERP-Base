@@ -4,7 +4,7 @@ import com.erp.base.config.websocket.WebsocketConstant;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.MessageService;
 import com.erp.base.service.NotificationService;
 import com.erp.base.service.security.TokenService;
@@ -54,7 +54,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
 
     //連結完先找歷史通知
     private void sendNotification() {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user != null){
             String userId = Long.toString(user.getId());
             Set<NotificationModel> notifications = notificationService.findGlobal();//全域通知

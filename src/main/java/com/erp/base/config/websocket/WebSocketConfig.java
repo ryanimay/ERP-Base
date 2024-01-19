@@ -2,7 +2,7 @@ package com.erp.base.config.websocket;
 
 import com.erp.base.filter.UserHandshakeInterceptor;
 import com.erp.base.model.ClientIdentity;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     @Override
                     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-                        UserModel user = ClientIdentity.getUser();
+                        ClientModel user = ClientIdentity.getUser();
                         long userId = 0L;
                         if (user != null) {
                             userId = user.getId();

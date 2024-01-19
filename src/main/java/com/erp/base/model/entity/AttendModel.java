@@ -22,7 +22,7 @@ public class AttendModel {
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserModel user;
+    private ClientModel user;
     @Column(name = "date")
     private LocalDate date = LocalDate.now();
     @Column(name = "attend_time")
@@ -32,7 +32,7 @@ public class AttendModel {
     @Column(name = "remarks")
     private String remarks;
 
-    public AttendModel(UserModel user) {
+    public AttendModel(ClientModel user) {
         this.user = user;
     }
 }

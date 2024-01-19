@@ -2,7 +2,7 @@ package com.erp.base.model.dto.request.job;
 
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.JobModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,7 +22,7 @@ public class JobRequest implements IBaseDto<JobModel> {
         JobModel job = new JobModel();
         job.setId(id);
         job.setInfo(info);
-        if(userId != null) job.setUser(new UserModel(userId));
+        if(userId != null) job.setUser(new ClientModel(userId));
         job.setStartTime(startTime);
         job.setEndTime(endTime);
         return job;

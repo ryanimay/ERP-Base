@@ -4,7 +4,7 @@ import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.AttendModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class AttendService {
     }
 
     public ResponseEntity<ApiResponse> signIn() {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
         LocalDate nowDate = LocalDate.now();
         LocalDateTime nowTime = LocalDateTime.now();
@@ -34,7 +34,7 @@ public class AttendService {
     }
 
     public ResponseEntity<ApiResponse> signOut() {
-        UserModel user = ClientIdentity.getUser();
+        ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
         LocalDate nowDate = LocalDate.now();
         LocalDateTime nowTime = LocalDateTime.now();

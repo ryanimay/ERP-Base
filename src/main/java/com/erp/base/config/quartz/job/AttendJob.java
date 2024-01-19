@@ -1,7 +1,7 @@
 package com.erp.base.config.quartz.job;
 
 import com.erp.base.model.entity.AttendModel;
-import com.erp.base.model.entity.UserModel;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.AttendService;
 import com.erp.base.service.ClientService;
 import org.quartz.Job;
@@ -29,7 +29,7 @@ public class AttendJob implements Job {
     }
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
-        Set<UserModel> activeUser = clientService.findActiveUserAndNotExistAttend();
+        Set<ClientModel> activeUser = clientService.findActiveUserAndNotExistAttend();
         List<AttendModel> attends = activeUser.stream().map(AttendModel::new).toList();
         attendService.saveAll(attends);
     }

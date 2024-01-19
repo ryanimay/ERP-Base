@@ -10,11 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")
+@Table(name = "client")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserModel implements IBaseModel {
+public class ClientModel implements IBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -40,18 +40,18 @@ public class UserModel implements IBaseModel {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
+            name = "client_roles",
+            joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleModel> roles = new HashSet<>();
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "user_notifications",
-            joinColumns = @JoinColumn(name = "user_id"),
+            name = "client_notifications",
+            joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "notifications_id"))
     private Set<NotificationModel> notifications = new HashSet<>();
 
-    public UserModel(long id) {
+    public ClientModel(long id) {
         this.id = id;
     }
 }
