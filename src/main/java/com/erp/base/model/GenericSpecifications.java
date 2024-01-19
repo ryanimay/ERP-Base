@@ -1,52 +1,63 @@
 package com.erp.base.model;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class GenericSpecifications<T> {
-    private final List<CriteriaObject> criteriaList = new ArrayList<>();
+public class GenericSpecifications<E> {
+    private final List<CriteriaObject<?>> criteriaList = new ArrayList<>();
 
-    public GenericSpecifications<T> add(String key, String operation, String value) {
-        criteriaList.add(new CriteriaObject(key, operation, value));
+    public <T extends Comparable<T>> GenericSpecifications<E> add(String key, String operation, T value) {
+        criteriaList.add(new CriteriaObject<>(key, operation, value));
         return this;
     }
 
-    public Specification<T> build() {
+    public Specification<E> build() {
         return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            for (CriteriaObject criteria : criteriaList) {
-                if (criteria.getOperation().equalsIgnoreCase(">")) {
-                    predicates.add(criteriaBuilder.greaterThan(root.get(criteria.getKey()), criteria.getValue()));
-                } else if (criteria.getOperation().equalsIgnoreCase("<")) {
-                    predicates.add(criteriaBuilder.lessThan(root.get(criteria.getKey()), criteria.getValue()));
-                } else if (criteria.getOperation().equalsIgnoreCase("=")) {
-                    if (root.get(criteria.getKey()).getJavaType() == String.class) {
-                        predicates.add(criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%"));
-                    } else {
-                        predicates.add(criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue()));
-                    }
-                } else if (criteria.getOperation().equalsIgnoreCase(">=")) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue()));
-                } else if (criteria.getOperation().equalsIgnoreCase("<=")) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue()));
+                Predicate predicate = criteriaBuilder.conjunction();
+                for (CriteriaObject<?> criteria : criteriaList) {
+                    comparison(predicate, criteriaBuilder, root, criteria);
                 }
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            return predicate;
         };
+    }
+    @SuppressWarnings("unchecked")
+    private <T extends Comparable<T>> void comparison(Predicate predicate, CriteriaBuilder criteriaBuilder, Root<E> root, CriteriaObject<?> criteria) {
+        if (criteria != null && criteria.getOperator() != null && criteria.getValue() != null) {
+            String key = criteria.getKey();
+            String operator = criteria.getOperator();
+            T value = (T) criteria.getValue();
+            Path<T> properties = root.get(key);
+            switch (operator) {
+                case "=" -> predicate.getExpressions().add(criteriaBuilder.equal(properties, value));
+                case "!=" -> predicate.getExpressions().add(criteriaBuilder.notEqual(properties, value));
+                case ">" -> predicate.getExpressions().add(criteriaBuilder.greaterThan(properties, value));
+                case ">=" -> predicate.getExpressions().add(criteriaBuilder.greaterThanOrEqualTo(properties, value));
+                case "<" -> predicate.getExpressions().add(criteriaBuilder.lessThan(properties, value));
+                case "<=" -> predicate.getExpressions().add(criteriaBuilder.lessThanOrEqualTo(properties, value));
+                case "like" -> predicate.getExpressions().add(criteriaBuilder.like((Path<String>) properties, "%" + value + "%"));
+                case "in" -> predicate.getExpressions().add(root.get(key).in((Collection<? extends T>)value));
+                // 可以根據需要添加其他操作符
+                default -> throw new IllegalArgumentException("Unsupported operator: " + operator);
+            }
+        }
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class CriteriaObject {
+    public static class CriteriaObject<T extends Comparable<T>> {
         private String key;
-        private String operation;
-        private String value;
+        private String operator;
+        private T value;
     }
 }
