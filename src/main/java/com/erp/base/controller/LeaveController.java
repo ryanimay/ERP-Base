@@ -1,5 +1,7 @@
 package com.erp.base.controller;
 
+import com.erp.base.enums.LeaveEnum;
+import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.leave.AddLeaveRequest;
 import com.erp.base.model.dto.request.leave.UpdateLeaveRequest;
@@ -45,5 +47,10 @@ public class LeaveController {
     @PostMapping(Router.LEAVE.ACCEPT)
     public ResponseEntity<ApiResponse> accept(@RequestBody Long id, Long eventUserId){
         return leaveService.accept(id, eventUserId);
+    }
+
+    @GetMapping(Router.LEAVE.ENUM_LIST)
+    public ResponseEntity<ApiResponse> enumList(){
+        return ApiResponse.success(ApiResponseCode.SUCCESS, LeaveEnum.getNameList());
     }
 }
