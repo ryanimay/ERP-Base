@@ -19,6 +19,7 @@ public class ProcurementRequest extends PageRequestParam {
     private String name;
     private BigDecimal price;
     private long count;
-    private LocalDateTime createTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private long createBy;
 }
