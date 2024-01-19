@@ -94,5 +94,7 @@ public interface Router {
     interface PROCUREMENT{
         String PROCUREMENT = "/procurement";
         String LIST = PROCUREMENT + "/list";
+        String ADD = PROCUREMENT + "/add";
+        String UPDATE = PROCUREMENT + "/update";
     }
 }

@@ -33,4 +33,6 @@ public class ProcurementModel implements IBaseModel {
     private LocalDateTime createTime = LocalDateTime.now();
     @Column(name = "create_by", nullable = false)
     private long createBy;
+    @Column(name = "status")
+    private int status = 1;//1.pending 2.done
 }
