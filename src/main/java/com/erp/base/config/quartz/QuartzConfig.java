@@ -1,6 +1,7 @@
 package com.erp.base.config.quartz;
 
 import com.erp.base.config.quartz.job.JobEnum;
+import com.erp.base.tool.LogFactory;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,13 @@ import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Objects;
 
 @Configuration
 public class QuartzConfig {
+    LogFactory LOG = new LogFactory(QuartzConfig.class);
     private final ApplicationContext applicationContext;
     @Autowired
     public QuartzConfig(ApplicationContext applicationContext) {
@@ -45,13 +48,21 @@ public class QuartzConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    public Trigger createTrigger(JobEnum jobEnum){
+    public Trigger createTrigger(JobEnum jobEnum) {
         CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
         JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
         jobDetailFactoryBean.setJobClass(jobEnum.getJobClazz());
         jobDetailFactoryBean.setDurability(true);
-        trigger.setJobDetail(Objects.requireNonNull(jobDetailFactoryBean.getObject()));
-        trigger.setCronExpression(jobEnum.getCron());
+        jobDetailFactoryBean.afterPropertiesSet();
+        if(jobDetailFactoryBean.getObject() != null){
+            trigger.setJobDetail(Objects.requireNonNull(jobDetailFactoryBean.getObject()));
+            trigger.setCronExpression(jobEnum.getCron());
+        }
+        try{
+            trigger.afterPropertiesSet();
+        } catch (ParseException e) {
+            LOG.error("Quartz Trigger執行錯誤:{0}", e.getMessage());
+        }
         return trigger.getObject();
     }
 }
