@@ -103,5 +103,6 @@ public interface Router {
         String JOB = "/job";
         String LIST = JOB + "/list";
         String ADD = JOB + "/add";
+        String UPDATE = JOB + "/update";
     }
 }

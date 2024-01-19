@@ -5,10 +5,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class JobController {
@@ -25,6 +22,11 @@ public class JobController {
     @PostMapping(Router.JOB.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody JobRequest request){
         return jobService.add(request);
+    }
+
+    @PutMapping(Router.JOB.UPDATE)
+    public ResponseEntity<ApiResponse> update(@RequestBody JobRequest request){
+        return jobService.update(request);
     }
 
 }
