@@ -1,8 +1,11 @@
 package com.erp.base.service;
 
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.JobModel;
+import com.erp.base.model.entity.UserModel;
 import com.erp.base.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +34,14 @@ public class JobService {
             list.add(model);
         });
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
+    }
+
+    public ResponseEntity<ApiResponse> add(JobRequest request) {
+        UserModel user = ClientIdentity.getUser();
+        JobModel jobModel = request.toModel();
+        if(jobModel.getUser() == null) jobModel.setUser(user);
+        jobModel.setCreateBy(user.getId());
+        jobRepository.save(jobModel);
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

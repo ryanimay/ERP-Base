@@ -69,4 +69,9 @@ public class ClientController {
     public ResponseEntity<ApiResponse> clientStatus(@RequestBody ClientStatusRequest request){
         return clientService.clientStatus(request);
     }
+
+    @GetMapping(Router.CLIENT.NAME_LIST)
+    public ResponseEntity<ApiResponse> nameList(){
+        return clientService.nameList();
+    }
 }
