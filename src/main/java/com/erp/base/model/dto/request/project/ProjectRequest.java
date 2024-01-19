@@ -1,9 +1,11 @@
 package com.erp.base.model.dto.request.project;
 
+import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.model.entity.UserModel;
 import lombok.Data;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +18,7 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
     private LocalDateTime scheduledEndTime;
     private String info;
     private Long managerId;
+
     @Override
     public ProjectModel toModel() {
         ProjectModel projectModel = new ProjectModel();
@@ -25,6 +28,16 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
         projectModel.setScheduledEndTime(scheduledEndTime);
         projectModel.setInfo(info);
         projectModel.setManager(new UserModel(managerId));
-        return null;
+        return projectModel;
+    }
+
+    @Override
+    public Specification<ProjectModel> getSpecification() {
+        GenericSpecifications<ProjectModel> genericSpecifications = new GenericSpecifications<>();
+        return genericSpecifications
+                .add("id", "=", id)
+                .add("name", "like", name)
+                .add("type", "=", type)
+                .build();
     }
 }

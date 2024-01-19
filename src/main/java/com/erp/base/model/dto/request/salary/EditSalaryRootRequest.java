@@ -1,11 +1,13 @@
 package com.erp.base.model.dto.request.salary;
 
+import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.model.entity.UserModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 
@@ -38,5 +40,13 @@ public class EditSalaryRootRequest implements IBaseDto<SalaryModel> {
         salaryModel.setLaborInsurance(laborInsurance);
         salaryModel.setNationalHealthInsurance(nationalHealthInsurance);
         return salaryModel;
+    }
+
+    @Override
+    public Specification<SalaryModel> getSpecification() {
+        GenericSpecifications<SalaryModel> genericSpecifications = new GenericSpecifications<>();
+        return genericSpecifications
+                .add("id", "=", id)
+                .build();
     }
 }
