@@ -55,4 +55,9 @@ public class JobService {
         }
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
+
+    public ResponseEntity<ApiResponse> deleteById(Long id) {
+        jobRepository.deleteById(id);
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
 }
