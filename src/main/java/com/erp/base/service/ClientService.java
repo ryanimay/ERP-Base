@@ -7,6 +7,7 @@ import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.NotificationModel;
@@ -272,5 +273,14 @@ public class ClientService {
 
     public Set<Long> findByHasAcceptPermission(String router) {
         return clientRepository.findByHasAcceptPermission(router);
+    }
+
+    public ResponseEntity<ApiResponse> nameList() {
+        List<ClientNameObject> clientNameList = clientCache.getClientNameList();
+        return ApiResponse.success(ApiResponseCode.SUCCESS, clientNameList);
+    }
+
+    public List<ClientNameObject> getClientNameList() {
+        return clientRepository.findAllNameAndId();
     }
 }

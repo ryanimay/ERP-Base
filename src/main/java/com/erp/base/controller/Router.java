@@ -19,6 +19,7 @@ public interface Router {
         String UPDATE_PASSWORD = CLIENT + "/updatePassword";
         String CLIENT_LOCK = CLIENT + "/clientLock";
         String CLIENT_STATUS = CLIENT + "/clientStatus";
+        String NAME_LIST = CLIENT + "/nameList";
     }
 
     interface ROLE{
@@ -101,5 +102,6 @@ public interface Router {
     interface JOB{
         String JOB = "/job";
         String LIST = JOB + "/list";
+        String ADD = JOB + "/add";
     }
 }

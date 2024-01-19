@@ -1,5 +1,6 @@
 package com.erp.base.repository;
 
+import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.entity.UserModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -37,4 +39,6 @@ public interface ClientRepository extends JpaRepository<UserModel, Long> {
     Set<UserModel> findActiveUserAndNotExistAttend(LocalDate date);
     @Query("SELECT u.id FROM UserModel u JOIN u.roles r JOIN r.permissions p WHERE p.url = :permission")
     Set<Long> findByHasAcceptPermission(String router);
+    @Query("SELECT u.id, u.username FROM UserModel u")
+    List<ClientNameObject> findAllNameAndId();
 }

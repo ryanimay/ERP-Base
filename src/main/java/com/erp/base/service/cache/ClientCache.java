@@ -1,5 +1,6 @@
 package com.erp.base.service.cache;
 
+import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
@@ -117,5 +118,10 @@ public class ClientCache {
 
     @CacheEvict(key = "'routers'")
     public void refreshRouters() {
+    }
+
+    @Cacheable(key = "'clientNameList'")
+    public List<ClientNameObject> getClientNameList() {
+        return clientService.getClientNameList();
     }
 }
