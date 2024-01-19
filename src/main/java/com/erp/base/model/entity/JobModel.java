@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.enums.JobStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,6 +34,5 @@ public class JobModel {
     @Column(name = "create_by", nullable = false)
     private long createBy;
     @Column(name = "status", nullable = false)
-    private String status;
-
+    private String status = JobStatusEnum.PENDING.getName();
 }
