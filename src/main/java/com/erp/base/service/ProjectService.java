@@ -44,6 +44,7 @@ public class ProjectService {
         Optional<ProjectModel> byId = projectRepository.findById(request.getId());
         if(byId.isPresent()){
             ProjectModel projectModel = byId.get();
+            projectModel.setId(projectModel.getId());
             projectModel.setName(request.getName());
             projectModel.setType(request.getType());
             projectModel.setScheduledStartTime(request.getScheduledStartTime());

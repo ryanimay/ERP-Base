@@ -18,14 +18,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProcurementRequest extends PageRequestParam implements IBaseDto<ProcurementModel> {
-    private long id;
-    private int type;
+    private Long id;
+    private Integer type;
     private String name;
     private BigDecimal price;
-    private long count;
+    private Long count;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private long createBy;
+    private Integer status;
 
     @Override
     public ProcurementModel toModel() {
@@ -35,6 +36,7 @@ public class ProcurementRequest extends PageRequestParam implements IBaseDto<Pro
         procurementModel.setName(name);
         procurementModel.setPrice(price);
         procurementModel.setCount(count);
+        procurementModel.setStatus(status);
         return procurementModel;
     }
 
@@ -47,6 +49,7 @@ public class ProcurementRequest extends PageRequestParam implements IBaseDto<Pro
                 .add("name", "like", name)
                 .add("createTime", ">=", startTime)
                 .add("createTime", "<=", endTime)
+                .add("status", "=", status)
                 .build();
     }
 }
