@@ -97,4 +97,9 @@ public interface Router {
         String ADD = PROCUREMENT + "/add";
         String UPDATE = PROCUREMENT + "/update";
     }
+
+    interface JOB{
+        String JOB = "/job";
+        String LIST = JOB + "/list";
+    }
 }
