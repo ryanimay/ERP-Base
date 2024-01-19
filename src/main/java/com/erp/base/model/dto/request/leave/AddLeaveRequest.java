@@ -4,6 +4,7 @@ import com.erp.base.enums.JobStatusEnum;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.LeaveModel;
 import lombok.Data;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
@@ -23,5 +24,10 @@ public class AddLeaveRequest implements IBaseDto<LeaveModel> {
         leaveModel.setStatus(JobStatusEnum.PENDING.getName());
         leaveModel.setInfo(info);
         return leaveModel;
+    }
+
+    @Override
+    public Specification<LeaveModel> getSpecification() {
+        return null;
     }
 }
