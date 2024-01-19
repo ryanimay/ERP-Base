@@ -29,4 +29,9 @@ public class JobController {
         return jobService.update(request);
     }
 
+    @DeleteMapping(Router.JOB.REMOVE)
+    public ResponseEntity<ApiResponse> remove(@RequestBody Long id){
+        return jobService.deleteById(id);
+    }
+
 }
