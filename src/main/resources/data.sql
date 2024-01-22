@@ -1,3 +1,4 @@
+-- 預設permission
 INSERT INTO permission (authority, info, url, status)
 SELECT authority, info, url, status
 FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
@@ -59,9 +60,32 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
       ) AS source (authority, info, url, status)
 WHERE NOT EXISTS(SELECT 1 FROM permission WHERE source.url = permission.url);
 
+-- 預設notification
 INSERT INTO notification (info, router, status, global, create_time, create_by)
 SELECT info, router, status, global, create_time, create_by
 FROM (VALUES
     ('系統初始化', null, 'true', 'true', GETDATE(), 0)
     ) AS source (info, router, status, global, create_time, create_by)
 WHERE NOT EXISTS (SELECT 1 FROM notification WHERE source.info = notification.info);
+
+-- 預設role
+INSERT INTO role (role_name)
+SELECT role_name
+FROM (VALUES
+        ('custom'),
+        ('super')
+    ) AS source(role_name)
+WHERE NOT EXISTS (SELECT 1 FROM role WHERE source.role_name = role.role_name);
+
+-- 預設super權限
+INSERT INTO role_permission (role_id, permission_id)
+SELECT
+    (SELECT id FROM role WHERE role_name = 'super') AS role_id,
+    permission.id AS permission_id
+FROM permission
+WHERE NOT EXISTS (
+        SELECT 1
+        FROM role_permission
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'super')
+          AND permission_id = permission.id
+    );
