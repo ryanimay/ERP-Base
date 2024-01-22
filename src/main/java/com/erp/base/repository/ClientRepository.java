@@ -41,4 +41,6 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     Set<Long> findByHasAcceptPermission(String permission);
     @Query("SELECT u.id, u.username FROM ClientModel u")
     List<ClientNameObject> findAllNameAndId();
+    @Query("SELECT u.username FROM ClientModel u WHERE u.id = :id")
+    String findUsernameById(long id);
 }

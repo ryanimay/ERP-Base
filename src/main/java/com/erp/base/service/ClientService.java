@@ -10,9 +10,9 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.cache.ClientCache;
@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -51,7 +52,6 @@ public class ClientService {
     private ResetPasswordModel resetPasswordModel;
     private ClientCache clientCache;
     private AuthenticationProvider authenticationProvider;
-    private RoleService roleService;
     private MessageService messageService;
     private NotificationService notificationService;
     private static final String RESET_PREFIX = "##";
@@ -97,11 +97,6 @@ public class ClientService {
     }
 
     @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
-
-    @Autowired
     public void setResetPasswordModel(ResetPasswordModel resetPasswordModel) {
         this.resetPasswordModel = resetPasswordModel;
     }
@@ -129,6 +124,7 @@ public class ClientService {
     private void updateLastLoginTime(ClientModel user) {
         user.setLastLoginTime(LocalDateTime.now());
         clientRepository.save(user);
+        clientCache.refreshClient(user.getUsername());
     }
 
     public PageResponse<ClientResponseModel> list(ClientListRequest param) {
@@ -233,12 +229,18 @@ public class ClientService {
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
         ClientModel client = clientCache.getClient(request.getUsername());
         if (client == null) throw new UsernameNotFoundException("User Not Found");
-        client.setEmail(request.getEmail());
-        client.setRoles(getRoles(request.getRoles()));
-        clientRepository.save(client);
+        String newMail = request.getEmail();
+        if (newMail != null && !newMail.equals(client.getEmail())) {
+            System.out.println(newMail);
+            client.setEmail(newMail);
+            client.setMustUpdatePassword(false);
+        }
+        if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
+        ClientModel save = clientRepository.save(client);
+        clientCache.refreshClient(client.getUsername());
         //非本人就發送通知
         checkUserOrSendMessage(client);
-        return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(client));
+        return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(save));
     }
 
     private void checkUserOrSendMessage(ClientModel client) {
@@ -251,7 +253,7 @@ public class ClientService {
     }
 
     private Set<RoleModel> getRoles(List<Long> roles) {
-        return roleService.getRolesById(roles);
+        return roles.stream().map(RoleModel::new).collect(Collectors.toSet());
     }
 
     public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {
@@ -283,5 +285,9 @@ public class ClientService {
 
     public List<ClientNameObject> getClientNameList() {
         return clientRepository.findAllNameAndId();
+    }
+
+    public String findNameByUserId(long id) {
+        return clientRepository.findUsernameById(id);
     }
 }
