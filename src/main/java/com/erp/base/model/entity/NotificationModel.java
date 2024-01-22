@@ -32,6 +32,6 @@ public class NotificationModel implements IBaseModel{
     private boolean global = false;
     @Column(name = "create_time")
     private LocalDateTime createTime = LocalDateTime.now();
-    @Column(name = "create_By")
+    @Column(name = "create_by")
     private long createBy = 0;
 }
