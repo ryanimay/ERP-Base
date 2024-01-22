@@ -2,10 +2,10 @@ package com.erp.base.service.cache;
 
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.security.RolePermissionDto;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.RouterModel;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
@@ -85,7 +85,7 @@ public class ClientCache {
     }
     @Cacheable(key = "'permissionMap'")
     public Map<String, List<PermissionModel>> getPermissionMap() {
-        List<PermissionModel> allPermission = permissionService.findAll();
+        List<PermissionModel> allPermission = getPermission();
         Map<String, List<PermissionModel>> map = new HashMap<>();
         for(PermissionModel permission : allPermission){
             String key = permission.getAuthority().split(":")[0];
@@ -123,5 +123,11 @@ public class ClientCache {
     @Cacheable(key = "'clientNameList'")
     public List<ClientNameObject> getClientNameList() {
         return clientService.getClientNameList();
+    }
+
+
+    @Cacheable(key = "'permissionStatus_' + #path")
+    public Boolean permissionStatus(String path) {
+        return permissionService.checkPermissionIfDeny(path);
     }
 }

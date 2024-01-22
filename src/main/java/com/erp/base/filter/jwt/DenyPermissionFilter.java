@@ -1,8 +1,8 @@
 package com.erp.base.filter.jwt;
 
-import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.enums.response.ApiResponseCode;
-import com.erp.base.service.PermissionService;
+import com.erp.base.model.dto.response.FilterExceptionResponse;
+import com.erp.base.service.cache.ClientCache;
 import com.erp.base.tool.LogFactory;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,10 +16,10 @@ import java.io.IOException;
 @Component
 public class DenyPermissionFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(DenyPermissionFilter.class);
-    private PermissionService permissionService;
+    private ClientCache clientCache;
     @Autowired
-    public void setPermissionService(PermissionService permissionService){
-        this.permissionService = permissionService;
+    public void setClientCache(ClientCache clientCache){
+        this.clientCache = clientCache;
     }
 
 
@@ -29,10 +29,10 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
 
         if (requestedUrl != null){
             //檢查路徑狀態是否為deny
-            ApiResponseCode code = permissionService.checkPermissionIfDeny(requestedUrl);
-            if(code != null) {
+            Boolean status = clientCache.permissionStatus(requestedUrl);
+            if(status == null) {
                 LOG.error("request path: [{0}] is Disable", requestedUrl);
-                FilterExceptionResponse.error(response, code);
+                FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
                 return;
             }
         }
