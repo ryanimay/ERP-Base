@@ -111,8 +111,9 @@ public class ClientService {
         ApiResponseCode code = verifyRegistration(dto);
         if (code != null) return ApiResponse.error(code);
 
-        dto.setPassword(passwordEncode(dto.getPassword()));
-        clientRepository.save(dto.toModel());
+        ClientModel entity = dto.toModel();
+        entity.setPassword(passwordEncode(entity.getPassword()));
+        clientRepository.save(entity);
 
         return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
     }
