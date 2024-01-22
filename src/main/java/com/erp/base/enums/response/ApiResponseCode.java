@@ -26,7 +26,8 @@ public enum ApiResponseCode {
     NAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.nameAlreadyExists"),
     SUCCESS(HttpStatus.OK, "response.success"),
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "response.unknownError"),
-    SECURITY_ERROR(HttpStatus.BAD_REQUEST, "response.securityError");
+    SECURITY_ERROR(HttpStatus.BAD_REQUEST, "response.securityError"),
+    IDENTITY_ERROR(HttpStatus.FORBIDDEN, "response.identityError");
 
     private final int code;
     private final String message;

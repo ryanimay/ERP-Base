@@ -20,15 +20,10 @@ import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.EncodeTool;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +46,6 @@ public class ClientService {
     private MailService mailService;
     private ResetPasswordModel resetPasswordModel;
     private ClientCache clientCache;
-    private AuthenticationProvider authenticationProvider;
     private MessageService messageService;
     private NotificationService notificationService;
     private static final String RESET_PREFIX = "##";
@@ -64,11 +58,6 @@ public class ClientService {
     @Autowired
     public void setMessageService(MessageService messageService) {
         this.messageService = messageService;
-    }
-
-    @Autowired
-    public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
-        this.authenticationProvider = authenticationProvider;
     }
 
     @Autowired
@@ -166,7 +155,9 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
         ClientModel client = ClientIdentity.getUser();
-        if (checkIdentity(client, request)) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
+        if (checkIdentity(client.getUsername(), request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
+        if (checkOldPassword(client.getUsername(), request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
+
         int result = updatePassword(passwordEncode(request.getPassword()), false, client.getUsername(), client.getEmail());
         if (result == 1) {
             return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
@@ -174,16 +165,19 @@ public class ClientService {
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
     }
 
-    private boolean checkIdentity(ClientModel client, UpdatePasswordRequest request) {
-        String username = client.getUsername();
-        if (!Objects.equals(username, request.getUsername())) return true;//不是本人拒絕更改
-        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getOldPassword());//比對舊帳密
-        try {
-            authenticationProvider.authenticate(authentication);
-        } catch (AuthenticationException e) {
-            return true;
-        }
-        return false;
+    /**
+     * 比對舊帳密
+     * */
+    private boolean checkOldPassword(String username, String oldPassword) {
+        ClientModel originModel = clientRepository.findByUsername(username);
+        return !encodeTool.match(oldPassword, originModel.getPassword());
+    }
+
+    /**
+     * 不是本人拒絕更改
+     * */
+    private boolean checkIdentity(String username, UpdatePasswordRequest request) {
+        return !Objects.equals(username, request.getUsername());
     }
 
     private int updatePassword(String password, boolean status, String username, String email) {
