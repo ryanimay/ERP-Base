@@ -23,7 +23,7 @@ public class RoleModel implements IBaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
-    @Column(name = "roleName", nullable = false)
+    @Column(name = "role_name", nullable = false)
     private String roleName;
 
     @ManyToMany(fetch = FetchType.EAGER)
