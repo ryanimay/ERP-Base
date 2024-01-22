@@ -21,4 +21,7 @@ public class EncodeTool {
     public String randomPassword(int length){
         return RandomStringUtils.random(length, true, true);
     }
+    public boolean match(String input, String origin){
+        return passwordEncoder.matches(input, origin);
+    }
 }
