@@ -1,10 +1,10 @@
 package com.erp.base.service;
 
+import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.permission.BanRequest;
 import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
-import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.repository.PermissionRepository;
 import com.erp.base.service.cache.ClientCache;
@@ -14,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -60,9 +62,7 @@ public class PermissionService {
         return ApiResponse.error(ApiResponseCode.SECURITY_ERROR, false);
     }
 
-    public ApiResponseCode checkPermissionIfDeny(String requestedUrl) {
-        Boolean result = permissionRepository.checkPermissionIfDeny(requestedUrl);
-        if(!result) return ApiResponseCode.ACCESS_DENIED;
-        return null;
+    public Boolean checkPermissionIfDeny(String requestedUrl) {
+        return permissionRepository.checkPermissionIfDeny(requestedUrl);
     }
 }
