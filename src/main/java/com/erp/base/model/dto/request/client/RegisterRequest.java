@@ -20,14 +20,14 @@ import java.util.Set;
 public class RegisterRequest implements IBaseDto<ClientModel> {
     @NotBlank(message = "client.userNameNotEmpty")
     private String username;
-    private String password = username;
     private Long roleId;
+    private Long createBy;
 
     public ClientModel toModel() {
         ClientModel model = new ClientModel();
         model.setUsername(username);
         model.setPassword(username);
-        model.setCreateBy(ClientIdentity.getUser().getId());
+        model.setCreateBy(createBy == null ? ClientIdentity.getUser().getId() : createBy);
         model.setMustUpdatePassword(true);
         Set<RoleModel> role = model.getRoles();
         //default 1
