@@ -31,7 +31,7 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
         model.setMustUpdatePassword(true);
         Set<RoleModel> role = model.getRoles();
         //default 1
-        role.add(new RoleModel((Long)Objects.requireNonNullElse(roleId, 1)));
+        role.add(new RoleModel(Objects.requireNonNullElse(roleId, 1L)));
         return model;
     }
 

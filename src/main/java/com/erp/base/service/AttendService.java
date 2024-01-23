@@ -3,6 +3,7 @@ package com.erp.base.service;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
@@ -19,27 +20,45 @@ import java.util.List;
 @Transactional
 public class AttendService {
     private AttendRepository attendRepository;
+    private ClientService clientService;
+    @Autowired
+    public void setClientService(ClientService clientService){
+        this.clientService = clientService;
+    }
     @Autowired
     public void setAttendRepository(AttendRepository attendRepository){
         this.attendRepository = attendRepository;
     }
 
     public ResponseEntity<ApiResponse> signIn() {
-        ClientModel user = ClientIdentity.getUser();
-        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        LocalDate nowDate = LocalDate.now();
-        LocalDateTime nowTime = LocalDateTime.now();
-        attendRepository.signIn(user.getId(), nowDate, nowTime);
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        return sign(1);
     }
 
     public ResponseEntity<ApiResponse> signOut() {
+        return sign(2);
+    }
+
+    private ResponseEntity<ApiResponse> sign(int type){
         ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LocalDate nowDate = LocalDate.now();
         LocalDateTime nowTime = LocalDateTime.now();
-        attendRepository.signOut(user.getId(), nowDate, nowTime);
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        int count = 0;
+        int status = 1;
+        switch(type){
+            case 1 -> {
+                count = attendRepository.signIn(user.getId(), nowDate, nowTime);
+                status = 2;
+            }
+            case 2 -> {
+                count = attendRepository.signOut(user.getId(), nowDate, nowTime);
+                status = 3;
+            }
+        }
+        if(count != 1) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        ClientModel clientModel = clientService.updateClientAttendStatus(user.getId(), status);
+
+        return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(clientModel));
     }
 
     public void saveAll(List<AttendModel> attends) {

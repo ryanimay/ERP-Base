@@ -36,6 +36,14 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
             "AND NOT EXISTS " +
             "(SELECT a FROM AttendModel a WHERE a.date = :date AND a.user = u)")
     Set<ClientModel> findActiveUserAndNotExistAttend(LocalDate date);
+    @Modifying
+    @Query("UPDATE ClientModel u SET u.attendStatus = 1 WHERE u.isActive AND u.isLock = false " +
+            "AND EXISTS " +
+            "(SELECT 1 FROM AttendModel a WHERE a.date = :date AND a.user = u)")
+    void updateClientAttendStatus(LocalDate date);
+    @Modifying
+    @Query("UPDATE ClientModel u SET u.attendStatus = :status WHERE u.id = :id")
+    void updateClientAttendStatus(long id, int status);
     @Query("SELECT u.id FROM ClientModel u JOIN u.roles r JOIN r.permissions p WHERE p.url = :permission")
     Set<Long> findByHasAcceptPermission(String permission);
     @Query("SELECT u.id, u.username FROM ClientModel u")

@@ -155,10 +155,10 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
         ClientModel client = ClientIdentity.getUser();
-        if (checkIdentity(client.getUsername(), request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
-        if (checkOldPassword(client.getUsername(), request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
-
-        int result = updatePassword(passwordEncode(request.getPassword()), false, client.getUsername(), client.getEmail());
+        String username = client.getUsername();
+        if (checkIdentity(username, request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
+        if (checkOldPassword(username, request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
+        int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail());
         if (result == 1) {
             return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
         }
@@ -269,6 +269,10 @@ public class ClientService {
     public Set<ClientModel> findActiveUserAndNotExistAttend() {
         return clientRepository.findActiveUserAndNotExistAttend(LocalDate.now());
     }
+    //用戶簽到狀態改為未簽
+    public void updateClientAttendStatus() {
+        clientRepository.updateClientAttendStatus(LocalDate.now());
+    }
 
     public Set<Long> findByHasAcceptPermission(String router) {
         return clientRepository.findByHasAcceptPermission(router);
@@ -286,5 +290,16 @@ public class ClientService {
 
     public String findNameByUserId(long id) {
         return clientRepository.findUsernameById(id);
+    }
+
+    public ClientModel updateClientAttendStatus(long id, int status) {
+        clientRepository.updateClientAttendStatus(id, status);
+        Optional<ClientModel> byId = clientRepository.findById(id);
+        if(byId.isPresent()){
+            ClientModel model = byId.get();
+            clientCache.refreshClient(model.getUsername());
+            return model;
+        }
+        return null;
     }
 }

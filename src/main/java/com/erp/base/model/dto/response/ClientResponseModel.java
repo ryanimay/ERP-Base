@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +20,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientResponseModel implements Serializable {
-
+    @Serial
+    private static final long serialVersionUID = -1L;
     private long id;
     private String username;
     private List<Long> roleId = new ArrayList<>();
@@ -30,6 +32,7 @@ public class ClientResponseModel implements Serializable {
     private LocalDateTime createTime;
     private String createBy;
     private boolean mustUpdatePassword;
+    private int attendStatus;
 
     public ClientResponseModel(ClientModel clientModel) {
         this.id = clientModel.getId();
@@ -48,5 +51,6 @@ public class ClientResponseModel implements Serializable {
         }
         this.createBy = createName;
         this.mustUpdatePassword = clientModel.isMustUpdatePassword();
+        this.attendStatus = clientModel.getAttendStatus();
     }
 }
