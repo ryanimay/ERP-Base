@@ -4,7 +4,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.AttendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,12 +14,12 @@ public class AttendController {
     public void setAttendService(AttendService attendService){
         this.attendService = attendService;
     }
-    @GetMapping(Router.ATTEND.SIGN_IN)
+    @PutMapping(Router.ATTEND.SIGN_IN)
     public ResponseEntity<ApiResponse> signIn(){
         return attendService.signIn();
     }
 
-    @GetMapping(Router.ATTEND.SIGN_OUT)
+    @PutMapping(Router.ATTEND.SIGN_OUT)
     public ResponseEntity<ApiResponse> signOut(){
         return attendService.signOut();
     }

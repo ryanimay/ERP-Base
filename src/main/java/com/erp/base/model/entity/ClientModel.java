@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +16,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClientModel implements IBaseModel {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -37,6 +40,8 @@ public class ClientModel implements IBaseModel {
     private long createBy;
     @Column(name = "must_update_password")
     private boolean mustUpdatePassword = false;
+    @Column(name = "attend_status")
+    private int attendStatus = 1;//1.未打卡 2.已簽到 3.已簽退
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

@@ -34,5 +34,6 @@ public class AttendJob implements Job {
         Set<ClientModel> activeUser = clientService.findActiveUserAndNotExistAttend();
         List<AttendModel> attends = activeUser.stream().map(AttendModel::new).toList();
         attendService.saveAll(attends);
+        clientService.updateClientAttendStatus();
     }
 }
