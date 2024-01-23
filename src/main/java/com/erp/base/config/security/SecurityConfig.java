@@ -1,13 +1,14 @@
 package com.erp.base.config.security;
 
-import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.filter.jwt.DenyPermissionFilter;
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.filter.jwt.UserStatusFilter;
+import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.entity.PermissionModel;
-import com.erp.base.service.CacheService;
-import com.erp.base.service.cache.ClientCache;
+import com.erp.base.service.PermissionService;
+import com.erp.base.tool.JsonTool;
+import com.erp.base.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,16 +32,11 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private CacheService cacheService;
-    private ClientCache clientCache;
-
+    LogFactory LOG = new LogFactory(SecurityConfig.class);
+    private final PermissionService permissionService;
     @Autowired
-    public void setClientCache(ClientCache clientCache) {
-        this.clientCache = clientCache;
-    }
-    @Autowired
-    public void setCacheService(CacheService cacheService) {
-        this.cacheService = cacheService;
+    public SecurityConfig(PermissionService permissionService) {
+        this.permissionService = permissionService;
     }
 
     @Bean
@@ -53,8 +49,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter, UserStatusFilter userStatusFilter, DenyPermissionFilter denyPermissionFilter) throws Exception {
-        cacheService.refreshAllCache();//啟動時刷新全部緩存
-
         //配置資料庫內permission表的所有API權限設定
         configurePermission(http);
 
@@ -79,7 +73,6 @@ public class SecurityConfig {
                                     }
                                     }
                                 ));
-
         return http.build();
     }
 
@@ -90,7 +83,8 @@ public class SecurityConfig {
 
     //動態設定所有權限
     private void configurePermission(HttpSecurity http) throws Exception {
-        List<PermissionModel> permissions = clientCache.getPermission();
+        List<PermissionModel> permissions = permissionService.findAll();
+        LOG.info("all permission: {0}", JsonTool.toJson(permissions));
         http.authorizeHttpRequests(request -> {
             for (PermissionModel permission : permissions) {
                 String authority = permission.getAuthority();
