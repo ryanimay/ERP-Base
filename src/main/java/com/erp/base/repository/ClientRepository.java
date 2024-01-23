@@ -25,10 +25,10 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     int updatePasswordByClient( String password, boolean status, String username, String email);
     @Modifying
     @Query("UPDATE ClientModel c SET c.isLock = :status WHERE c.id = :clientId AND c.username = :username")
-    void lockClientByIdAndUsername(long clientId, String username, boolean status);
+    int lockClientByIdAndUsername(long clientId, String username, boolean status);
     @Modifying
     @Query("UPDATE ClientModel c SET c.isActive = :status WHERE c.id = :clientId AND c.username = :username")
-    void switchClientStatusByIdAndUsername(long clientId, String username, boolean status);
+    int switchClientStatusByIdAndUsername(long clientId, String username, boolean status);
 
     Page<ClientModel> findByIdContaining(Long id, PageRequest page);
 

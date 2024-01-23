@@ -22,6 +22,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -250,14 +251,17 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {
         String username = request.getUsername();
-        clientRepository.lockClientByIdAndUsername(request.getClientId(), username, request.isStatus());
+        int count = clientRepository.lockClientByIdAndUsername(request.getClientId(), username, request.isStatus());
+        if(count != 1) return ApiResponse.error(HttpStatus.BAD_REQUEST, "Update Failed");
         clientCache.refreshClient(username);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     public ResponseEntity<ApiResponse> clientStatus(ClientStatusRequest request) {
         String username = request.getUsername();
-        clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
+        int count = clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
+
+        if(count != 1) return ApiResponse.error(HttpStatus.BAD_REQUEST, "Update Failed");
         clientCache.refreshClient(username);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
