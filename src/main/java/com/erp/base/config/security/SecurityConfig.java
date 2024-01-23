@@ -69,6 +69,7 @@ public class SecurityConfig {
                         exception.accessDeniedHandler((request, response, accessDeniedException) ->
                                 FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED))
                                 .authenticationEntryPoint((request, response, authException) -> {
+                                    authException.printStackTrace();
                                     if(authException instanceof LockedException){
                                         FilterExceptionResponse.error(response, ApiResponseCode.CLIENT_LOCKED);
                                     }else if(authException instanceof DisabledException){
