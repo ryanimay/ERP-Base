@@ -148,6 +148,7 @@ public class ClientService {
         if (result == 1) {
             //更新成功才發送郵件
             mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context, null);
+            clientCache.refreshClient(username);
             return ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
@@ -160,6 +161,7 @@ public class ClientService {
         if (checkOldPassword(username, request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
         int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail());
         if (result == 1) {
+            clientCache.refreshClient(username);
             return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
