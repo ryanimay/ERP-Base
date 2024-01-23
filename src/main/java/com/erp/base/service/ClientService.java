@@ -280,7 +280,8 @@ public class ClientService {
     }
 
     public List<ClientNameObject> getClientNameList() {
-        return clientRepository.findAllNameAndId();
+        List<Object[]> allNameAndId = clientRepository.findAllNameAndId();
+        return allNameAndId.stream().map(ClientNameObject::new).toList();
     }
 
     public String findNameByUserId(long id) {

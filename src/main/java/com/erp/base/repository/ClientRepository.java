@@ -1,6 +1,5 @@
 package com.erp.base.repository;
 
-import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.entity.ClientModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +39,7 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     @Query("SELECT u.id FROM ClientModel u JOIN u.roles r JOIN r.permissions p WHERE p.url = :permission")
     Set<Long> findByHasAcceptPermission(String permission);
     @Query("SELECT u.id, u.username FROM ClientModel u")
-    List<ClientNameObject> findAllNameAndId();
+    List<Object[]> findAllNameAndId();
     @Query("SELECT u.username FROM ClientModel u WHERE u.id = :id")
     String findUsernameById(long id);
 }
