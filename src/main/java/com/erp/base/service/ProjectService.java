@@ -54,7 +54,7 @@ public class ProjectService {
             projectRepository.save(projectModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFound");
+        return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
     }
 
     public ResponseEntity<ApiResponse> start(Long projectId) {

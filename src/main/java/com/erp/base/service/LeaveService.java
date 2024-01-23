@@ -50,14 +50,14 @@ public class LeaveService {
 
     public ResponseEntity<ApiResponse> list(PageRequestParam page) {
         ClientModel user = ClientIdentity.getUser();
-        if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         Page<LeaveModel> leaves = leaveRepository.findAllByUser(user.getId(), page.getPage());
         return ApiResponse.success(new PageResponse<>(leaves, LeaveModel.class));
     }
 
     public ResponseEntity<ApiResponse> add(AddLeaveRequest request) {
         ClientModel user = ClientIdentity.getUser();
-        if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LeaveModel entity = request.toModel();
         LeaveModel saved = updateOrSave(entity, user);
         sendMessageToManager(user);
@@ -75,7 +75,7 @@ public class LeaveService {
 
     public ResponseEntity<ApiResponse> update(UpdateLeaveRequest request) {
         ClientModel user = ClientIdentity.getUser();
-        if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LeaveModel entity = request.toModel();
         LeaveModel saved = updateOrSave(entity, user);
         return ApiResponse.success(ApiResponseCode.SUCCESS, saved);

@@ -11,7 +11,7 @@ public enum ApiResponseCode {
     REGISTER_SUCCESS(HttpStatus.OK, "response.registerSuccess"),
     REFRESH_CACHE_SUCCESS(HttpStatus.OK, "response.refreshCacheSuccess"),
     USERNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.usernameAlreadyExists"),
-    USERNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "response.usernameNotExists"),
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "response.userNotFound"),
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.emailAlreadyExists"),
     UNKNOWN_EMAIL(HttpStatus.BAD_REQUEST, "response.unknownEmail"),
     RESET_PASSWORD_SUCCESS(HttpStatus.OK, "response.resetPasswordSuccess"),

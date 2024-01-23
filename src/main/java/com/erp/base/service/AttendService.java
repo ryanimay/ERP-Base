@@ -26,7 +26,7 @@ public class AttendService {
 
     public ResponseEntity<ApiResponse> signIn() {
         ClientModel user = ClientIdentity.getUser();
-        if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LocalDate nowDate = LocalDate.now();
         LocalDateTime nowTime = LocalDateTime.now();
         attendRepository.signIn(user.getId(), nowDate, nowTime);
@@ -35,7 +35,7 @@ public class AttendService {
 
     public ResponseEntity<ApiResponse> signOut() {
         ClientModel user = ClientIdentity.getUser();
-        if(user == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UserNotFount");
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LocalDate nowDate = LocalDate.now();
         LocalDateTime nowTime = LocalDateTime.now();
         attendRepository.signOut(user.getId(), nowDate, nowTime);
