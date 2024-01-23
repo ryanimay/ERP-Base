@@ -22,4 +22,12 @@ SpringSecurity筆記:https://hackmd.io/@S1MNxjTORYSfAfivxMlEQw/rykdZBNEa
 權限都改為多對多  
 i18n僅保留中/英  
 目標比較明確了，主結構會按照下列去完成  
-![img.png](src/main/resources/template/file/img.png)
+![img.png](src/main/resources/template/file/img.png)  
+整體內容大致都想好怎麼做了  
+就是剩下權限控管的部分，因為要區分前後端  
+不太確定到底該怎麼切  
+(  
+目前做法是每支api有自己的權限可以設定對應角色，  
+前端部分是延用route的概念，希望是能做到區分頁面顯示與否  
+有想法會再改
+)
