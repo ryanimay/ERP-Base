@@ -66,7 +66,7 @@ public class SalaryService {
     public ResponseEntity<ApiResponse> get() {
         ClientModel user = ClientIdentity.getUser();
         if(user == null) {
-            return ApiResponse.success(ApiResponseCode.UNKNOWN_ERROR, "UserNotFound");
+            return ApiResponse.success(ApiResponseCode.USER_NOT_FOUND);
         }
         List<SalaryModel> salaryList = salaryRepository.findByUserId(user.getId());
         return ApiResponse.success(ApiResponseCode.SUCCESS, salaryList);

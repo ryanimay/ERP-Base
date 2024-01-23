@@ -56,7 +56,7 @@ public class PerformanceService {
     public ResponseEntity<ApiResponse> getList(PerformanceListRequest request) {
         ClientModel user = ClientIdentity.getUser();
         if(user == null){
-            return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "User Not Found");
+            return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         }
         request.setUserId(user.getId());//限搜本人
         return getAllList(request);
@@ -65,7 +65,7 @@ public class PerformanceService {
     public ResponseEntity<ApiResponse> add(AddPerformanceRequest request) {
         ClientModel user = ClientIdentity.getUser();
         if(user == null){
-            return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "User Not Found");
+            return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
         request.setCreateBy(user.getId());
         performanceRepository.save(request.toModel());

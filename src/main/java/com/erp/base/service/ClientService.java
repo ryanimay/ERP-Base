@@ -22,7 +22,6 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -207,7 +206,7 @@ public class ClientService {
     private ApiResponseCode checkResetPassword(ResetPasswordRequest resetRequest) {
         // 檢查使用者名稱是否已存在
         if (!isUsernameExists(resetRequest.getUsername())) {
-            return ApiResponseCode.USERNAME_NOT_EXIST;
+            return ApiResponseCode.USER_NOT_FOUND;
         }// 檢查使用者Email是否已存在
         if (!isEmailExists(resetRequest.getEmail())) {
             return ApiResponseCode.UNKNOWN_EMAIL;
@@ -217,7 +216,7 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> findByUserId(long id) {
         Optional<ClientModel> modelOption = clientRepository.findById(id);
-        return modelOption.map(model -> ApiResponse.success(new ClientResponseModel(model))).orElseGet(() -> ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null));
+        return modelOption.map(model -> ApiResponse.success(new ClientResponseModel(model))).orElseGet(() -> ApiResponse.error(ApiResponseCode.USER_NOT_FOUND));
     }
 
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
@@ -225,7 +224,6 @@ public class ClientService {
         if (client == null) throw new UsernameNotFoundException("User Not Found");
         String newMail = request.getEmail();
         if (newMail != null && !newMail.equals(client.getEmail())) {
-            System.out.println(newMail);
             client.setEmail(newMail);
             client.setMustUpdatePassword(false);
         }

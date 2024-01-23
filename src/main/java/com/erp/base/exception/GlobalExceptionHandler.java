@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponse> usernameNotFoundExceptionHandler(Exception e){
         LOG.error(e.getMessage());
-        return ApiResponse.error(ApiResponseCode.USERNAME_NOT_EXIST);
+        return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
