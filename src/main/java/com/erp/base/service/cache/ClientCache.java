@@ -49,7 +49,7 @@ public class ClientCache {
         this.roleService = roleService;
     }
 
-    //有關使用者資訊，不存密碼
+    //有關使用者資訊，密碼有經過springSecurity加密
     @Cacheable(key = "'clientCache_' + #username")
     public ClientModel getClient(String username) {
         return clientService.findByUsername(username);
