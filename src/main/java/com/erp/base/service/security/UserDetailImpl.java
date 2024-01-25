@@ -3,7 +3,7 @@ package com.erp.base.service.security;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.RoleModel;
-import com.erp.base.service.cache.ClientCache;
+import com.erp.base.service.CacheService;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,11 +19,11 @@ import java.util.Set;
 @Transactional
 public class UserDetailImpl implements UserDetails {
     private ClientModel clientModel;
-    private ClientCache clientCache;
+    private CacheService cacheService;
 
-    public UserDetailImpl(ClientModel clientModel, ClientCache clientCache) {
+    public UserDetailImpl(ClientModel clientModel, CacheService cacheService) {
         this.clientModel = clientModel;
-        this.clientCache = clientCache;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -63,8 +63,8 @@ public class UserDetailImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> getRolePermission(Set<RoleModel> roles) {
         Set<RolePermissionDto> set = new HashSet<>();
-        for(RoleModel role : roles){
-            set.addAll(clientCache.getRolePermission(role.getId()));
+        for (RoleModel role : roles) {
+            set.addAll(cacheService.getRolePermission(role.getId()));
         }
         return set;
     }

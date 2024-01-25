@@ -1,11 +1,11 @@
 package com.erp.base.filter.jwt;
 
+import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
-import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.ClientModel;
-import com.erp.base.enums.response.ApiResponseCode;
-import com.erp.base.service.cache.ClientCache;
+import com.erp.base.model.entity.RoleModel;
+import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.LogFactory;
 import io.jsonwebtoken.security.SignatureException;
@@ -32,31 +32,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String PRINCIPAL_CLIENT = "client";
     public static final String PRINCIPAL_LOCALE = "locale";
     private TokenService tokenService;
-    private ClientCache clientCache;
+    private CacheService cacheService;
+
     @Autowired
-    public void setTokenService(TokenService tokenService){
+    public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
     }
+
     @Autowired
-    public void setClientCache(ClientCache clientCache){
-        this.clientCache = clientCache;
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
     }
 
     /**
      * 針對已登入用戶後續存取api做token驗證和例外處理
-     * */
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try{
+        try {
             String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if(token != null){
+            if (token != null) {
                 authenticationToken(token);
                 refreshToken(request, response);
             }
-        }catch (SignatureException e){
+        } catch (SignatureException e) {
             exceptionResponse(e, response, ApiResponseCode.INVALID_SIGNATURE);
             return;
-        }catch (AccessDeniedException e){
+        } catch (AccessDeniedException e) {
             exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
             return;
         }
@@ -65,12 +67,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * 驗證AccessToken
-     * */
-    private void authenticationToken(String token){
+     */
+    private void authenticationToken(String token) {
         String accessToken = token.replace("Bearer ", "");
         Map<String, Object> tokenDetail = tokenService.parseToken(accessToken);
         String username = (String) tokenDetail.get("username");
-        ClientModel client = clientCache.getClient(username);
+        ClientModel client = cacheService.getClient(username);
         Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
         HashMap<String, Object> principalMap = new HashMap<>();
         principalMap.put(PRINCIPAL_CLIENT, client);
@@ -80,22 +82,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Collection<? extends GrantedAuthority> getRolePermission(Set<RoleModel> roles) {
         Set<RolePermissionDto> set = new HashSet<>();
-        for(RoleModel role : roles){
-            set.addAll(clientCache.getRolePermission(role.getId()));
+        for (RoleModel role : roles) {
+            set.addAll(cacheService.getRolePermission(role.getId()));
         }
         return set;
     }
 
     /**
      * 每次用戶有動作就刷新AccessToken時效，避免用到一半過期要重登
-     * */
-    private void refreshToken(HttpServletRequest request, HttpServletResponse response){
+     */
+    private void refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader(TokenService.REFRESH_TOKEN);
         if (token != null) {
             String accessToken = tokenService.refreshAccessToken(token);
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
             response.setHeader(TokenService.REFRESH_TOKEN, token);
-        }else{
+        } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
         }
     }

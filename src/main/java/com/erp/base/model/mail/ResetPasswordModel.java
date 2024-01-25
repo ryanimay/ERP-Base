@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource("classpath:mail-template.properties")
+@PropertySource("classpath:config/mail-config.properties")
 public class ResetPasswordModel extends BaseMailModel{
     public ResetPasswordModel(@Value("${mail.resetPassword.subject}") String subject,
                               @Value("${mail.resetPassword.templatePath}") String mailTemplatePath) {
