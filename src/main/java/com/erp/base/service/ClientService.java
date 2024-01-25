@@ -15,7 +15,6 @@ import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
-import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.EncodeTool;
 import jakarta.mail.MessagingException;
@@ -45,7 +44,7 @@ public class ClientService {
     private TokenService tokenService;
     private MailService mailService;
     private ResetPasswordModel resetPasswordModel;
-    private ClientCache clientCache;
+    private CacheService cacheService;
     private MessageService messageService;
     private NotificationService notificationService;
     private static final String RESET_PREFIX = "##";
@@ -61,8 +60,8 @@ public class ClientService {
     }
 
     @Autowired
-    public void setClientCache(ClientCache clientCache) {
-        this.clientCache = clientCache;
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
     }
 
     @Autowired
@@ -104,7 +103,7 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> login(LoginRequest request) {
         HttpHeaders token = tokenService.createToken(request);
-        ClientModel user = clientCache.getClient(request.getUsername());
+        ClientModel user = cacheService.getClient(request.getUsername());
         ClientResponseModel client = new ClientResponseModel(user);
         updateLastLoginTime(user);
         return ApiResponse.success(token, client);
@@ -113,7 +112,7 @@ public class ClientService {
     private void updateLastLoginTime(ClientModel user) {
         user.setLastLoginTime(LocalDateTime.now());
         clientRepository.save(user);
-        clientCache.refreshClient(user.getUsername());
+        cacheService.refreshClient(user.getUsername());
     }
 
     public PageResponse<ClientResponseModel> list(ClientListRequest param) {
@@ -148,7 +147,7 @@ public class ClientService {
         if (result == 1) {
             //更新成功才發送郵件
             mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context, null);
-            clientCache.refreshClient(username);
+            cacheService.refreshClient(username);
             return ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
@@ -158,10 +157,11 @@ public class ClientService {
         ClientModel client = ClientIdentity.getUser();
         String username = client.getUsername();
         if (checkIdentity(username, request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
-        if (checkOldPassword(username, request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
+        if (checkOldPassword(username, request.getOldPassword()))
+            return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
         int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail());
         if (result == 1) {
-            clientCache.refreshClient(username);
+            cacheService.refreshClient(username);
             return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
@@ -169,7 +169,7 @@ public class ClientService {
 
     /**
      * 比對舊帳密
-     * */
+     */
     private boolean checkOldPassword(String username, String oldPassword) {
         ClientModel originModel = clientRepository.findByUsername(username);
         return !encodeTool.match(oldPassword, originModel.getPassword());
@@ -177,7 +177,7 @@ public class ClientService {
 
     /**
      * 不是本人拒絕更改
-     * */
+     */
     private boolean checkIdentity(String username, UpdatePasswordRequest request) {
         return !Objects.equals(username, request.getUsername());
     }
@@ -223,7 +223,7 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
-        ClientModel client = clientCache.getClient(request.getUsername());
+        ClientModel client = cacheService.getClient(request.getUsername());
         if (client == null) throw new UsernameNotFoundException("User Not Found");
         String newMail = request.getEmail();
         if (newMail != null && !newMail.equals(client.getEmail())) {
@@ -232,7 +232,7 @@ public class ClientService {
         }
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
         ClientModel save = clientRepository.save(client);
-        clientCache.refreshClient(client.getUsername());
+        cacheService.refreshClient(client.getUsername());
         //非本人就發送通知
         checkUserOrSendMessage(client);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(save));
@@ -254,8 +254,8 @@ public class ClientService {
     public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {
         String username = request.getUsername();
         int count = clientRepository.lockClientByIdAndUsername(request.getClientId(), username, request.isStatus());
-        if(count != 1) return ApiResponse.error(HttpStatus.BAD_REQUEST, "Update Failed");
-        clientCache.refreshClient(username);
+        if (count != 1) return ApiResponse.error(HttpStatus.BAD_REQUEST, "Update Failed");
+        cacheService.refreshClient(username);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -263,14 +263,15 @@ public class ClientService {
         String username = request.getUsername();
         int count = clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
 
-        if(count != 1) return ApiResponse.error(HttpStatus.BAD_REQUEST, "Update Failed");
-        clientCache.refreshClient(username);
+        if (count != 1) return ApiResponse.error(HttpStatus.BAD_REQUEST, "Update Failed");
+        cacheService.refreshClient(username);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     public Set<ClientModel> findActiveUserAndNotExistAttend() {
         return clientRepository.findActiveUserAndNotExistAttend(LocalDate.now());
     }
+
     //用戶簽到狀態改為未簽
     public void updateClientAttendStatus() {
         clientRepository.updateClientAttendStatus(LocalDate.now());
@@ -281,7 +282,7 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> nameList() {
-        List<ClientNameObject> clientNameList = clientCache.getClientNameList();
+        List<ClientNameObject> clientNameList = cacheService.getClientNameList();
         return ApiResponse.success(ApiResponseCode.SUCCESS, clientNameList);
     }
 
@@ -297,9 +298,9 @@ public class ClientService {
     public ClientModel updateClientAttendStatus(long id, int status) {
         clientRepository.updateClientAttendStatus(id, status);
         Optional<ClientModel> byId = clientRepository.findById(id);
-        if(byId.isPresent()){
+        if (byId.isPresent()) {
             ClientModel model = byId.get();
-            clientCache.refreshClient(model.getUsername());
+            cacheService.refreshClient(model.getUsername());
             return model;
         }
         return null;

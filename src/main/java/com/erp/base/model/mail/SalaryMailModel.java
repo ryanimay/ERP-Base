@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource("classpath:mail-template.properties")
+@PropertySource("classpath:config/mail-config.properties")
 public class SalaryMailModel extends BaseMailModel{
     public SalaryMailModel(@Value("${mail.salary.subject}") String subject,
                            @Value("${mail.salary.templatePath}") String mailTemplatePath) {

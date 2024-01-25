@@ -1,5 +1,6 @@
 package com.erp.base.service;
 
+import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
 import com.erp.base.model.dto.request.role.RoleRouterRequest;
@@ -7,10 +8,8 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.role.RoleListResponse;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
-import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.entity.RouterModel;
 import com.erp.base.repository.RoleRepository;
-import com.erp.base.service.cache.ClientCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,15 +23,16 @@ import java.util.Set;
 @Transactional
 public class RoleService {
     private RoleRepository roleRepository;
-    private ClientCache clientCache;
+    private CacheService cacheService;
 
     @Autowired
     public void setRoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
+
     @Autowired
-    public void setClientCache(ClientCache clientCache) {
-        this.clientCache = clientCache;
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
     }
 
 
@@ -41,7 +41,7 @@ public class RoleService {
     }
 
     public ResponseEntity<ApiResponse> roleNameList() {
-        List<RoleListResponse> roleListResponses = clientCache.getRole().values().stream().map(RoleListResponse::new).toList();
+        List<RoleListResponse> roleListResponses = cacheService.getRole().values().stream().map(RoleListResponse::new).toList();
         return ApiResponse.success(roleListResponses);
     }
 
@@ -49,13 +49,13 @@ public class RoleService {
         Long id = request.getId();
         String name = request.getName();
         ResponseEntity<ApiResponse> response = checkRoleName(name, id);
-        if(response != null) return response;
+        if (response != null) return response;
 
-        RoleModel model = clientCache.getRole().get(id);
-        if(model != null){
+        RoleModel model = cacheService.getRole().get(id);
+        if (model != null) {
             model.setRoleName(name);
             roleRepository.save(model);
-            clientCache.refreshRole();
+            cacheService.refreshRole();
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
 
@@ -65,15 +65,16 @@ public class RoleService {
     public ResponseEntity<ApiResponse> addRole(RoleRequest request) {
         String name = request.getName();
         ResponseEntity<ApiResponse> response = checkRoleName(name, null);
-        if(response != null) return response;
+        if (response != null) return response;
         roleRepository.save(new RoleModel(name));
-        clientCache.refreshRole();
+        cacheService.refreshRole();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
-    private ResponseEntity<ApiResponse> checkRoleName(String name, Long id){
+    private ResponseEntity<ApiResponse> checkRoleName(String name, Long id) {
         Optional<RoleModel> roleModel = roleRepository.findByRoleName(name);
-        if(roleModel.isPresent() && roleModel.get().getId() != id) return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
+        if (roleModel.isPresent() && roleModel.get().getId() != id)
+            return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
         return null;
     }
 
@@ -87,13 +88,9 @@ public class RoleService {
         return role.orElse(null);
     }
 
-    public Set<RoleModel> getRolesById(List<Long> roles) {
-        return roleRepository.findByIdIn(roles);
-    }
-
     public ResponseEntity<ApiResponse> updateRolePermission(RolePermissionRequest request) {
         Long id = request.getId();
-        RoleModel roleModel = clientCache.getRole().get(id);
+        RoleModel roleModel = cacheService.getRole().get(id);
         Set<PermissionModel> permissionSet = request.getPermissionSet();
         roleModel.setPermissions(permissionSet);
         roleRepository.save(roleModel);
@@ -102,7 +99,7 @@ public class RoleService {
 
     public ResponseEntity<ApiResponse> updateRoleRouter(RoleRouterRequest request) {
         Long id = request.getId();
-        RoleModel roleModel = clientCache.getRole().get(id);
+        RoleModel roleModel = cacheService.getRole().get(id);
         Set<RouterModel> set = request.getRouterSet();
         roleModel.setRouters(set);
         roleRepository.save(roleModel);
