@@ -87,3 +87,11 @@ WHERE NOT EXISTS(
         WHERE role_id = (SELECT id FROM role WHERE role_name = 'super')
           AND permission_id = permission.id
     );
+
+-- 預設部門
+INSERT INTO department (name)
+SELECT name
+FROM (VALUES ('departmentA'),
+             ('departmentB'),
+             ('departmentC')) AS source(name)
+WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = role.name);
