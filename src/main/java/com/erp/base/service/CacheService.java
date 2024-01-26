@@ -80,7 +80,7 @@ public class CacheService {
     }
 
     public List<RouterModel> getRouters() {
-        return clientCache.getRouters();
+        return rolePermissionCache.getRouters();
     }
 
     public Set<RouterModel> getRoleRouter(long roleId) {
