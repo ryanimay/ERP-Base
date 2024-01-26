@@ -6,16 +6,16 @@ import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
-import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.repository.ProjectRepository;
+import com.erp.base.tool.DateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -58,12 +58,12 @@ public class ProjectService {
     }
 
     public ResponseEntity<ApiResponse> start(Long projectId) {
-        projectRepository.start(projectId, LocalDateTime.now());
+        projectRepository.start(projectId, DateTool.now());
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     public ResponseEntity<ApiResponse> done(Long projectId) {
-        projectRepository.done(projectId, LocalDateTime.now());
+        projectRepository.done(projectId, DateTool.now());
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

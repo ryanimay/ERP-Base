@@ -7,6 +7,7 @@ import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
+import com.erp.base.tool.DateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class AttendService {
         ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LocalDate nowDate = LocalDate.now();
-        LocalDateTime nowTime = LocalDateTime.now();
+        LocalDateTime nowTime = DateTool.now();
         int count = 0;
         int status = 1;
         switch(type){

@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,7 +36,7 @@ public class ClientModel implements IBaseModel {
     @Column(name = "last_login_time")
     private LocalDateTime lastLoginTime;
     @Column(name = "create_time")
-    private LocalDateTime createTime = LocalDateTime.now();
+    private LocalDateTime createTime = DateTool.now();
     @Column(name = "create_by")
     private long createBy;
     @Column(name = "must_update_password")
