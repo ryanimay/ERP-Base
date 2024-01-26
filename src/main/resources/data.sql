@@ -57,8 +57,7 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
              ('JOB_ADD', '任務:新增任務', '/job/add', 'true'),
              ('JOB_UPDATE', '任務:更新任務', '/job/update', 'true'),
              ('JOB_REMOVE', '任務:移除任務', '/job/remove', 'true'),
-             ('CACHE_FRESH', '緩存:刷新', '/cache/refresh', 'true')
-      ) AS source (authority, info, url, status)
+             ('CACHE_FRESH', '緩存:刷新', '/cache/refresh', 'true')) AS source (authority, info, url, status)
 WHERE NOT EXISTS(SELECT 1 FROM permission WHERE source.url = permission.url);
 
 -- 預設notification
@@ -70,16 +69,17 @@ FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM notification WHERE source.info = notification.info);
 
 -- 預設role
-INSERT INTO role (role_name)
+INSERT INTO role (role_name, level)
 SELECT role_name
-FROM (VALUES ('custom'),
-             ('super')) AS source(role_name)
+FROM (VALUES ('visitor', 1),
+             ('super1', 1),
+             ('super2', 2)) AS source(role_name)
 WHERE NOT EXISTS(SELECT 1 FROM role WHERE source.role_name = role.role_name);
 
 -- 預設super權限
 INSERT INTO role_permission (role_id, permission_id)
-SELECT (SELECT id FROM role WHERE role_name = 'super') AS role_id,
-       permission.id                                   AS permission_id
+SELECT (SELECT id FROM role WHERE role_name = 'super1' OR role_name = 'super2') AS role_id,
+       permission.id                                                            AS permission_id
 FROM permission
 WHERE NOT EXISTS(
         SELECT 1
