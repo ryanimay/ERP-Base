@@ -9,8 +9,9 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 @Data
-public class AddLeaveRequest implements IBaseDto<LeaveModel> {
-    private String type;
+public class LeaveRequest implements IBaseDto<LeaveModel> {
+    private long id;
+    private Integer type;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String info;
@@ -18,11 +19,11 @@ public class AddLeaveRequest implements IBaseDto<LeaveModel> {
     @Override
     public LeaveModel toModel() {
         LeaveModel leaveModel = new LeaveModel();
-        leaveModel.setType(type);
-        leaveModel.setStartTime(startTime);
-        leaveModel.setEndTime(endTime);
-        leaveModel.setStatus(StatusConstant.get(1));
-        leaveModel.setInfo(info);
+        if(type != null) leaveModel.setType(type);
+        if(startTime != null) leaveModel.setStartTime(startTime);
+        if(endTime != null) leaveModel.setEndTime(endTime);
+        leaveModel.setStatus(StatusConstant.get(StatusConstant.PENDING_NO));//初始化都是待審
+        if(info != null) leaveModel.setInfo(info);
         return leaveModel;
     }
 

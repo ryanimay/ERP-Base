@@ -22,9 +22,9 @@ public class LeaveModel implements IBaseModel {
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private ClientModel user;
+    private ClientModel user;//請假人
     @Column(name = "type", nullable = false)
-    private String type; //請假類型
+    private int type; //請假類型
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startTime;
     @Column(name = "end_date", nullable = false)
@@ -35,5 +35,7 @@ public class LeaveModel implements IBaseModel {
     private String info;
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime = DateTool.now();
+    @Column(name = "department")
+    private String department;
 
 }

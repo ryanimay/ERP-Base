@@ -35,5 +35,5 @@ public class JobModel implements IBaseModel {
     @Column(name = "create_by", nullable = false)
     private long createBy;
     @Column(name = "status", nullable = false)
-    private String status = StatusConstant.get(1);
+    private String status = StatusConstant.get(StatusConstant.PENDING_NO);
 }
