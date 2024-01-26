@@ -1,6 +1,6 @@
 package com.erp.base.model.dto.request.leave;
 
-import com.erp.base.enums.JobStatusEnum;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.LeaveModel;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class UpdateLeaveRequest extends AddLeaveRequest implements IBaseDto<Leav
         leaveModel.setStartTime(getStartTime());
         leaveModel.setEndTime(getEndTime());
         leaveModel.setCreatedTime(createdTime);
-        leaveModel.setStatus(JobStatusEnum.PENDING.getName());
+        leaveModel.setStatus(StatusConstant.get(1));
         leaveModel.setInfo(getInfo());
         return leaveModel;
     }

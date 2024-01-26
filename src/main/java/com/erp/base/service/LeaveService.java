@@ -2,7 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
 import com.erp.base.controller.Router;
-import com.erp.base.enums.JobStatusEnum;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
@@ -82,13 +82,13 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> delete(long id) {
-        int i = leaveRepository.deleteByIdIfStatus(id, JobStatusEnum.PENDING.getName(), JobStatusEnum.REMOVED.getName());
+        int i = leaveRepository.deleteByIdIfStatus(id, StatusConstant.get(1), StatusConstant.get(4));
         if(i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "delete: " + i);
     }
 
     public ResponseEntity<ApiResponse> accept(long id, Long eventUserId) {
-        int i = leaveRepository.accept(id, JobStatusEnum.PENDING.getName(), JobStatusEnum.APPROVED.getName());
+        int i = leaveRepository.accept(id, StatusConstant.get(1), StatusConstant.get(2));
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
             ClientModel user = ClientIdentity.getUser();
@@ -100,7 +100,7 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
-        Page<LeaveModel> allPending = leaveRepository.findAllByStatus(JobStatusEnum.PENDING.getName(), page.getPage());
+        Page<LeaveModel> allPending = leaveRepository.findAllByStatus(StatusConstant.get(1), page.getPage());
         return ApiResponse.success(new PageResponse<>(allPending, LeaveModel.class));
     }
 
