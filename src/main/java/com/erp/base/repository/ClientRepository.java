@@ -44,8 +44,9 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     @Modifying
     @Query("UPDATE ClientModel u SET u.attendStatus = :status WHERE u.id = :id")
     void updateClientAttendStatus(long id, int status);
-    @Query("SELECT u.id FROM ClientModel u JOIN u.roles r JOIN r.permissions p WHERE p.url = :permission")
-    Set<Long> findByHasAcceptPermission(String permission);
+    //如果是主管(level1) or 管理層(level3)
+    @Query("SELECT u.id FROM ClientModel u JOIN u.roles r WHERE (u.department.id = :departmentId AND r.level = :level1) OR r.level = :levelAll")
+    Set<Long> findByHasAcceptRole(Long departmentId, int level1, int levelAll);
     @Query("SELECT u.id, u.username FROM ClientModel u")
     List<Object[]> findAllNameAndId();
     @Query("SELECT u.username FROM ClientModel u WHERE u.id = :id")

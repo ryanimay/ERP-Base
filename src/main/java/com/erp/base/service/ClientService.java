@@ -2,6 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
 import com.erp.base.enums.NotificationEnum;
+import com.erp.base.enums.RoleConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
@@ -277,8 +278,8 @@ public class ClientService {
         clientRepository.updateClientAttendStatus(LocalDate.now());
     }
 
-    public Set<Long> findByHasAcceptPermission(String router) {
-        return clientRepository.findByHasAcceptPermission(router);
+    public Set<Long> findByHasAcceptRole(Long departmentId) {
+        return clientRepository.findByHasAcceptRole(departmentId, RoleConstant.LEVEL_1, RoleConstant.LEVEL_3);
     }
 
     public ResponseEntity<ApiResponse> nameList() {

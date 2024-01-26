@@ -1,7 +1,6 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
-import com.erp.base.controller.Router;
 import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
@@ -12,9 +11,9 @@ import com.erp.base.model.dto.request.performance.PerformanceListRequest;
 import com.erp.base.model.dto.request.performance.UpdatePerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.PerformanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -75,7 +74,7 @@ public class PerformanceService {
 
     private void sendMessageToManger(ClientModel user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE, user.getUsername());
-        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission(Router.PERFORMANCE.ACCEPT);
+        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptRole(user.getDepartment().getId());
         byHasAcceptPermission.forEach(id -> {
             MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);

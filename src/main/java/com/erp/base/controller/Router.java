@@ -81,7 +81,7 @@ public interface Router {
         String UPDATE = LEAVE + "/update";
         String DELETE = LEAVE + "/delete";
         String ACCEPT = LEAVE + "/accept";
-        String ENUM_LIST = LEAVE + "/enumList";
+        String TYPE_LIST = LEAVE + "/typeList";
     }
 
     interface PROJECT{

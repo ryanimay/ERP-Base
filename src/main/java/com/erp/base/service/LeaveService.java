@@ -1,20 +1,19 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
-import com.erp.base.controller.Router;
-import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.NotificationEnum;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
-import com.erp.base.model.dto.request.leave.AddLeaveRequest;
-import com.erp.base.model.dto.request.leave.UpdateLeaveRequest;
+import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LeaveModel;
 import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -55,7 +55,7 @@ public class LeaveService {
         return ApiResponse.success(new PageResponse<>(leaves, LeaveModel.class));
     }
 
-    public ResponseEntity<ApiResponse> add(AddLeaveRequest request) {
+    public ResponseEntity<ApiResponse> add(LeaveRequest request) {
         ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LeaveModel entity = request.toModel();
@@ -66,29 +66,37 @@ public class LeaveService {
 
     private void sendMessageToManager(ClientModel user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_LEAVE, user.getUsername());
-        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptPermission(Router.LEAVE.ACCEPT);
+        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptRole(user.getDepartment().getId());
         byHasAcceptPermission.forEach(id -> {
             MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
         });
     }
 
-    public ResponseEntity<ApiResponse> update(UpdateLeaveRequest request) {
+    public ResponseEntity<ApiResponse> update(LeaveRequest request) {
         ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        LeaveModel entity = request.toModel();
-        LeaveModel saved = updateOrSave(entity, user);
-        return ApiResponse.success(ApiResponseCode.SUCCESS, saved);
+        Optional<LeaveModel> byId = leaveRepository.findById(request.getId());
+        if(byId.isPresent()){
+            LeaveModel leaveModel = byId.get();
+            if(request.getType() != null) leaveModel.setType(request.getType());
+            if(request.getStartTime() != null) leaveModel.setStartTime(request.getStartTime());
+            if(request.getEndTime() != null) leaveModel.setEndTime(request.getEndTime());
+            if(request.getInfo() != null) leaveModel.setInfo(request.getInfo());
+            LeaveModel saved = updateOrSave(leaveModel, user);
+            return ApiResponse.success(ApiResponseCode.SUCCESS, saved);
+        }
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
 
     public ResponseEntity<ApiResponse> delete(long id) {
-        int i = leaveRepository.deleteByIdIfStatus(id, StatusConstant.get(1), StatusConstant.get(4));
+        int i = leaveRepository.deleteByIdIfStatus(id, StatusConstant.get(StatusConstant.PENDING_NO), StatusConstant.get(StatusConstant.REMOVED_NO));
         if(i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "delete: " + i);
     }
 
     public ResponseEntity<ApiResponse> accept(long id, Long eventUserId) {
-        int i = leaveRepository.accept(id, StatusConstant.get(1), StatusConstant.get(2));
+        int i = leaveRepository.accept(id, StatusConstant.get(StatusConstant.PENDING_NO), StatusConstant.get(StatusConstant.APPROVED_NO));
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
             ClientModel user = ClientIdentity.getUser();
@@ -100,12 +108,23 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
-        Page<LeaveModel> allPending = leaveRepository.findAllByStatus(StatusConstant.get(1), page.getPage());
+        ClientModel user = ClientIdentity.getUser();
+        Optional<RoleModel> first = user.getRoles().stream().filter(model -> model.getLevel() == 3).findFirst();
+        Page<LeaveModel> allPending;
+        //管理權限全搜不分部門
+        if(first.isPresent()){
+            allPending = leaveRepository.findByStatus(StatusConstant.get(StatusConstant.PENDING_NO), page.getPage());
+        }else{
+            allPending = leaveRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.get(1), page.getPage());
+        }
         return ApiResponse.success(new PageResponse<>(allPending, LeaveModel.class));
     }
 
     private LeaveModel updateOrSave(LeaveModel model, ClientModel user){
-        model.setUser(user);
+        if(model.getUser() == null) {
+            model.setUser(user);
+            model.setDepartment(user.getDepartment().getName());
+        }
         return leaveRepository.save(model);
     }
 }
