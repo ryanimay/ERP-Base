@@ -1,6 +1,6 @@
 package com.erp.base.model.entity;
 
-import com.erp.base.enums.JobStatusEnum;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,5 +35,5 @@ public class JobModel implements IBaseModel {
     @Column(name = "create_by", nullable = false)
     private long createBy;
     @Column(name = "status", nullable = false)
-    private String status = JobStatusEnum.PENDING.getName();
+    private String status = StatusConstant.get(1);
 }
