@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,6 +34,6 @@ public class LeaveModel implements IBaseModel {
     @Column(name = "info")
     private String info;
     @Column(name = "created_time", nullable = false)
-    private LocalDateTime createdTime = LocalDateTime.now();
+    private LocalDateTime createdTime = DateTool.now();
 
 }

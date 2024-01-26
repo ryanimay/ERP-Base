@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +31,7 @@ public class ProcurementModel implements IBaseModel {
     @Column(name = "count")
     private long count = 0;
     @Column(name = "create_time")
-    private LocalDateTime createTime = LocalDateTime.now();
+    private LocalDateTime createTime = DateTool.now();
     @Column(name = "create_by", nullable = false)
     private long createBy;
     @Column(name = "status")

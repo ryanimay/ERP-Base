@@ -16,6 +16,7 @@ import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.security.TokenService;
+import com.erp.base.tool.DateTool;
 import com.erp.base.tool.EncodeTool;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,7 +110,7 @@ public class ClientService {
     }
 
     private void updateLastLoginTime(ClientModel user) {
-        user.setLastLoginTime(LocalDateTime.now());
+        user.setLastLoginTime(DateTool.now());
         clientRepository.save(user);
         cacheService.refreshClient(user.getUsername());
     }

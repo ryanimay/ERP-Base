@@ -1,6 +1,7 @@
 package com.erp.base.model.entity;
 
 import com.erp.base.enums.JobStatusEnum;
+import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +31,7 @@ public class JobModel implements IBaseModel {
     @Column(name = "end_time")
     private LocalDateTime endTime;
     @Column(name = "created_time", nullable = false)
-    private LocalDateTime createdTime = LocalDateTime.now();
+    private LocalDateTime createdTime = DateTool.now();
     @Column(name = "create_by", nullable = false)
     private long createBy;
     @Column(name = "status", nullable = false)
