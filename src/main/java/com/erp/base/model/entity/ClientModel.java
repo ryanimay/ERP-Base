@@ -57,6 +57,10 @@ public class ClientModel implements IBaseModel {
             inverseJoinColumns = @JoinColumn(name = "notifications_id"))
     private Set<NotificationModel> notifications = new HashSet<>();
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private DepartmentModel department;//所屬部門
+
     public ClientModel(long id) {
         this.id = id;
     }
