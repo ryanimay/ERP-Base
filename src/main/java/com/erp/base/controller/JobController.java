@@ -30,7 +30,7 @@ public class JobController {
     }
 
     @DeleteMapping(Router.JOB.REMOVE)
-    public ResponseEntity<ApiResponse> remove(@RequestBody Long id){
+    public ResponseEntity<ApiResponse> remove(Long id){
         return jobService.deleteById(id);
     }
 

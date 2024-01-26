@@ -4,6 +4,7 @@ import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.JobResponse;
 import com.erp.base.model.entity.JobModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.JobRepository;
@@ -25,10 +26,10 @@ public class JobService {
 
     public ResponseEntity<ApiResponse> findAll() {
         List<JobModel> all = jobRepository.findAll();
-        Map<String, List<JobModel>> map = new HashMap<>();
+        Map<String, List<JobResponse>> map = new HashMap<>();
         all.forEach(model -> {
-            List<JobModel> list = map.computeIfAbsent(model.getStatus(), v -> new ArrayList<>());
-            list.add(model);
+            List<JobResponse> list = map.computeIfAbsent(model.getStatus(), v -> new ArrayList<>());
+            list.add(new JobResponse(model));
         });
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
     }
@@ -46,12 +47,13 @@ public class JobService {
         Optional<JobModel> byId = jobRepository.findById(request.getId());
         if(byId.isPresent()){
             JobModel model = byId.get();
-            model.setInfo(request.getInfo());
+            if(request.getInfo() != null) model.setInfo(request.getInfo());
             if(request.getUserId() != null) model.setUser(new ClientModel(request.getUserId()));
-            model.setStartTime(request.getStartTime());
-            model.setEndTime(request.getEndTime());
-            model.setStatus(request.getStatus());
+            if(request.getStartTime() != null) model.setStartTime(request.getStartTime());
+            if(request.getEndTime() != null) model.setEndTime(request.getEndTime());
+            if(request.getStatus() != null) model.setStatus(request.getStatus());
             jobRepository.save(model);
+            return ApiResponse.success(ApiResponseCode.SUCCESS, new JobResponse(model));
         }
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
