@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.enums.RoleConstant;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -25,6 +26,8 @@ public class RoleModel implements IBaseModel {
     private long id;
     @Column(name = "role_name", nullable = false)
     private String roleName;
+    @Column(name = "level", nullable = false)
+    private int level = RoleConstant.LEVEL_0;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
