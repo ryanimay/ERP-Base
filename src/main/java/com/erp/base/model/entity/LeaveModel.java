@@ -35,7 +35,5 @@ public class LeaveModel implements IBaseModel {
     private String info;
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime = DateTool.now();
-    @Column(name = "department")
-    private String department;
 
 }
