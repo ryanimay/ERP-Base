@@ -66,7 +66,7 @@ public class LeaveService {
 
     private void sendMessageToManager(ClientModel user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_LEAVE, user.getUsername());
-        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptRole(user.getDepartment().getId());
+        Set<Long> byHasAcceptPermission = clientService.queryReviewer(user.getDepartment().getId());
         byHasAcceptPermission.forEach(id -> {
             MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
@@ -123,7 +123,6 @@ public class LeaveService {
     private LeaveModel updateOrSave(LeaveModel model, ClientModel user){
         if(model.getUser() == null) {
             model.setUser(user);
-            model.setDepartment(user.getDepartment().getName());
         }
         return leaveRepository.save(model);
     }

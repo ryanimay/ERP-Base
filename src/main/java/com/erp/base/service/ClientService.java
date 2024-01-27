@@ -278,8 +278,8 @@ public class ClientService {
         clientRepository.updateClientAttendStatus(LocalDate.now());
     }
 
-    public Set<Long> findByHasAcceptRole(Long departmentId) {
-        return clientRepository.findByHasAcceptRole(departmentId, RoleConstant.LEVEL_1, RoleConstant.LEVEL_3);
+    public Set<Long> queryReviewer(Long departmentId) {
+        return clientRepository.queryReviewer(departmentId, RoleConstant.LEVEL_1, RoleConstant.LEVEL_3);
     }
 
     public ResponseEntity<ApiResponse> nameList() {

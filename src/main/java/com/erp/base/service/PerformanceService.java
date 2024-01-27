@@ -74,7 +74,7 @@ public class PerformanceService {
 
     private void sendMessageToManger(ClientModel user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE, user.getUsername());
-        Set<Long> byHasAcceptPermission = clientService.findByHasAcceptRole(user.getDepartment().getId());
+        Set<Long> byHasAcceptPermission = clientService.queryReviewer(user.getDepartment().getId());
         byHasAcceptPermission.forEach(id -> {
             MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
