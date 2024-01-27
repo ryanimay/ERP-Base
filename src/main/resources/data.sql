@@ -70,21 +70,32 @@ WHERE NOT EXISTS (SELECT 1 FROM notification WHERE source.info = notification.in
 
 -- 預設role
 INSERT INTO role (role_name, level)
-SELECT role_name
+SELECT role_name, level
 FROM (VALUES ('visitor', 1),
              ('super1', 1),
-             ('super2', 2)) AS source(role_name)
+             ('super2', 2)) AS source(role_name, level)
 WHERE NOT EXISTS(SELECT 1 FROM role WHERE source.role_name = role.role_name);
 
 -- 預設super權限
 INSERT INTO role_permission (role_id, permission_id)
-SELECT (SELECT id FROM role WHERE role_name = 'super1' OR role_name = 'super2') AS role_id,
-       permission.id                                                            AS permission_id
+SELECT (SELECT id FROM role WHERE role_name = 'super1') AS role_id,
+       permission.id                                    AS permission_id
 FROM permission
 WHERE NOT EXISTS(
         SELECT 1
         FROM role_permission
-        WHERE role_id = (SELECT id FROM role WHERE role_name = 'super')
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'super1')
+          AND permission_id = permission.id
+    );
+
+INSERT INTO role_permission (role_id, permission_id)
+SELECT (SELECT id FROM role WHERE role_name = 'super2') AS role_id,
+       permission.id                                    AS permission_id
+FROM permission
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM role_permission
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'super2')
           AND permission_id = permission.id
     );
 
@@ -94,4 +105,4 @@ SELECT name
 FROM (VALUES ('departmentA'),
              ('departmentB'),
              ('departmentC')) AS source(name)
-WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = role.name);
+WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = department.name);
