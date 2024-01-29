@@ -29,7 +29,9 @@ public class LeaveModel implements IBaseModel {
     private LocalDateTime startTime;
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endTime;
+
     @Column(name = "status", nullable = false)
+    //只會有1.待審 2.已審未執行 3.已執行
     private int status;
     @Column(name = "info")
     private String info;
