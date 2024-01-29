@@ -23,7 +23,7 @@ public class PerformanceModel implements IBaseModel {
     private long id;
     @Column(name = "event", nullable = false)
     private String event;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private ClientModel user;
     @Column(name = "fixed_bonus", precision = 10, scale = 2)

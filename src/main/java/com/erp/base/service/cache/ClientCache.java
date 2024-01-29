@@ -5,6 +5,7 @@ import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
 import com.erp.base.tool.LogFactory;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,7 +34,10 @@ public class ClientCache {
     //有關使用者資訊，密碼有經過springSecurity加密
     @Cacheable(key = CacheConstant.CLIENT.CLIENT + " + #username")
     public ClientModel getClient(String username) {
-        return clientService.findByUsername(username);
+        ClientModel model = clientService.findByUsername(username);
+        Hibernate.initialize(model.getRoles());
+        Hibernate.initialize(model.getNotifications());
+        return model;
     }
 
     @CacheEvict(key = CacheConstant.CLIENT.CLIENT + " + #username")

@@ -31,11 +31,11 @@ public class DepartmentModel implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<ClientModel> clientModelList;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     @JsonIgnore
     private RoleModel default_role; //預設權限

@@ -29,7 +29,7 @@ public class RoleModel implements IBaseModel {
     @Column(name = "level", nullable = false)
     private int level = RoleConstant.LEVEL_0;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),
@@ -38,7 +38,7 @@ public class RoleModel implements IBaseModel {
     private Set<PermissionModel> permissions = new HashSet<>();
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private Set<RouterModel> routers = new HashSet<>();
 
     public RoleModel(String roleName) {
@@ -49,7 +49,6 @@ public class RoleModel implements IBaseModel {
         this.id = id;
     }
 
-    //存簡單資料就好，剔除父類
     public Set<RolePermissionDto> getRolePermissionsDto() {
         Set<PermissionModel> permissionSet = getPermissions();
         Set<RolePermissionDto> dtoResult = new HashSet<>();
