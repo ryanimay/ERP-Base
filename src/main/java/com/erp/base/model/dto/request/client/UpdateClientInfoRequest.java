@@ -20,4 +20,5 @@ public class UpdateClientInfoRequest {
     private String email;
 
     private List<Long> roles;
+    private Long departmentId;
 }

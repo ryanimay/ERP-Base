@@ -2,10 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.security.RolePermissionDto;
-import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.PermissionModel;
-import com.erp.base.model.entity.RoleModel;
-import com.erp.base.model.entity.RouterModel;
+import com.erp.base.model.entity.*;
 import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.cache.RolePermissionCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +86,9 @@ public class CacheService {
 
     public Boolean permissionStatus(String requestedUrl) {
         return rolePermissionCache.permissionStatus(requestedUrl);
+    }
+
+    public DepartmentModel getDepartment(Long departmentId) {
+        return rolePermissionCache.getDepartment(departmentId);
     }
 }
