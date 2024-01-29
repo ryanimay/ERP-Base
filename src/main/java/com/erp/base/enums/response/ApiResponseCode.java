@@ -27,7 +27,8 @@ public enum ApiResponseCode {
     SUCCESS(HttpStatus.OK, "response.success"),
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "response.unknownError"),
     SECURITY_ERROR(HttpStatus.BAD_REQUEST, "response.securityError"),
-    IDENTITY_ERROR(HttpStatus.FORBIDDEN, "response.identityError");
+    IDENTITY_ERROR(HttpStatus.FORBIDDEN, "response.identityError"),
+    SIGN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "response.signFailed");
 
     private final int code;
     private final String message;
