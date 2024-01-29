@@ -23,7 +23,7 @@ public class JobModel implements IBaseModel {
     private long id;
     @Column(name = "info")
     private String info;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private ClientModel user;
     @Column(name = "start_time")
@@ -32,8 +32,9 @@ public class JobModel implements IBaseModel {
     private LocalDateTime endTime;
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime = DateTool.now();
-    @Column(name = "create_by", nullable = false)
-    private long createBy;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "createBy", nullable = false)
+    private ClientModel createBy;
     @Column(name = "status", nullable = false)
     private String status = StatusConstant.get(StatusConstant.PENDING_NO);
 }

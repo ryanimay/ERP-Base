@@ -38,7 +38,7 @@ public class JobService {
         ClientModel user = ClientIdentity.getUser();
         JobModel jobModel = request.toModel();
         if(jobModel.getUser() == null) jobModel.setUser(user);
-        jobModel.setCreateBy(user.getId());
+        jobModel.setCreateBy(user);
         jobRepository.save(jobModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }

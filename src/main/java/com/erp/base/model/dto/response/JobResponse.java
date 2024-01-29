@@ -13,7 +13,7 @@ public class JobResponse {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private LocalDateTime createdTime;
-    private long createBy;
+    private String createBy;
     private String status;
 
     public JobResponse(JobModel model) {
@@ -23,7 +23,7 @@ public class JobResponse {
         this.startTime = model.getStartTime();
         this.endTime = model.getEndTime();
         this.createdTime = model.getCreatedTime();
-        this.createBy = model.getCreateBy();
+        this.createBy = model.getCreateBy().getUsername();
         this.status = model.getStatus();
     }
 }
