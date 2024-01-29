@@ -30,7 +30,7 @@ public class RouterModel {
     @Column(name = "metas")
     private String metas;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "router_role",
             joinColumns = @JoinColumn(name = "router_id"),
@@ -38,7 +38,7 @@ public class RouterModel {
     )
     private Set<RoleModel> roles = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private RouterModel parent;
 

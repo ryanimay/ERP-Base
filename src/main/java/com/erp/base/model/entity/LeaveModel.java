@@ -20,7 +20,7 @@ public class LeaveModel implements IBaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private ClientModel user;//請假人
     @Column(name = "type", nullable = false)

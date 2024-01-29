@@ -44,20 +44,20 @@ public class ClientModel implements IBaseModel {
     @Column(name = "attend_status")
     private int attendStatus = 1;//1.未打卡 2.已簽到 3.已簽退
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "client_roles",
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleModel> roles = new HashSet<>();
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "client_notifications",
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "notifications_id"))
     private Set<NotificationModel> notifications = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id")
     private DepartmentModel department;//所屬部門
 

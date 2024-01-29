@@ -38,7 +38,7 @@ public class ProjectModel implements IBaseModel {
     private LocalDateTime scheduledEndTime;
     @Column(name = "info")
     private String info;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "manager_id")
     private ClientModel Manager;
     @Column(name = "status", nullable = false)

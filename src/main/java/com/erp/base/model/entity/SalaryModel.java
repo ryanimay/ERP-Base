@@ -20,7 +20,7 @@ public class SalaryModel implements IBaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private ClientModel user;
     @Column(name = "time", nullable = false)
