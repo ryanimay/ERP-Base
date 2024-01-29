@@ -56,7 +56,7 @@ public class AttendService {
                 status = 3;
             }
         }
-        if(count != 1) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        if(count != 1) return ApiResponse.error(ApiResponseCode.SIGN_FAILED);
         ClientModel clientModel = clientService.updateClientAttendStatus(user.getId(), status);
 
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(clientModel));
