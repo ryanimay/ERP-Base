@@ -22,7 +22,7 @@ public class LeaveRequest implements IBaseDto<LeaveModel> {
         if(type != null) leaveModel.setType(type);
         if(startTime != null) leaveModel.setStartTime(startTime);
         if(endTime != null) leaveModel.setEndTime(endTime);
-        leaveModel.setStatus(StatusConstant.get(StatusConstant.PENDING_NO));//初始化都是待審
+        leaveModel.setStatus(StatusConstant.PENDING_NO);//初始化都是待審
         if(info != null) leaveModel.setInfo(info);
         return leaveModel;
     }

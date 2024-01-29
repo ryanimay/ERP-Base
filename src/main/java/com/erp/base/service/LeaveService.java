@@ -91,13 +91,13 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> delete(long id) {
-        int i = leaveRepository.deleteByIdIfStatus(id, StatusConstant.get(StatusConstant.PENDING_NO), StatusConstant.get(StatusConstant.REMOVED_NO));
+        int i = leaveRepository.deleteByIdIfStatus(id, StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO);
         if(i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "delete: " + i);
     }
 
     public ResponseEntity<ApiResponse> accept(long id, Long eventUserId) {
-        int i = leaveRepository.accept(id, StatusConstant.get(StatusConstant.PENDING_NO), StatusConstant.get(StatusConstant.APPROVED_NO));
+        int i = leaveRepository.accept(id, StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
             ClientModel user = ClientIdentity.getUser();
@@ -114,9 +114,9 @@ public class LeaveService {
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門
         if(first.isPresent()){
-            allPending = leaveRepository.findByStatus(StatusConstant.get(StatusConstant.PENDING_NO), page.getPage());
+            allPending = leaveRepository.findByStatus(StatusConstant.PENDING_NO, page.getPage());
         }else{
-            allPending = leaveRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.get(1), page.getPage());
+            allPending = leaveRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, page.getPage());
         }
         return ApiResponse.success(new PageResponse<>(allPending, LeaveResponse.class));
     }

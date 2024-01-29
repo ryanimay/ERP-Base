@@ -1,6 +1,7 @@
 package com.erp.base.model.dto.response;
 
 import com.erp.base.enums.LeaveConstant;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.entity.LeaveModel;
 import lombok.Data;
 
@@ -28,7 +29,7 @@ public class LeaveResponse implements Serializable {
         this.type = LeaveConstant.get(model.getType());
         this.startTime = model.getStartTime();
         this.endTime = model.getEndTime();
-        this.status = model.getStatus();
+        this.status = StatusConstant.get(model.getStatus());
         this.info = model.getInfo();
         this.createdTime = model.getCreatedTime();
     }
