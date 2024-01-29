@@ -9,6 +9,7 @@ import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.LeaveResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LeaveModel;
@@ -52,7 +53,7 @@ public class LeaveService {
         ClientModel user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         Page<LeaveModel> leaves = leaveRepository.findAllByUser(user.getId(), page.getPage());
-        return ApiResponse.success(new PageResponse<>(leaves, LeaveModel.class));
+        return ApiResponse.success(new PageResponse<>(leaves, LeaveResponse.class));
     }
 
     public ResponseEntity<ApiResponse> add(LeaveRequest request) {
@@ -61,7 +62,7 @@ public class LeaveService {
         LeaveModel entity = request.toModel();
         LeaveModel saved = updateOrSave(entity, user);
         sendMessageToManager(user);
-        return ApiResponse.success(ApiResponseCode.SUCCESS, saved);
+        return ApiResponse.success(ApiResponseCode.SUCCESS, new LeaveResponse(saved));
     }
 
     private void sendMessageToManager(ClientModel user) {
@@ -84,7 +85,7 @@ public class LeaveService {
             if(request.getEndTime() != null) leaveModel.setEndTime(request.getEndTime());
             if(request.getInfo() != null) leaveModel.setInfo(request.getInfo());
             LeaveModel saved = updateOrSave(leaveModel, user);
-            return ApiResponse.success(ApiResponseCode.SUCCESS, saved);
+            return ApiResponse.success(ApiResponseCode.SUCCESS, new LeaveResponse(saved));
         }
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
@@ -117,7 +118,7 @@ public class LeaveService {
         }else{
             allPending = leaveRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.get(1), page.getPage());
         }
-        return ApiResponse.success(new PageResponse<>(allPending, LeaveModel.class));
+        return ApiResponse.success(new PageResponse<>(allPending, LeaveResponse.class));
     }
 
     private LeaveModel updateOrSave(LeaveModel model, ClientModel user){
