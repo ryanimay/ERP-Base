@@ -12,6 +12,7 @@ import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.mail.ResetPasswordModel;
@@ -48,7 +49,12 @@ public class ClientService {
     private CacheService cacheService;
     private MessageService messageService;
     private NotificationService notificationService;
+    private DepartmentService departmentService;
     private static final String RESET_PREFIX = "##";
+    @Autowired
+    public void setDepartmentService(DepartmentService departmentService){
+        this.departmentService = departmentService;
+    }
 
     @Autowired
     public void setNotificationService(NotificationService notificationService) {
@@ -96,6 +102,8 @@ public class ClientService {
         if (code != null) return ApiResponse.error(code);
 
         ClientModel entity = dto.toModel();
+        //依部門設置註冊用戶的默認權限
+        entity = departmentService.setDefaultRole(entity, dto.getDepartmentId());
         entity.setPassword(passwordEncode(entity.getPassword()));
         clientRepository.save(entity);
 
@@ -229,9 +237,9 @@ public class ClientService {
         String newMail = request.getEmail();
         if (newMail != null && !newMail.equals(client.getEmail())) {
             client.setEmail(newMail);
-            client.setMustUpdatePassword(false);
         }
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
+        if (request.getDepartmentId() != null) client.setDepartment(new DepartmentModel(request.getDepartmentId()));
         ClientModel save = clientRepository.save(client);
         cacheService.refreshClient(client.getUsername());
         //非本人就發送通知

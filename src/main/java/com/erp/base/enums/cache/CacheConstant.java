@@ -20,5 +20,6 @@ public interface CacheConstant {
         String ROLE_PERMISSION = "'rolePermission_'";
         String ROLE_ROUTER = "'roleRouter_'";
         String PERMISSION_STATUS = "'permissionStatus_'";
+        String DEPARTMENT = "'department_'";
     }
 }

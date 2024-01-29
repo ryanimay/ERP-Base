@@ -72,37 +72,50 @@ WHERE NOT EXISTS (SELECT 1 FROM notification WHERE source.info = notification.in
 INSERT INTO role (role_name, level)
 SELECT role_name, level
 FROM (VALUES ('visitor', 1),
-             ('super1', 1),
-             ('super2', 2)) AS source(role_name, level)
+             ('Basic', 1),
+             ('Manager', 2),
+             ('Senior', 3)
+             ) AS source(role_name, level)
 WHERE NOT EXISTS(SELECT 1 FROM role WHERE source.role_name = role.role_name);
 
--- 預設super權限
+-- 預設權限
 INSERT INTO role_permission (role_id, permission_id)
-SELECT (SELECT id FROM role WHERE role_name = 'super1') AS role_id,
+SELECT (SELECT id FROM role WHERE role_name = 'Basic') AS role_id,
        permission.id                                    AS permission_id
 FROM permission
 WHERE NOT EXISTS(
         SELECT 1
         FROM role_permission
-        WHERE role_id = (SELECT id FROM role WHERE role_name = 'super1')
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Basic')
           AND permission_id = permission.id
     );
 
 INSERT INTO role_permission (role_id, permission_id)
-SELECT (SELECT id FROM role WHERE role_name = 'super2') AS role_id,
+SELECT (SELECT id FROM role WHERE role_name = 'Manager') AS role_id,
        permission.id                                    AS permission_id
 FROM permission
 WHERE NOT EXISTS(
         SELECT 1
         FROM role_permission
-        WHERE role_id = (SELECT id FROM role WHERE role_name = 'super2')
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Manager')
+          AND permission_id = permission.id
+    );
+
+INSERT INTO role_permission (role_id, permission_id)
+SELECT (SELECT id FROM role WHERE role_name = 'Senior') AS role_id,
+       permission.id                                    AS permission_id
+FROM permission
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM role_permission
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Senior')
           AND permission_id = permission.id
     );
 
 -- 預設部門
-INSERT INTO department (name)
-SELECT name
-FROM (VALUES ('departmentA'),
-             ('departmentB'),
-             ('departmentC')) AS source(name)
+INSERT INTO department (name, role_id)
+SELECT name, role_id
+FROM (VALUES ('departmentA', 2),
+             ('departmentB', 2),
+             ('departmentC', 2)) AS source(name, role_id)
 WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = department.name);

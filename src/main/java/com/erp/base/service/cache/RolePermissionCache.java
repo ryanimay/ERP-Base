@@ -2,9 +2,11 @@ package com.erp.base.service.cache;
 
 import com.erp.base.enums.cache.CacheConstant;
 import com.erp.base.model.dto.security.RolePermissionDto;
+import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.RouterModel;
+import com.erp.base.service.DepartmentService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
 import com.erp.base.service.RouterService;
@@ -32,6 +34,12 @@ public class RolePermissionCache {
     private RoleService roleService;
     private PermissionService permissionService;
     private RouterService routerService;
+    private DepartmentService departmentService;
+
+    @Autowired
+    public void setDepartmentService(@Lazy DepartmentService departmentService) {
+        this.departmentService = departmentService;
+    }
 
     @Autowired
     public void setRouterService(@Lazy RouterService routerService) {
@@ -116,5 +124,10 @@ public class RolePermissionCache {
 
     @CacheEvict(key = CacheConstant.ROLE_PERMISSION.ROUTERS)
     public void refreshRouters() {
+    }
+
+    @Cacheable(key = CacheConstant.ROLE_PERMISSION.DEPARTMENT + " + #id")
+    public DepartmentModel getDepartment(Long id) {
+        return departmentService.findById(id);
     }
 }
