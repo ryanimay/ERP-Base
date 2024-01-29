@@ -48,6 +48,11 @@ Router:
 (/configList)前端路由配置列表，刪去分層
 (/list)展示清單，有整理分層
 (/role)針對role拿routerIdList
+Department:
+*(/list)部門清單
+*(/add)新增
+*(/update)編輯
+*(remove)要設置轉移部門
 3.薪資管理salary
 管理層:
 (/roots)薪資基礎清單
@@ -74,7 +79,7 @@ Router:
 (/update)更新假單
 (/delete)刪除假單-非未審不可刪
 (/accept)過審[通知用戶]
-7.專案管理projecet
+7.專案管理project
 (/list)專案清單
 (/add)新增專案
 (/update)更新專案
