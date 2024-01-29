@@ -25,7 +25,7 @@ public class LeaveConstant {
 
     }
 
-    public String get(int id) {
+    public static String get(int id) {
         return messageSource.getMessage(leaveMap.get(id), null, ClientIdentity.getLocale());
     }
 
