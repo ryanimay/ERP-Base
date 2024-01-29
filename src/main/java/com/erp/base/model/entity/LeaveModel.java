@@ -30,7 +30,7 @@ public class LeaveModel implements IBaseModel {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endTime;
     @Column(name = "status", nullable = false)
-    private String status;
+    private int status;
     @Column(name = "info")
     private String info;
     @Column(name = "created_time", nullable = false)

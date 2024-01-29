@@ -14,14 +14,14 @@ public interface LeaveRepository extends JpaRepository<LeaveModel, Long> {
     Page<LeaveModel> findAllByUser(long id, PageRequest page);
     @Modifying
     @Query("UPDATE LeaveModel l SET l.status = :status2 WHERE l.id = :id AND l.status = :status1")
-    int accept(long id, String status1, String status2);
+    int accept(long id, int status1, int status2);
     @Modifying
     @Query("UPDATE LeaveModel l SET l.status = :status2 WHERE l.id = :id AND l.status = :status1")
-    int deleteByIdIfStatus(long id, String status1, String status2);
+    int deleteByIdIfStatus(long id, int status1, int status2);
     //狀態待審並且部門相同
     @Query("SELECT l FROM LeaveModel l WHERE l.status = :status AND l.user.department.name = :departmentName")
-    Page<LeaveModel> findByStatusAndDepartment(String departmentName, String status, PageRequest page);
+    Page<LeaveModel> findByStatusAndDepartment(String departmentName, int status, PageRequest page);
     //狀態待審
     @Query("SELECT l FROM LeaveModel l WHERE l.status = :status")
-    Page<LeaveModel> findByStatus(String status, PageRequest page);
+    Page<LeaveModel> findByStatus(int status, PageRequest page);
 }
