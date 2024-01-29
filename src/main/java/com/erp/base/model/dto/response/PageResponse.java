@@ -16,6 +16,7 @@ public class PageResponse<C> {
     private long totalElements;
 
     /**
+     * 把Page<Entity>替換成Page<DTO>
      * clazz一定要有page內物件的建構子，不然會出錯
      * */
     public PageResponse(Page<?> page, Class<C> clazz) {

@@ -150,11 +150,11 @@ public class ClientService {
         String username = resetRequest.getUsername();
         String password = RESET_PREFIX + encodeTool.randomPassword(18);
 
-        Context context = mailService.createContext(username, password);
         int result = updatePassword(passwordEncode(password), true, username, resetRequest.getEmail());
 
         if (result == 1) {
             //更新成功才發送郵件
+            Context context = mailService.createContext(username, password);
             mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context, null);
             cacheService.refreshClient(username);
             return ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
