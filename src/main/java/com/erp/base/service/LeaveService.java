@@ -91,13 +91,13 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> delete(long id) {
-        int i = leaveRepository.deleteByIdIfStatus(id, StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO);
+        int i = leaveRepository.deleteByIdAndStatus(id, StatusConstant.PENDING_NO);
         if(i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "delete: " + i);
     }
 
     public ResponseEntity<ApiResponse> accept(long id, Long eventUserId) {
-        int i = leaveRepository.accept(id, StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
+        int i = leaveRepository.updateLeaveStatus(id, StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
             ClientModel user = ClientIdentity.getUser();
