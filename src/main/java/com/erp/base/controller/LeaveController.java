@@ -39,7 +39,7 @@ public class LeaveController {
     }
 
     @DeleteMapping(Router.LEAVE.DELETE)
-    public ResponseEntity<ApiResponse> delete(@RequestBody Long id){
+    public ResponseEntity<ApiResponse> delete(Long id){
         return leaveService.delete(id);
     }
 
