@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 public class JobRequest implements IBaseDto<JobModel> {
@@ -21,6 +22,8 @@ public class JobRequest implements IBaseDto<JobModel> {
     @DateTimeFormat(pattern = DateTool.YYYY_MM_DD_T_HH_MM_SS)
     private LocalDateTime endTime;
     private int status;
+    private Integer order;
+    private Set<Integer> idSet;
 
     @Override
     public JobModel toModel() {
@@ -30,6 +33,10 @@ public class JobRequest implements IBaseDto<JobModel> {
         if(userId != null) job.setUser(new ClientModel(userId));
         job.setStartTime(startTime);
         job.setEndTime(endTime);
+        job.setOrder(order);
+        if(idSet != null){
+            idSet.forEach(id -> job.addTracking(new ClientModel(id)));
+        }
         return job;
     }
 

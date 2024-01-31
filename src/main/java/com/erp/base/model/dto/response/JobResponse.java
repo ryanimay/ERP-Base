@@ -4,6 +4,8 @@ import com.erp.base.model.entity.JobModel;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 public class JobResponse {
@@ -15,6 +17,8 @@ public class JobResponse {
     private LocalDateTime createdTime;
     private String createBy;
     private String status;
+    private Integer order;
+    private Set<ClientNameObject> trackingSet;
 
     public JobResponse(JobModel model) {
         this.id = model.getId();
@@ -25,5 +29,7 @@ public class JobResponse {
         this.createdTime = model.getCreatedTime();
         this.createBy = model.getCreateBy().getUsername();
         this.status = model.getStatus();
+        this.order = model.getOrder();
+        this.trackingSet = model.getTrackingList().stream().map(ClientNameObject::new).collect(Collectors.toSet());
     }
 }
