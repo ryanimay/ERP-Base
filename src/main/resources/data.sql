@@ -113,9 +113,9 @@ WHERE NOT EXISTS(
     );
 
 -- 預設部門
-INSERT INTO department (name, role_id)
-SELECT name, role_id
+INSERT INTO department (name, default_role_id)
+SELECT name, default_role_id
 FROM (VALUES ('departmentA', 2),
              ('departmentB', 2),
-             ('departmentC', 2)) AS source(name, role_id)
+             ('departmentC', 2)) AS source(name, default_role_id)
 WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = department.name);

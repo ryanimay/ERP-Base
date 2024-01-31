@@ -35,7 +35,7 @@ public class DepartmentService {
         }else {
             DepartmentModel department = cacheService.getDepartment(departmentId);
             model.setDepartment(department);
-            role.add(department.getDefault_role());
+            role.add(new RoleModel(department.getDefaultRoleId()));
         }
         return model;
     }

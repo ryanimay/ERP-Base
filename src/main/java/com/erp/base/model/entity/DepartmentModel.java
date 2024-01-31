@@ -35,10 +35,8 @@ public class DepartmentModel implements Serializable {
     @JsonIgnore
     private List<ClientModel> clientModelList;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
-    @JsonIgnore
-    private RoleModel default_role; //預設權限
+    @Column(name = "default_role_id")
+    private Long defaultRoleId; //預設權限
 
     public DepartmentModel(Long departmentId) {
         this.id = departmentId;
