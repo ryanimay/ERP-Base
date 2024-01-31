@@ -4,6 +4,7 @@ import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serial;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class ClientModel implements IBaseModel {
     @Serial
     private static final long serialVersionUID = 1L;
