@@ -3,6 +3,7 @@ package com.erp.base.controller;
 import com.erp.base.enums.LeaveConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.PageRequestParam;
+import com.erp.base.model.dto.request.leave.LeaveAcceptRequest;
 import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.LeaveService;
@@ -44,8 +45,8 @@ public class LeaveController {
     }
 
     @PostMapping(Router.LEAVE.ACCEPT)
-    public ResponseEntity<ApiResponse> accept(@RequestBody Long id, Long eventUserId){
-        return leaveService.accept(id, eventUserId);
+    public ResponseEntity<ApiResponse> accept(@RequestBody LeaveAcceptRequest request){
+        return leaveService.accept(request);
     }
 
     @GetMapping(Router.LEAVE.TYPE_LIST)
