@@ -1,6 +1,7 @@
 package com.erp.base.controller;
 
 import com.erp.base.model.dto.request.PageRequestParam;
+import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.PerformanceService;
@@ -43,7 +44,7 @@ public class PerformanceController {
     }
 
     @PutMapping(Router.PERFORMANCE.ACCEPT)
-    public ResponseEntity<ApiResponse> accept(@RequestBody Long eventId, Long eventUserId){
-        return performanceService.accept(eventId, eventUserId);
+    public ResponseEntity<ApiResponse> accept(@RequestBody PerformanceAcceptRequest request){
+        return performanceService.accept(request);
     }
 }

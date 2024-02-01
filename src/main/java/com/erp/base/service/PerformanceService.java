@@ -8,6 +8,7 @@ import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
+import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
@@ -106,12 +107,12 @@ public class PerformanceService {
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "removed:" + i);
     }
 
-    public ResponseEntity<ApiResponse> accept(Long eventId, Long eventUserId) {
-        int i = performanceRepository.updateStatus(eventId, StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
+    public ResponseEntity<ApiResponse> accept(PerformanceAcceptRequest request) {
+        int i = performanceRepository.updateStatus(request.getEventId(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         if (i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_PERFORMANCE);
             ClientModel user = ClientIdentity.getUser();
-            MessageModel messageModel = new MessageModel(user.getUsername(), eventUserId.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            MessageModel messageModel = new MessageModel(user.getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
