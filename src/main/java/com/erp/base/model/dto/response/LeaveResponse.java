@@ -2,6 +2,7 @@ package com.erp.base.model.dto.response;
 
 import com.erp.base.enums.LeaveConstant;
 import com.erp.base.enums.StatusConstant;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LeaveModel;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class LeaveResponse implements Serializable {
     private static final long serialVersionUID = -3L;
 
     private long id;
-    private String username;
+    private ClientNameObject user;
     private String type; //請假類型
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -25,7 +26,8 @@ public class LeaveResponse implements Serializable {
 
     public LeaveResponse(LeaveModel model) {
         this.id = model.getId();
-        this.username = model.getUser().getUsername();
+        ClientModel u = model.getUser();
+        this.user = new ClientNameObject(u.getId(), u.getUsername());
         this.type = LeaveConstant.get(model.getType());
         this.startTime = model.getStartTime();
         this.endTime = model.getEndTime();
