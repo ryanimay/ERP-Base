@@ -2,6 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
 import com.erp.base.enums.NotificationEnum;
+import com.erp.base.enums.RoleConstant;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
@@ -111,7 +112,7 @@ public class LeaveService {
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
         ClientModel user = ClientIdentity.getUser();
-        Optional<RoleModel> first = user.getRoles().stream().filter(model -> model.getLevel() == 3).findFirst();
+        Optional<RoleModel> first = user.getRoles().stream().filter(model -> model.getLevel() == RoleConstant.LEVEL_3).findFirst();
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門
         if(first.isPresent()){
