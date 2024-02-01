@@ -11,6 +11,9 @@ import java.util.List;
 
 @Repository
 public interface JobRepository extends JpaRepository<JobModel, Long> {
-    @Query("SELECT j FROM JobModel j WHERE j.user = :model OR :model MEMBER OF j.trackingList ORDER BY j.order NULLS LAST")
-    List<JobModel> findByUserId(@Param("model") ClientModel model);
+    @Query("SELECT j FROM JobModel j " +
+            "WHERE j.user = :model " +
+            "OR :model MEMBER OF j.trackingList " +
+            "ORDER BY j.order NULLS LAST")
+    List<JobModel> findByUserOrTracking(@Param("model") ClientModel model);
 }
