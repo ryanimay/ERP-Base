@@ -30,7 +30,7 @@ public class JobService {
 
     public ResponseEntity<ApiResponse> findAll() {
         ClientModel user = ClientIdentity.getUser();
-        List<JobModel> all = jobRepository.findByUserId(user);
+        List<JobModel> all = jobRepository.findByUserOrTracking(user);
 
         Map<String, List<JobResponse>> map = all.stream()
                 .collect(Collectors.groupingBy(
