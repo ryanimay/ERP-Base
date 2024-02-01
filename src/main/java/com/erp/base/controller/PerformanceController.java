@@ -38,7 +38,7 @@ public class PerformanceController {
     }
 
     @DeleteMapping(Router.PERFORMANCE.REMOVE)
-    public ResponseEntity<ApiResponse> remove(@RequestBody Long eventId){
+    public ResponseEntity<ApiResponse> remove(Long eventId){
         return performanceService.remove(eventId);
     }
 
