@@ -44,7 +44,7 @@ public class LeaveController {
         return leaveService.delete(id);
     }
 
-    @PostMapping(Router.LEAVE.ACCEPT)
+    @PutMapping(Router.LEAVE.ACCEPT)
     public ResponseEntity<ApiResponse> accept(@RequestBody LeaveAcceptRequest request){
         return leaveService.accept(request);
     }
