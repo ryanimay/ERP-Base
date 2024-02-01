@@ -18,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class ClientModel implements IBaseModel {
+public class ClientModel implements IBaseModel, Comparable<ClientModel> {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
@@ -65,5 +65,10 @@ public class ClientModel implements IBaseModel {
 
     public ClientModel(long id) {
         this.id = id;
+    }
+
+    @Override
+    public int compareTo(ClientModel model) {
+        return Long.compare(id, model.getId());
     }
 }
