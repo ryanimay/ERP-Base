@@ -7,6 +7,7 @@ import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
+import com.erp.base.model.dto.request.leave.LeaveAcceptRequest;
 import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.LeaveResponse;
@@ -96,12 +97,12 @@ public class LeaveService {
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "delete: " + i);
     }
 
-    public ResponseEntity<ApiResponse> accept(long id, Long eventUserId) {
-        int i = leaveRepository.updateLeaveStatus(id, StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
+    public ResponseEntity<ApiResponse> accept(LeaveAcceptRequest request) {
+        int i = leaveRepository.updateLeaveStatus(request.getId(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
             ClientModel user = ClientIdentity.getUser();
-            MessageModel messageModel = new MessageModel(user.getUsername(), eventUserId.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            MessageModel messageModel = new MessageModel(user.getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
