@@ -2,18 +2,20 @@ package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
 import com.erp.base.enums.NotificationEnum;
+import com.erp.base.enums.RoleConstant;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
-import com.erp.base.model.dto.request.performance.AddPerformanceRequest;
-import com.erp.base.model.dto.request.performance.PerformanceListRequest;
-import com.erp.base.model.dto.request.performance.UpdatePerformanceRequest;
+import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.response.PerformanceResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
+import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.PerformanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -30,44 +33,42 @@ public class PerformanceService {
     private MessageService messageService;
     private NotificationService notificationService;
     private ClientService clientService;
+
     @Autowired
-    public void setClientService(ClientService clientService){
+    public void setClientService(ClientService clientService) {
         this.clientService = clientService;
     }
+
     @Autowired
-    public void setNotificationService(NotificationService notificationService){
+    public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
+
     @Autowired
-    public void setMessageService(MessageService messageService){
+    public void setMessageService(MessageService messageService) {
         this.messageService = messageService;
     }
+
     @Autowired
-    public void setPerformanceRepository(PerformanceRepository performanceRepository){
+    public void setPerformanceRepository(PerformanceRepository performanceRepository) {
         this.performanceRepository = performanceRepository;
     }
 
-    public ResponseEntity<ApiResponse> getAllList(PerformanceListRequest request) {
-        Page<PerformanceModel> allPerformance = performanceRepository.findAllPerformance(request.getUserId(), request.getStartTime(), request.getEndTime(), request.getPage());
-        return ApiResponse.success(new PageResponse<>(allPerformance, PerformanceModel.class));
+    public ResponseEntity<ApiResponse> getList(PerformanceRequest request) {
+        Page<PerformanceModel> allPerformance = performanceRepository.findAll(request.getSpecification(), request.getPage());
+        return ApiResponse.success(new PageResponse<>(allPerformance, PerformanceResponse.class));
     }
 
-    public ResponseEntity<ApiResponse> getList(PerformanceListRequest request) {
+    public ResponseEntity<ApiResponse> add(PerformanceRequest request) {
         ClientModel user = ClientIdentity.getUser();
-        if(user == null){
-            return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        }
-        request.setUserId(user.getId());//限搜本人
-        return getAllList(request);
-    }
-
-    public ResponseEntity<ApiResponse> add(AddPerformanceRequest request) {
-        ClientModel user = ClientIdentity.getUser();
-        if(user == null){
+        if (user == null) {
             return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
-        request.setCreateBy(user.getId());
-        performanceRepository.save(request.toModel());
+        PerformanceModel entity = request.toModel();
+        Long userId = request.getUserId();
+        entity.setUser(userId == null ? user : new ClientModel(userId));
+        entity.setCreateBy(user);
+        performanceRepository.save(entity);
         sendMessageToManger(user);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
@@ -81,20 +82,33 @@ public class PerformanceService {
         });
     }
 
-    public ResponseEntity<ApiResponse> save(UpdatePerformanceRequest request) {
-        performanceRepository.save(request.toModel());
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    public ResponseEntity<ApiResponse> save(PerformanceRequest request) {
+        ClientModel user = ClientIdentity.getUser();
+        Optional<PerformanceModel> byId = performanceRepository.findById(request.getId());
+        if (byId.isPresent()) {
+            PerformanceModel model = byId.get();
+            if (request.getEvent() != null) model.setEvent(request.getEvent());
+            Long userId = request.getUserId();
+            model.setUser(userId == null ? user : new ClientModel(userId));
+            if (request.getFixedBonus() != null) model.setFixedBonus(request.getFixedBonus());
+            if (request.getPerformanceRatio() != null) model.setPerformanceRatio(request.getPerformanceRatio());
+            if (request.getEventTime() != null) model.setEventTime(request.getEventTime());
+            if (request.getStatus() != null) model.setStatus(request.getStatus());
+            performanceRepository.save(model);
+            return ApiResponse.success(ApiResponseCode.SUCCESS);
+        }
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
     }
 
     public ResponseEntity<ApiResponse> remove(Long eventId) {
-        int i = performanceRepository.updateStateRemoved(eventId);
-        if(i ==1) return ApiResponse.success(ApiResponseCode.SUCCESS);
+        int i = performanceRepository.updateStatus(eventId, StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO);
+        if (i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "removed:" + i);
     }
 
     public ResponseEntity<ApiResponse> accept(Long eventId, Long eventUserId) {
-        int i = performanceRepository.updateStateAccept(eventId);
-        if(i == 1) {
+        int i = performanceRepository.updateStatus(eventId, StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
+        if (i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_PERFORMANCE);
             ClientModel user = ClientIdentity.getUser();
             MessageModel messageModel = new MessageModel(user.getUsername(), eventUserId.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
@@ -105,7 +119,15 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam request) {
-        Page<PerformanceModel> list = performanceRepository.findAllByStatus(request.getPage());
-        return ApiResponse.success(new PageResponse<>(list, PerformanceModel.class));
+        ClientModel user = ClientIdentity.getUser();
+        Optional<RoleModel> first = user.getRoles().stream().filter(model -> model.getLevel() == RoleConstant.LEVEL_3).findFirst();
+        Page<PerformanceModel> list;
+        //管理權限全搜不分部門
+        if (first.isPresent()) {
+            list = performanceRepository.findAllByStatus(StatusConstant.PENDING_NO, request.getPage());
+        } else {
+            list = performanceRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, request.getPage());
+        }
+        return ApiResponse.success(new PageResponse<>(list, PerformanceResponse.class));
     }
 }

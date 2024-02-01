@@ -1,9 +1,7 @@
 package com.erp.base.controller;
 
 import com.erp.base.model.dto.request.PageRequestParam;
-import com.erp.base.model.dto.request.performance.AddPerformanceRequest;
-import com.erp.base.model.dto.request.performance.PerformanceListRequest;
-import com.erp.base.model.dto.request.performance.UpdatePerformanceRequest;
+import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.PerformanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +15,25 @@ public class PerformanceController {
     public void setPerformanceService(PerformanceService performanceService){
         this.performanceService = performanceService;
     }
-
+    //待審績效清單
     @GetMapping(Router.PERFORMANCE.PENDING_LIST)
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam request){
         return performanceService.pendingList(request);
     }
 
-    @GetMapping(Router.PERFORMANCE.ALL_LIST)
-    public ResponseEntity<ApiResponse> allList(PerformanceListRequest request){
-        return performanceService.getAllList(request);
-    }
-
+    //依照輸入值搜尋特定條件績效清單
     @GetMapping(Router.PERFORMANCE.LIST)
-    public ResponseEntity<ApiResponse> list(PerformanceListRequest request){
+    public ResponseEntity<ApiResponse> list(PerformanceRequest request){
         return performanceService.getList(request);
     }
 
     @PostMapping(Router.PERFORMANCE.ADD)
-    public ResponseEntity<ApiResponse> add(@RequestBody AddPerformanceRequest request){
+    public ResponseEntity<ApiResponse> add(@RequestBody PerformanceRequest request){
         return performanceService.add(request);
     }
 
     @PutMapping(Router.PERFORMANCE.UPDATE)
-    public ResponseEntity<ApiResponse> update(@RequestBody UpdatePerformanceRequest request){
+    public ResponseEntity<ApiResponse> update(@RequestBody PerformanceRequest request){
         return performanceService.save(request);
     }
 
