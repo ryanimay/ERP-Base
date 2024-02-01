@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class GenericSpecifications<E> {
     private final List<CriteriaObject<?>> criteriaList = new ArrayList<>();
@@ -23,33 +24,38 @@ public class GenericSpecifications<E> {
 
     public Specification<E> build() {
         return (root, query, criteriaBuilder) -> {
-                Predicate predicate = criteriaBuilder.conjunction();
-                for (CriteriaObject<?> criteria : criteriaList) {
-                    comparison(predicate, criteriaBuilder, root, criteria);
-                }
-            return predicate;
+            Predicate[] predicates = criteriaList.stream()
+                    .map(criteria -> comparison(criteriaBuilder, root, criteria))
+                    .filter(Objects::nonNull)
+                    .toArray(Predicate[]::new);
+            return criteriaBuilder.and(predicates);
         };
     }
+
     @SuppressWarnings("unchecked")
-    private <T extends Comparable<T>> void comparison(Predicate predicate, CriteriaBuilder criteriaBuilder, Root<E> root, CriteriaObject<?> criteria) {
+    private <T extends Comparable<T>> Predicate comparison(CriteriaBuilder criteriaBuilder, Root<E> root, CriteriaObject<?> criteria) {
+        //剔除如果比較值為null就不當條件
         if (criteria != null && criteria.getOperator() != null && criteria.getValue() != null) {
             String key = criteria.getKey();
             String operator = criteria.getOperator();
             T value = (T) criteria.getValue();
             Path<T> properties = root.get(key);
+            Predicate namePredicate;
             switch (operator) {
-                case "=" -> predicate.getExpressions().add(criteriaBuilder.equal(properties, value));
-                case "!=" -> predicate.getExpressions().add(criteriaBuilder.notEqual(properties, value));
-                case ">" -> predicate.getExpressions().add(criteriaBuilder.greaterThan(properties, value));
-                case ">=" -> predicate.getExpressions().add(criteriaBuilder.greaterThanOrEqualTo(properties, value));
-                case "<" -> predicate.getExpressions().add(criteriaBuilder.lessThan(properties, value));
-                case "<=" -> predicate.getExpressions().add(criteriaBuilder.lessThanOrEqualTo(properties, value));
-                case "like" -> predicate.getExpressions().add(criteriaBuilder.like((Path<String>) properties, "%" + value + "%"));
-                case "in" -> predicate.getExpressions().add(root.get(key).in((Collection<? extends T>)value));
+                case "=" -> namePredicate = criteriaBuilder.equal(properties, value);
+                case "!=" -> namePredicate = criteriaBuilder.notEqual(properties, value);
+                case ">" -> namePredicate = criteriaBuilder.greaterThan(properties, value);
+                case ">=" -> namePredicate = criteriaBuilder.greaterThanOrEqualTo(properties, value);
+                case "<" -> namePredicate = criteriaBuilder.lessThan(properties, value);
+                case "<=" -> namePredicate = criteriaBuilder.lessThanOrEqualTo(properties, value);
+                case "like" -> namePredicate = criteriaBuilder.like((Path<String>) properties, "%" + value + "%");
+                case "in" -> namePredicate = root.get(key).in((Collection<? extends T>) value);
                 // 可以根據需要添加其他操作符
                 default -> throw new IllegalArgumentException("Unsupported operator: " + operator);
             }
+            return namePredicate;
         }
+        return null;
     }
 
     @Data
@@ -61,3 +67,4 @@ public class GenericSpecifications<E> {
         private T value;
     }
 }
+
