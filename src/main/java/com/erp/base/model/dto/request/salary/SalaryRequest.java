@@ -27,7 +27,7 @@ public class SalaryRequest extends PageRequestParam implements IBaseDto<SalaryMo
     //健保
     private BigDecimal nationalHealthInsurance;
     //基底
-    private Boolean root = true;
+    private Boolean root;
 
     @Override
     public SalaryModel toModel() {
@@ -35,18 +35,21 @@ public class SalaryRequest extends PageRequestParam implements IBaseDto<SalaryMo
         salaryModel.setId(id);
         salaryModel.setUser(new ClientModel(userId));
         salaryModel.setBaseSalary(baseSalary);
+        salaryModel.setMealAllowance(mealAllowance);
         salaryModel.setBonus(bonus);
         salaryModel.setLaborInsurance(laborInsurance);
         salaryModel.setNationalHealthInsurance(nationalHealthInsurance);
+        if(root != null) salaryModel.setRoot(root);
         return salaryModel;
     }
-
+    //只用來搜root
     @Override
     public Specification<SalaryModel> getSpecification() {
         GenericSpecifications<SalaryModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
                 .add("id", GenericSpecifications.EQ, id)
                 .add("user", GenericSpecifications.EQ, userId == null ? null : new ClientModel(userId))
+                .add("root", GenericSpecifications.EQ, true)
                 .build();
     }
 }
