@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Set;
+
 @Repository
 public interface PerformanceRepository extends JpaRepository<PerformanceModel, Long>, JpaSpecificationExecutor<PerformanceModel> {
     @Modifying
@@ -18,4 +20,10 @@ public interface PerformanceRepository extends JpaRepository<PerformanceModel, L
     Page<PerformanceModel> findAllByStatus(int status, PageRequest page);
     @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status AND p.user.department.name = :departmentName")
     Page<PerformanceModel> findByStatusAndDepartment(String departmentName, int status, PageRequest page);
+    @Query("SELECT p.user, SUM(p.fixedBonus), SUM(p.performanceRatio), FUNCTION('YEAR', CURRENT_DATE) AS settleYear, COUNT(p) FROM PerformanceModel p " +
+            "WHERE (:id IS NULL OR p.user.id = :id) " +
+            "AND p.status = :status " +
+            "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) " +
+            "GROUP BY p.user")
+    Set<Object[]> calculateByCreateYear(Long id, int status);
 }

@@ -10,9 +10,7 @@ import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
-import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.dto.response.PageResponse;
-import com.erp.base.model.dto.response.PerformanceResponse;
+import com.erp.base.model.dto.response.*;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
@@ -24,6 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -130,5 +131,21 @@ public class PerformanceService {
             list = performanceRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, request.getPage());
         }
         return ApiResponse.success(new PageResponse<>(list, PerformanceResponse.class));
+    }
+
+    public ResponseEntity<ApiResponse> calculate(Long id) {
+        List<PerformanceCalculateResponse> resultList = new ArrayList<>();
+        Set<Object[]> set = performanceRepository.calculateByCreateYear(id, StatusConstant.APPROVED_NO);
+        set.forEach(obj -> {
+            PerformanceCalculateResponse performanceCalculateResponse = new PerformanceCalculateResponse();
+            ClientModel user = (ClientModel) obj[0];
+            performanceCalculateResponse.setUser(new ClientNameObject(user));
+            performanceCalculateResponse.setFixedBonus((BigDecimal) obj[1]);
+            performanceCalculateResponse.setPerformanceRatio((BigDecimal) obj[2]);
+            performanceCalculateResponse.setSettleYear(String.valueOf(obj[3]));
+            performanceCalculateResponse.setCount((Long) obj[4]);
+            resultList.add(performanceCalculateResponse);
+        });
+        return ApiResponse.success(ApiResponseCode.SUCCESS, resultList);
     }
 }
