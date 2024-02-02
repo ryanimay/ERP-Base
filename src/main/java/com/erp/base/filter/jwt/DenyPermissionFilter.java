@@ -32,7 +32,7 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
         if (requestedUrl != null) {
             //檢查路徑狀態是否為deny
             Boolean status = cacheService.permissionStatus(requestedUrl);
-            if (status == null) {
+            if (status == null || Boolean.FALSE.equals(status)) {
                 LOG.error("request path: [{0}] is Disable", requestedUrl);
                 FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
                 return;

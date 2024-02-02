@@ -53,8 +53,7 @@ public class PermissionService {
 
     public ResponseEntity<ApiResponse> ban(BanRequest request) {
         permissionRepository.updateStatusById(request.getId(), request.isStatus());
-        cacheService.refreshPermission();
-        cacheService.refreshPermissionMap();
+        cacheService.refreshRolePermission();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
