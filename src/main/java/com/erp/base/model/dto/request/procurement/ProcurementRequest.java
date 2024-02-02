@@ -44,12 +44,12 @@ public class ProcurementRequest extends PageRequestParam implements IBaseDto<Pro
     public Specification<ProcurementModel> getSpecification() {
         GenericSpecifications<ProcurementModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
-                .add("id", "=", id)
-                .add("type", "=", type)
-                .add("name", "like", name)
-                .add("createTime", ">=", startTime)
-                .add("createTime", "<=", endTime)
-                .add("status", "=", status)
+                .add("id", GenericSpecifications.EQ, id)
+                .add("type", GenericSpecifications.EQ, type)
+                .add("name", GenericSpecifications.LIKE, name)
+                .add("createTime", GenericSpecifications.GOE, startTime)
+                .add("createTime", GenericSpecifications.LOE, endTime)
+                .add("status", GenericSpecifications.EQ, status)
                 .build();
     }
 }

@@ -35,9 +35,9 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
     public Specification<ProjectModel> getSpecification() {
         GenericSpecifications<ProjectModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
-                .add("id", "=", id)
-                .add("name", "like", name)
-                .add("type", "=", type)
+                .add("id", GenericSpecifications.EQ, id)
+                .add("name", GenericSpecifications.LIKE, name)
+                .add("type", GenericSpecifications.EQ, type)
                 .build();
     }
 }
