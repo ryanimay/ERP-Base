@@ -40,11 +40,11 @@ public class PerformanceRequest extends PageRequestParam implements IBaseDto<Per
     @Override
     public Specification<PerformanceModel> getSpecification() {
         GenericSpecifications<PerformanceModel> genericSpecifications = new GenericSpecifications<>();
-        return genericSpecifications.add("id", "=", id)
-                .add("user", "=", userId == null ? null : new ClientModel(userId))
-                .add("createTime", ">=", startTime)
-                .add("createTime", "<=", endTime)
-                .add("status", "=", status)
+        return genericSpecifications.add("id", GenericSpecifications.EQ, id)
+                .add("user", GenericSpecifications.EQ, userId == null ? null : new ClientModel(userId))
+                .add("createTime", GenericSpecifications.GOE, startTime)
+                .add("createTime", GenericSpecifications.LOE, endTime)
+                .add("status", GenericSpecifications.EQ, status)
                 .build();
     }
 }

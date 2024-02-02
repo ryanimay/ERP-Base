@@ -46,7 +46,7 @@ public class EditSalaryRootRequest implements IBaseDto<SalaryModel> {
     public Specification<SalaryModel> getSpecification() {
         GenericSpecifications<SalaryModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
-                .add("id", "=", id)
+                .add("id", GenericSpecifications.EQ, id)
                 .build();
     }
 }
