@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -70,13 +69,14 @@ public class SalaryService {
         if (user == null) {
             return ApiResponse.success(ApiResponseCode.USER_NOT_FOUND);
         }
-        List<SalaryModel> salaryList = salaryRepository.findByUserId(user.getId());
-        return ApiResponse.success(ApiResponseCode.SUCCESS, salaryList);
+        List<SalaryModel> salaryList = salaryRepository.findByUserIdAndNotRoot(user.getId());
+        List<SalaryResponse> salaryResponses = salaryList.stream().map(SalaryResponse::new).toList();
+        return ApiResponse.success(ApiResponseCode.SUCCESS, salaryResponses);
     }
 
     public ResponseEntity<ApiResponse> info(long id) {
-        Optional<SalaryModel> salaryModel = salaryRepository.findById(id);
-        return ApiResponse.success(ApiResponseCode.SUCCESS, salaryModel.orElse(null));
+        SalaryModel salaryModel = salaryRepository.findByIdAndRootIsFalse(id);
+        return ApiResponse.success(ApiResponseCode.SUCCESS, new SalaryResponse(salaryModel));
     }
 
     //執行統計彙整的動作
