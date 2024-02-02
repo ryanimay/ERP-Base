@@ -73,24 +73,16 @@ public class RolePermissionCache {
         return allPermission;
     }
 
-    @CacheEvict(key = CacheConstant.ROLE_PERMISSION.PERMISSIONS)
-    public void refreshPermission() {
-    }
-
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSIONS_MAP)
     public Map<String, List<PermissionModel>> getPermissionMap() {
         List<PermissionModel> allPermission = getPermission();
         Map<String, List<PermissionModel>> map = new HashMap<>();
         for (PermissionModel permission : allPermission) {
-            String key = permission.getAuthority().split(":")[0];
+            String key = permission.getAuthority().split("_")[0];
             List<PermissionModel> list = map.computeIfAbsent(key, k -> new ArrayList<>());
             list.add(permission);
         }
         return map;
-    }
-
-    @CacheEvict(key = CacheConstant.ROLE_PERMISSION.PERMISSIONS_MAP)
-    public void refreshPermissionMap() {
     }
 
     //角色擁有權限
@@ -120,10 +112,6 @@ public class RolePermissionCache {
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROUTERS)
     public List<RouterModel> getRouters() {
         return routerService.findAll();
-    }
-
-    @CacheEvict(key = CacheConstant.ROLE_PERMISSION.ROUTERS)
-    public void refreshRouters() {
     }
 
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.DEPARTMENT + " + #id")

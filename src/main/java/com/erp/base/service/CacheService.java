@@ -36,7 +36,15 @@ public class CacheService {
      * 全刷
      */
     public void refreshAllCache() {
+        refreshClient();
+        refreshRolePermission();
+    }
+
+    public void refreshClient(){
         clientCache.refreshAll();
+    }
+
+    public void refreshRolePermission(){
         rolePermissionCache.refreshAll();
     }
 
@@ -66,14 +74,6 @@ public class CacheService {
 
     public Map<String, List<PermissionModel>> getPermissionMap() {
         return rolePermissionCache.getPermissionMap();
-    }
-
-    public void refreshPermission() {
-        rolePermissionCache.refreshPermission();
-    }
-
-    public void refreshPermissionMap() {
-        rolePermissionCache.refreshPermissionMap();
     }
 
     public List<RouterModel> getRouters() {
