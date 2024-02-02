@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
 import com.erp.base.model.dto.request.role.RoleRouterRequest;
@@ -37,7 +38,7 @@ public class RoleController {
     }
 
     @DeleteMapping(Router.ROLE.REMOVE)
-    public ResponseEntity<ApiResponse> remove(@RequestBody RoleRequest request){
+    public ResponseEntity<ApiResponse> remove(IdRequest request){
         return roleService.deleteById(request);
     }
 

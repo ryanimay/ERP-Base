@@ -314,4 +314,8 @@ public class ClientService {
         }
         return null;
     }
+
+    public boolean checkExistsRoleId(Long id) {
+        return clientRepository.checkExistsRoleId(id);
+    }
 }
