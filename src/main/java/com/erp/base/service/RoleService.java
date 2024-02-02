@@ -1,6 +1,7 @@
 package com.erp.base.service;
 
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
 import com.erp.base.model.dto.request.role.RoleRouterRequest;
@@ -24,6 +25,11 @@ import java.util.Set;
 public class RoleService {
     private RoleRepository roleRepository;
     private CacheService cacheService;
+    private ClientService clientService;
+    @Autowired
+    public void setClientService(ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     @Autowired
     public void setRoleService(RoleRepository roleRepository) {
@@ -78,8 +84,11 @@ public class RoleService {
         return null;
     }
 
-    public ResponseEntity<ApiResponse> deleteById(RoleRequest request) {
+    public ResponseEntity<ApiResponse> deleteById(IdRequest request) {
+        boolean exists = clientService.checkExistsRoleId(request.getId());
+        if(exists) return ApiResponse.error(ApiResponseCode.ROLE_EXISTS);
         roleRepository.deleteById(request.getId());
+        cacheService.refreshRole();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 

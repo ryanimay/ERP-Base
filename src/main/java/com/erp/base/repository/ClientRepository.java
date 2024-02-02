@@ -51,4 +51,6 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     List<Object[]> findAllNameAndId();
     @Query("SELECT u.username FROM ClientModel u WHERE u.id = :id")
     String findUsernameById(long id);
+    @Query("SELECT CASE WHEN EXISTS (SELECT 1 FROM ClientModel c JOIN c.roles r WHERE r.id = :id) THEN true ELSE false END FROM ClientModel c")
+    boolean checkExistsRoleId(Long id);
 }
