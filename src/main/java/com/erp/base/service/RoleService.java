@@ -103,6 +103,7 @@ public class RoleService {
         Set<PermissionModel> permissionSet = request.getPermissionSet();
         roleModel.setPermissions(permissionSet);
         roleRepository.save(roleModel);
+        cacheService.refreshRolePermission();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
