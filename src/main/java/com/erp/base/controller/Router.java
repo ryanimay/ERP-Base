@@ -64,6 +64,7 @@ public interface Router {
         String UPDATE = PERFORMANCE + "/update";
         String REMOVE = PERFORMANCE + "/remove";
         String ACCEPT = PERFORMANCE + "/accept";
+        String CALCULATE = PERFORMANCE + "/calculate";
     }
 
     interface ATTEND{

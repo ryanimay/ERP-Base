@@ -47,4 +47,9 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse> accept(@RequestBody PerformanceAcceptRequest request){
         return performanceService.accept(request);
     }
+
+    @GetMapping(Router.PERFORMANCE.CALCULATE)
+    public ResponseEntity<ApiResponse> calculate(Long id) {
+        return performanceService.calculate(id);
+    }
 }
