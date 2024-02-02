@@ -1,6 +1,6 @@
 package com.erp.base.controller;
 
-import com.erp.base.model.dto.request.salary.EditSalaryRootRequest;
+import com.erp.base.model.dto.request.salary.SalaryRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.SalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +19,13 @@ public class SalaryController {
     }
     //root清單
     @GetMapping(Router.SALARY.ROOTS)
-    public ResponseEntity<ApiResponse> roots(){
-        return salaryService.getRoots();
-    }
-    //找rootByUserId
-    @GetMapping(Router.SALARY.ROOT_BY)
-    public ResponseEntity<ApiResponse> rootBy(long id){
-        return salaryService.getRootById(id);
+    public ResponseEntity<ApiResponse> roots(SalaryRequest request){
+        return salaryService.getRoots(request);
     }
     //編輯或新增Root
     @PostMapping(Router.SALARY.EDIT_ROOT)
-    public ResponseEntity<ApiResponse> editRoot(@RequestBody EditSalaryRootRequest editSalaryRootRequest){
-        return salaryService.editRoot(editSalaryRootRequest);
+    public ResponseEntity<ApiResponse> editRoot(@RequestBody SalaryRequest request){
+        return salaryService.editRoot(request);
     }
 
     //----------------------------------以下展示用

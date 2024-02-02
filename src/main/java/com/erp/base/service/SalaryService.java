@@ -5,13 +5,16 @@ import com.erp.base.enums.NotificationEnum;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
-import com.erp.base.model.dto.request.salary.EditSalaryRootRequest;
+import com.erp.base.model.dto.request.salary.SalaryRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.response.SalaryResponse;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.SalaryModel;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.SalaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,32 +30,31 @@ public class SalaryService {
     private SalaryRepository salaryRepository;
     private MessageService messageService;
     private NotificationService notificationService;
+
     @Autowired
-    public void setNotificationService(NotificationService notificationService){
+    public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
+
     @Autowired
-    public void setMessageService(MessageService messageService){
+    public void setMessageService(MessageService messageService) {
         this.messageService = messageService;
     }
+
     @Autowired
-    public void setSalaryRepository(SalaryRepository salaryRepository){
+    public void setSalaryRepository(SalaryRepository salaryRepository) {
         this.salaryRepository = salaryRepository;
     }
 
-    public ResponseEntity<ApiResponse> getRoots() {
-        List<SalaryModel> roots = salaryRepository.findByRoot();
-        return ApiResponse.success(ApiResponseCode.SUCCESS, roots);
+    public ResponseEntity<ApiResponse> getRoots(SalaryRequest request) {
+        Page<SalaryModel> roots = salaryRepository.findAll(request.getSpecification(), request.getPage());
+        return ApiResponse.success(new PageResponse<>(roots, SalaryResponse.class));
     }
 
-    public ResponseEntity<ApiResponse> getRootById(long id) {
-        return ApiResponse.success(ApiResponseCode.SUCCESS, salaryRepository.findByRootAndUserId(id).orElse(null));
-    }
-
-    public ResponseEntity<ApiResponse> editRoot(EditSalaryRootRequest editSalaryRootRequest) {
-        SalaryModel salaryModel = editSalaryRootRequest.toModel();
+    public ResponseEntity<ApiResponse> editRoot(SalaryRequest request) {
+        SalaryModel salaryModel = request.toModel();
         salaryRepository.save(salaryModel);
-        sendMessage(editSalaryRootRequest.getUserId());
+        sendMessage(request.getUserId());
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -65,7 +67,7 @@ public class SalaryService {
 
     public ResponseEntity<ApiResponse> get() {
         ClientModel user = ClientIdentity.getUser();
-        if(user == null) {
+        if (user == null) {
             return ApiResponse.success(ApiResponseCode.USER_NOT_FOUND);
         }
         List<SalaryModel> salaryList = salaryRepository.findByUserId(user.getId());
@@ -76,8 +78,9 @@ public class SalaryService {
         Optional<SalaryModel> salaryModel = salaryRepository.findById(id);
         return ApiResponse.success(ApiResponseCode.SUCCESS, salaryModel.orElse(null));
     }
+
     //執行統計彙整的動作
-    public List<SalaryModel> execCalculate(){
+    public List<SalaryModel> execCalculate() {
         LocalDate now = LocalDate.now();
         List<SalaryModel> roots = salaryRepository.findByRoot();
         List<SalaryModel> newList = new ArrayList<>();
