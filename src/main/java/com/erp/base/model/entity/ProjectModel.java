@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,9 @@ public class ProjectModel implements IBaseModel {
     private String type;//1.開發案 2.維護案
     @Column(name = "create_time")
     private LocalDateTime createTime = DateTool.now();
-    @Column(name = "create_by")
-    private long createBy;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "create_by")
+    private ClientModel createBy;
     @Column(name = "start_time")
     private LocalDateTime startTime;
     @Column(name = "end_time")
@@ -40,7 +42,7 @@ public class ProjectModel implements IBaseModel {
     private String info;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "manager_id")
-    private ClientModel Manager;
+    private ClientModel manager;
     @Column(name = "status", nullable = false)
-    private String status = "1";//1.代辦 2.進行中 3.結案
+    private int status = StatusConstant.PENDING_NO;//1.代辦 2.進行中 3.結案
 }

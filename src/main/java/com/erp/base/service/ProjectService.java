@@ -1,11 +1,12 @@
 package com.erp.base.service;
 
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
-import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.response.ProjectResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.repository.ProjectRepository;
@@ -27,15 +28,15 @@ public class ProjectService {
         this.projectRepository = projectRepository;
     }
 
-    public ResponseEntity<ApiResponse> list(PageRequestParam page) {
-        Page<ProjectModel> all = projectRepository.findAll(page.getPage());
-        return ApiResponse.success(new PageResponse<>(all, ProjectModel.class));
+    public ResponseEntity<ApiResponse> list(ProjectRequest request) {
+        Page<ProjectModel> all = projectRepository.findAll(request.getSpecification(), request.getPage());
+        return ApiResponse.success(new PageResponse<>(all, ProjectResponse.class));
     }
 
     public ResponseEntity<ApiResponse> add(ProjectRequest request) {
         ClientModel user = ClientIdentity.getUser();
         ProjectModel projectModel = request.toModel();
-        projectModel.setCreateBy(user.getId());
+        projectModel.setCreateBy(user);
         projectRepository.save(projectModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
@@ -44,13 +45,12 @@ public class ProjectService {
         Optional<ProjectModel> byId = projectRepository.findById(request.getId());
         if(byId.isPresent()){
             ProjectModel projectModel = byId.get();
-            projectModel.setId(projectModel.getId());
-            projectModel.setName(request.getName());
-            projectModel.setType(request.getType());
-            projectModel.setScheduledStartTime(request.getScheduledStartTime());
-            projectModel.setScheduledEndTime(request.getScheduledEndTime());
-            projectModel.setInfo(request.getInfo());
-            projectModel.setManager(new ClientModel(request.getManagerId()));
+            if(request.getName() != null) projectModel.setName(request.getName());
+            if(request.getType() != null) projectModel.setType(request.getType());
+            if(request.getScheduledStartTime() != null) projectModel.setScheduledStartTime(request.getScheduledStartTime());
+            if(request.getScheduledEndTime() != null) projectModel.setScheduledEndTime(request.getScheduledEndTime());
+            if(request.getInfo() != null) projectModel.setInfo(request.getInfo());
+            if(request.getManagerId() != null) projectModel.setManager(new ClientModel(request.getManagerId()));
             projectRepository.save(projectModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
@@ -58,12 +58,12 @@ public class ProjectService {
     }
 
     public ResponseEntity<ApiResponse> start(Long projectId) {
-        projectRepository.start(projectId, DateTool.now());
+        projectRepository.start(projectId, DateTool.now(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     public ResponseEntity<ApiResponse> done(Long projectId) {
-        projectRepository.done(projectId, DateTool.now());
+        projectRepository.done(projectId, DateTool.now(), StatusConstant.APPROVED_NO, StatusConstant.CLOSED_NO);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

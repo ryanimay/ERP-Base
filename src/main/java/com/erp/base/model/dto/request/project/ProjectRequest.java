@@ -2,15 +2,18 @@ package com.erp.base.model.dto.request.project;
 
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
+import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.model.entity.ClientModel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
 @Data
-public class ProjectRequest implements IBaseDto<ProjectModel> {
+@EqualsAndHashCode(callSuper = false)
+public class ProjectRequest extends PageRequestParam implements IBaseDto<ProjectModel> {
     private Long id;
     private String name;
     private String type;//1.開發案 2.維護案
@@ -18,6 +21,7 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
     private LocalDateTime scheduledEndTime;
     private String info;
     private Long managerId;
+    private Integer status;
 
     @Override
     public ProjectModel toModel() {
@@ -38,6 +42,10 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
                 .add("id", GenericSpecifications.EQ, id)
                 .add("name", GenericSpecifications.LIKE, name)
                 .add("type", GenericSpecifications.EQ, type)
+                .add("scheduledStartTime", GenericSpecifications.GOE, scheduledStartTime)
+                .add("scheduledEndTime", GenericSpecifications.LOE, scheduledEndTime)
+                .add("manager", GenericSpecifications.EQ, managerId == null ? null : new ClientModel(managerId))
+                .add("status", GenericSpecifications.EQ, status)
                 .build();
     }
 }
