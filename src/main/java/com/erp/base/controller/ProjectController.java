@@ -1,6 +1,6 @@
 package com.erp.base.controller;
 
-import com.erp.base.model.dto.request.PageRequestParam;
+import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.ProjectService;
@@ -17,8 +17,8 @@ public class ProjectController {
     }
 
     @GetMapping(Router.PROJECT.LIST)
-    public ResponseEntity<ApiResponse> list(PageRequestParam page){
-        return projectService.list(page);
+    public ResponseEntity<ApiResponse> list(ProjectRequest request){
+        return projectService.list(request);
     }
 
     @PostMapping(Router.PROJECT.ADD)
@@ -32,12 +32,12 @@ public class ProjectController {
     }
 
     @PutMapping(Router.PROJECT.START)
-    public ResponseEntity<ApiResponse> start(@RequestBody Long projectId){
-        return projectService.start(projectId);
+    public ResponseEntity<ApiResponse> start(@RequestBody IdRequest request){
+        return projectService.start(request.getId());
     }
 
     @PutMapping(Router.PROJECT.DONE)
-    public ResponseEntity<ApiResponse> done(@RequestBody Long projectId){
-        return projectService.done(projectId);
+    public ResponseEntity<ApiResponse> done(@RequestBody IdRequest request){
+        return projectService.done(request.getId());
     }
 }
