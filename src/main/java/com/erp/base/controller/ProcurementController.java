@@ -28,4 +28,9 @@ public class ProcurementController {
     public ResponseEntity<ApiResponse> update(@RequestBody ProcurementRequest request){
         return procurementService.update(request);
     }
+
+    @DeleteMapping(Router.PROCUREMENT.DELETE)
+    public ResponseEntity<ApiResponse> delete(Long id){
+        return procurementService.delete(id);
+    }
 }

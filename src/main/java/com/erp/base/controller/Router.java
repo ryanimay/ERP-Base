@@ -98,6 +98,7 @@ public interface Router {
         String LIST = PROCUREMENT + "/list";
         String ADD = PROCUREMENT + "/add";
         String UPDATE = PROCUREMENT + "/update";
+        String DELETE = PROCUREMENT + "/delete";
     }
 
     interface JOB{
