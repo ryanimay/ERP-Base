@@ -50,7 +50,6 @@ public interface Router {
     interface SALARY{
         String SALARY = "/salary";
         String ROOTS = SALARY + "/roots";
-        String ROOT_BY = SALARY + "/rootBy";
         String EDIT_ROOT = SALARY + "/editRoot";
         String GET = SALARY + "/get";
         String INFO = SALARY + "/info";

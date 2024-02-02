@@ -2,19 +2,18 @@ package com.erp.base.model.dto.request.salary;
 
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
-import com.erp.base.model.entity.SalaryModel;
+import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ClientModel;
-import lombok.AllArgsConstructor;
+import com.erp.base.model.entity.SalaryModel;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class EditSalaryRootRequest implements IBaseDto<SalaryModel> {
+@EqualsAndHashCode(callSuper = false)
+public class SalaryRequest extends PageRequestParam implements IBaseDto<SalaryModel> {
     private Long id;
     private Long userId;
     //本薪
@@ -28,7 +27,7 @@ public class EditSalaryRootRequest implements IBaseDto<SalaryModel> {
     //健保
     private BigDecimal nationalHealthInsurance;
     //基底
-    private boolean root = true;
+    private Boolean root = true;
 
     @Override
     public SalaryModel toModel() {
@@ -47,6 +46,7 @@ public class EditSalaryRootRequest implements IBaseDto<SalaryModel> {
         GenericSpecifications<SalaryModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
                 .add("id", GenericSpecifications.EQ, id)
+                .add("user", GenericSpecifications.EQ, userId == null ? null : new ClientModel(userId))
                 .build();
     }
 }
