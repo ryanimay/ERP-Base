@@ -23,20 +23,19 @@ public class ProcurementRequest extends PageRequestParam implements IBaseDto<Pro
     private String name;
     private BigDecimal price;
     private Long count;
+    private String info;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private long createBy;
     private Integer status;
 
     @Override
     public ProcurementModel toModel() {
         ProcurementModel procurementModel = new ProcurementModel();
-        procurementModel.setId(id);
         procurementModel.setType(type);
         procurementModel.setName(name);
         procurementModel.setPrice(price);
         procurementModel.setCount(count);
-        procurementModel.setStatus(status);
+        procurementModel.setInfo(info);
         return procurementModel;
     }
 

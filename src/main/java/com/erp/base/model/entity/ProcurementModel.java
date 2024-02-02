@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.enums.ProcurementConstant;
 import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,10 +31,13 @@ public class ProcurementModel implements IBaseModel {
     private BigDecimal price;
     @Column(name = "count")
     private long count = 0;
+    @Column(name = "info")
+    private String info;
     @Column(name = "create_time")
     private LocalDateTime createTime = DateTool.now();
-    @Column(name = "create_by", nullable = false)
-    private long createBy;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "create_by", nullable = false)
+    private ClientModel createBy;
     @Column(name = "status")
-    private int status = 1;//1.pending 2.done
+    private int status = ProcurementConstant.STATUS_PENDING;
 }
