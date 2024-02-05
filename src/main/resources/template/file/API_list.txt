@@ -52,7 +52,7 @@ Department:
 (/list)部門清單:
 (/staff)部門人員
 (/edit)新增/編輯部門
-(/remove)要設置轉移部門
+(/remove)移除部門，使用中不可移除
 3.薪資管理salary
 管理層:
 (/roots)薪資基礎清單
