@@ -49,10 +49,10 @@ Router:
 (/list)展示清單，有整理分層
 (/role)針對role拿routerIdList
 Department:
-*(/list)部門清單
-*(/add)新增
-*(/update)編輯
-*(remove)要設置轉移部門
+(/list)部門清單:
+(/staff)部門人員
+(/edit)新增/編輯部門
+(/remove)要設置轉移部門
 3.薪資管理salary
 管理層:
 (/roots)薪資基礎清單

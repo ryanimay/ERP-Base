@@ -103,7 +103,7 @@ public class ClientService {
 
         ClientModel entity = dto.toModel();
         //依部門設置註冊用戶的默認權限
-        entity = departmentService.setDefaultRole(entity, dto.getDepartmentId());
+        entity = departmentService.setDepartmentDefaultRole(entity, dto.getDepartmentId());
         entity.setPassword(passwordEncode(entity.getPassword()));
         clientRepository.save(entity);
 
