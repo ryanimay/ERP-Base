@@ -14,7 +14,6 @@ import com.erp.base.model.dto.response.*;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
-import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.PerformanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -122,10 +121,10 @@ public class PerformanceService {
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam request) {
         ClientModel user = ClientIdentity.getUser();
-        Optional<RoleModel> first = user.getRoles().stream().filter(model -> model.getLevel() == RoleConstant.LEVEL_3).findFirst();
+        boolean isManager = user.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<PerformanceModel> list;
         //管理權限全搜不分部門
-        if (first.isPresent()) {
+        if (isManager) {
             list = performanceRepository.findAllByStatus(StatusConstant.PENDING_NO, request.getPage());
         } else {
             list = performanceRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, request.getPage());
