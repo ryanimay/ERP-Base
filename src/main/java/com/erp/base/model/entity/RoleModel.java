@@ -38,7 +38,7 @@ public class RoleModel implements IBaseModel {
     private Set<PermissionModel> permissions = new HashSet<>();
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<RouterModel> routers = new HashSet<>();
 
     public RoleModel(String roleName) {
