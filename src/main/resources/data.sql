@@ -58,7 +58,12 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
              ('JOB_ADD', '任務:新增任務', '/job/add', 'true'),
              ('JOB_UPDATE', '任務:更新任務', '/job/update', 'true'),
              ('JOB_REMOVE', '任務:移除任務', '/job/remove', 'true'),
-             ('CACHE_FRESH', '緩存:刷新', '/cache/refresh', 'true')) AS source (authority, info, url, status)
+             ('CACHE_FRESH', '緩存:刷新', '/cache/refresh', 'true'),
+             ('DEPARTMENT_LIST', '部門:清單', '/department/list', 'true'),
+             ('DEPARTMENT_STAFF', '部門:員工', '/department/staff', 'true'),
+             ('DEPARTMENT_EDIT', '部門:編輯', '/department/edit', 'true'),
+             ('DEPARTMENT_REMOVE', '部門:移除', '/department/remove', 'true')
+             ) AS source (authority, info, url, status)
 WHERE NOT EXISTS(SELECT 1 FROM permission WHERE source.url = permission.url);
 
 -- 預設notification
@@ -114,9 +119,9 @@ WHERE NOT EXISTS(
     );
 
 -- 預設部門
-INSERT INTO department (name, default_role_id)
-SELECT name, default_role_id
+INSERT INTO department (name, default_role)
+SELECT name, default_role
 FROM (VALUES ('departmentA', 2),
              ('departmentB', 2),
-             ('departmentC', 2)) AS source(name, default_role_id)
+             ('departmentC', 2)) AS source(name, default_role)
 WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = department.name);

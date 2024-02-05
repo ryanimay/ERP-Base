@@ -107,4 +107,12 @@ public interface Router {
         String UPDATE = JOB + "/update";
         String REMOVE = JOB + "/remove";
     }
+
+    interface DEPARTMENT{
+        String DEPARTMENT = "/department";
+        String LIST = DEPARTMENT + "/list";
+        String STAFF = DEPARTMENT + "/staff";
+        String EDIT = DEPARTMENT + "/edit";
+        String REMOVE = DEPARTMENT + "/remove";
+    }
 }

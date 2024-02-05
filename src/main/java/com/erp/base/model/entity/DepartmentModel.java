@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "clientModelList")
-public class DepartmentModel implements Serializable {
+public class DepartmentModel implements IBaseModel {
     @Serial
     private static final long serialVersionUID = 2L;
 
@@ -31,12 +30,14 @@ public class DepartmentModel implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "department", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ClientModel> clientModelList;
 
-    @Column(name = "default_role_id")
-    private Long defaultRoleId; //預設權限
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "default_role")
+    @JsonIgnore
+    private RoleModel defaultRole; //預設權限
 
     public DepartmentModel(Long departmentId) {
         this.id = departmentId;

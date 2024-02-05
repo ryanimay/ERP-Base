@@ -33,7 +33,7 @@ public class ClientResponseModel implements Serializable {
     private String createBy;
     private boolean mustUpdatePassword;
     private int attendStatus;
-    private DepartmentResponse department;
+    private DepartmentNameResponse department;
 
     public ClientResponseModel(ClientModel clientModel) {
         this.id = clientModel.getId();
@@ -53,6 +53,6 @@ public class ClientResponseModel implements Serializable {
         this.createBy = createName;
         this.mustUpdatePassword = clientModel.isMustUpdatePassword();
         this.attendStatus = clientModel.getAttendStatus();
-        if(clientModel.getDepartment() != null) this.department = new DepartmentResponse(clientModel.getDepartment());
+        if(clientModel.getDepartment() != null) this.department = new DepartmentNameResponse(clientModel.getDepartment());
     }
 }
