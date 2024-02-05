@@ -16,7 +16,6 @@ import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LeaveModel;
 import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -112,10 +111,10 @@ public class LeaveService {
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
         ClientModel user = ClientIdentity.getUser();
-        Optional<RoleModel> first = user.getRoles().stream().filter(model -> model.getLevel() == RoleConstant.LEVEL_3).findFirst();
+        boolean isManager = user.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門
-        if(first.isPresent()){
+        if(isManager){
             allPending = leaveRepository.findByStatus(StatusConstant.PENDING_NO, page.getPage());
         }else{
             allPending = leaveRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, page.getPage());
