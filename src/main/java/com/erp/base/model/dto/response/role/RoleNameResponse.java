@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleListResponse {
+public class RoleNameResponse {
     private long id;
     private String roleName;
 
-    public RoleListResponse(RoleModel model) {
+    public RoleNameResponse(RoleModel model) {
         this.id = model.getId();
         this.roleName = model.getRoleName();
     }

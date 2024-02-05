@@ -6,7 +6,7 @@ import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
 import com.erp.base.model.dto.request.role.RoleRouterRequest;
 import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.dto.response.role.RoleListResponse;
+import com.erp.base.model.dto.response.role.RoleNameResponse;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.RouterModel;
@@ -47,8 +47,8 @@ public class RoleService {
     }
 
     public ResponseEntity<ApiResponse> roleNameList() {
-        List<RoleListResponse> roleListResponses = cacheService.getRole().values().stream().map(RoleListResponse::new).toList();
-        return ApiResponse.success(roleListResponses);
+        List<RoleNameResponse> roleNameResponses = cacheService.getRole().values().stream().map(RoleNameResponse::new).toList();
+        return ApiResponse.success(roleNameResponses);
     }
 
     public ResponseEntity<ApiResponse> updateName(RoleRequest request) {
