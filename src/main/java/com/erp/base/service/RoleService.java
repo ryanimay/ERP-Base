@@ -86,7 +86,7 @@ public class RoleService {
 
     public ResponseEntity<ApiResponse> deleteById(IdRequest request) {
         boolean exists = clientService.checkExistsRoleId(request.getId());
-        if(exists) return ApiResponse.error(ApiResponseCode.ROLE_EXISTS);
+        if(exists) return ApiResponse.error(ApiResponseCode.ROLE_IN_USE);
         roleRepository.deleteById(request.getId());
         cacheService.refreshRole();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
