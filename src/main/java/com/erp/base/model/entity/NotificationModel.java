@@ -28,11 +28,15 @@ public class NotificationModel implements IBaseModel{
     @Column(name="router")
     private String router;
     @Column(name = "status")//已處理
+    @Builder.Default
     private boolean status = true;
     @Column(name = "global")
+    @Builder.Default
     private boolean global = false;
     @Column(name = "create_time")
+    @Builder.Default
     private LocalDateTime createTime = DateTool.now();
     @Column(name = "create_by")
+    @Builder.Default
     private long createBy = 0;
 }
