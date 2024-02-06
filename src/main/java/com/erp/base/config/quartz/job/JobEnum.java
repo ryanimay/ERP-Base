@@ -4,7 +4,8 @@ import org.quartz.Job;
 
 public enum JobEnum {
     SALARY(SalaryCalculationJob.class, "0 0 10 30 * ?"),
-    ATTEND(AttendJob.class, "0 0 0 * * ?")
+    ATTEND(AttendJob.class, "0 0 0 * * ?"),
+    TEST(TestJob.class, "*/3 * * * * ?")
     ;
     private final Class<? extends Job> jobClazz;
     private final String cron;

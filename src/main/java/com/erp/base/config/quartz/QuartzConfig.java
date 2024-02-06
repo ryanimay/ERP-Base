@@ -14,6 +14,7 @@ import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
+import javax.sql.DataSource;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -22,9 +23,11 @@ import java.util.Objects;
 public class QuartzConfig {
     LogFactory LOG = new LogFactory(QuartzConfig.class);
     private final ApplicationContext applicationContext;
+    private final DataSource quartzDataSource;
     @Autowired
-    public QuartzConfig(ApplicationContext applicationContext) {
+    public QuartzConfig(ApplicationContext applicationContext, DataSource quartzDataSource) {
         this.applicationContext = applicationContext;
+        this.quartzDataSource = quartzDataSource;
     }
 
     @Bean
@@ -32,6 +35,7 @@ public class QuartzConfig {
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
         schedulerFactoryBean.setApplicationContext(applicationContext);
         schedulerFactoryBean.setJobFactory(jobFactory());
+        schedulerFactoryBean.setDataSource(quartzDataSource);
         //存入所有排程任務
         Trigger[] triggers = Arrays.stream(JobEnum.values()).map(this::createTrigger).toArray(Trigger[]::new);
         schedulerFactoryBean.setTriggers(triggers);
