@@ -1,33 +1,39 @@
 package com.erp.base.config.quartz;
 
-import com.erp.base.config.quartz.job.JobEnum;
+import com.erp.base.model.entity.QuartzJobModel;
+import com.erp.base.service.QuartzJobService;
 import com.erp.base.tool.LogFactory;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
-import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 import javax.sql.DataSource;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * 只用來讀現有排程
+ * 新增或比對的任務都在Service做
+ * */
 @Configuration
 public class QuartzConfig {
     LogFactory LOG = new LogFactory(QuartzConfig.class);
     private final ApplicationContext applicationContext;
     private final DataSource quartzDataSource;
+    private final QuartzJobService quartzJobService;
     @Autowired
-    public QuartzConfig(ApplicationContext applicationContext, DataSource quartzDataSource) {
+    public QuartzConfig(ApplicationContext applicationContext, DataSource quartzDataSource, QuartzJobService quartzJobService) {
         this.applicationContext = applicationContext;
         this.quartzDataSource = quartzDataSource;
+        this.quartzJobService = quartzJobService;
     }
 
     @Bean
@@ -36,37 +42,33 @@ public class QuartzConfig {
         schedulerFactoryBean.setApplicationContext(applicationContext);
         schedulerFactoryBean.setJobFactory(jobFactory());
         schedulerFactoryBean.setDataSource(quartzDataSource);
-        //存入所有排程任務
-        Trigger[] triggers = Arrays.stream(JobEnum.values()).map(this::createTrigger).toArray(Trigger[]::new);
-        schedulerFactoryBean.setTriggers(triggers);
+        try{
+            schedulerFactoryBean.setTriggers(getNewTrigger(schedulerFactoryBean.getScheduler()));
+        }catch (SchedulerException e){
+            LOG.error("排程檢查發生錯誤,{0}", e.getMessage());
+        }catch (ClassNotFoundException e){
+            LOG.error("類名轉換發生錯誤,{0}", e.getMessage());
+        }
         return schedulerFactoryBean;
     }
 
-    @Bean
-    public JobFactory jobFactory() {
+    private Trigger[] getNewTrigger(Scheduler scheduler) throws SchedulerException, ClassNotFoundException {
+        List<QuartzJobModel> allModel = quartzJobService.findAll();
+        List<Trigger> triggerList = new ArrayList<>();
+        for (QuartzJobModel model : allModel) {
+            if(!scheduler.checkExists(new TriggerKey(model.getName(), model.getGroup()))){
+                triggerList.add(quartzJobService.createTrigger(model).getObject());
+            }
+        }
+        return triggerList.toArray(new Trigger[0]);
+    }
+
+    private JobFactory jobFactory() {
         return new SpringBeanJobFactory();
     }
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
-    public Trigger createTrigger(JobEnum jobEnum) {
-        CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
-        JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
-        jobDetailFactoryBean.setJobClass(jobEnum.getJobClazz());
-        jobDetailFactoryBean.setDurability(true);
-        jobDetailFactoryBean.afterPropertiesSet();
-        if(jobDetailFactoryBean.getObject() != null){
-            trigger.setJobDetail(Objects.requireNonNull(jobDetailFactoryBean.getObject()));
-            trigger.setCronExpression(jobEnum.getCron());
-        }
-        try{
-            trigger.afterPropertiesSet();
-        } catch (ParseException e) {
-            LOG.error("Quartz Trigger執行錯誤:{0}", e.getMessage());
-        }
-        return trigger.getObject();
+    public Scheduler scheduler() {
+        return schedulerFactoryBean().getObject();
     }
 }

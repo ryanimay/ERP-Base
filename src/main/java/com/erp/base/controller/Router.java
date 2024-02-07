@@ -115,4 +115,12 @@ public interface Router {
         String EDIT = DEPARTMENT + "/edit";
         String REMOVE = DEPARTMENT + "/remove";
     }
+
+    interface QUARTZ_JOB{
+        String QUARTZ_JOB = "/quartz_job";
+        String LIST = QUARTZ_JOB + "/list";
+        String ADD = QUARTZ_JOB + "/add";
+        String UPDATE = QUARTZ_JOB + "/update";
+        String DELETE = QUARTZ_JOB + "/delete";
+    }
 }

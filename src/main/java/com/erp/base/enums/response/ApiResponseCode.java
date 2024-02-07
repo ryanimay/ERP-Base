@@ -30,7 +30,9 @@ public enum ApiResponseCode {
     IDENTITY_ERROR(HttpStatus.FORBIDDEN, "response.identityError"),
     SIGN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "response.signFailed"),
     ROLE_IN_USE(HttpStatus.BAD_REQUEST, "response.roleInUse"),
-    DEPARTMENT_IN_USE(HttpStatus.BAD_REQUEST, "response.departmentInUse");
+    DEPARTMENT_IN_USE(HttpStatus.BAD_REQUEST, "response.departmentInUse"),
+    CLASS_NOT_FOUND(HttpStatus.BAD_REQUEST, "response.classNotFound"),
+    SCHEDULER_ERROR(HttpStatus.BAD_REQUEST, "response.schedulerError");
 
     private final int code;
     private final String message;
