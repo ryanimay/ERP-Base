@@ -94,3 +94,8 @@ Department:
 (/add)新增任務，可搜尋(/client/nameList)指派人員
 (/update)編輯任務，可搜尋(/client/nameList)指派人員
 (/delete)刪除任務
+10.排程quartz_job(和上面任務無關，是quartz的排程，做一對一，只用來做簡單控制)
+(/list)現有排程清單、狀態
+(/add)新增排程，程式碼要先加上job實現，新增時要帶上jobClass路徑
+(/update)更動排程時間cron、狀態
+(/delete)刪除排程(job+trigger)
