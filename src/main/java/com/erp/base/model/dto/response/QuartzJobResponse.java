@@ -17,7 +17,7 @@ public class QuartzJobResponse {
     public QuartzJobResponse(QuartzJobModel model) {
         this.id = model.getId();
         this.name = model.getName();
-        this.group = model.getGroup();
+        this.group = model.getGroupName();
         this.cron = model.getCron();
         this.param = model.getParam();
         this.info = model.getInfo();
