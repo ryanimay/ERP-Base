@@ -20,7 +20,7 @@ public class QuartzJobRequest implements IBaseDto<QuartzJobModel> {
     public QuartzJobModel toModel() {
         QuartzJobModel model = new QuartzJobModel();
         model.setName(name);
-        model.setGroup(group == null ? DEFAULT_GROUP : group);
+        model.setGroupName(group == null ? DEFAULT_GROUP : group);
         model.setCron(cron);
         model.setParam(param);
         model.setClassPath(classPath);

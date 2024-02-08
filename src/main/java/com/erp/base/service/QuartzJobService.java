@@ -89,7 +89,7 @@ public class QuartzJobService {
             trigger.setJobDetail(Objects.requireNonNull(jobDetailFactoryBean.getObject()));
             trigger.setCronExpression(model.getCron());
             trigger.setName(model.getName());
-            trigger.setGroup(model.getGroup());
+            trigger.setGroup(model.getGroupName());
         }
         try{
             trigger.afterPropertiesSet();

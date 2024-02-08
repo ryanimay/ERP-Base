@@ -19,8 +19,8 @@ public class QuartzJobModel implements IBaseModel {
     private long id;
     @Column(name = "name")
     private String name;
-    @Column(name = "group")
-    private String group;
+    @Column(name = "group_name")
+    private String groupName;
     @Column(name = "cron")
     private String cron;
     @Column(name = "param")
