@@ -43,11 +43,14 @@ public class QuartzConfig {
         schedulerFactoryBean.setJobFactory(jobFactory());
         schedulerFactoryBean.setDataSource(quartzDataSource);
         try{
+            schedulerFactoryBean.afterPropertiesSet();
             schedulerFactoryBean.setTriggers(getNewTrigger(schedulerFactoryBean.getScheduler()));
         }catch (SchedulerException e){
             LOG.error("排程檢查發生錯誤,{0}", e.getMessage());
         }catch (ClassNotFoundException e){
             LOG.error("類名轉換發生錯誤,{0}", e.getMessage());
+        } catch (Exception e) {
+            LOG.error("排程發生未知錯誤,{0}", e.getMessage());
         }
         return schedulerFactoryBean;
     }
@@ -56,7 +59,7 @@ public class QuartzConfig {
         List<QuartzJobModel> allModel = quartzJobService.findAll();
         List<Trigger> triggerList = new ArrayList<>();
         for (QuartzJobModel model : allModel) {
-            if(!scheduler.checkExists(new TriggerKey(model.getName(), model.getGroup()))){
+            if(!scheduler.checkExists(new TriggerKey(model.getName(), model.getGroupName()))){
                 triggerList.add(quartzJobService.createTrigger(model).getObject());
             }
         }
