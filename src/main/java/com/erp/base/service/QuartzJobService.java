@@ -1,16 +1,14 @@
 package com.erp.base.service;
 
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.quartzJob.QuartzJobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.QuartzJobResponse;
 import com.erp.base.model.entity.QuartzJobModel;
 import com.erp.base.repository.QuartzJobRepository;
 import com.erp.base.tool.LogFactory;
-import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,12 +28,14 @@ public class QuartzJobService {
     LogFactory LOG = new LogFactory(QuartzJobService.class);
     private QuartzJobRepository quartzJobRepository;
     private Scheduler scheduler;
+
     @Autowired
-    public void setQuartzJobRepository(QuartzJobRepository quartzJobRepository){
+    public void setQuartzJobRepository(QuartzJobRepository quartzJobRepository) {
         this.quartzJobRepository = quartzJobRepository;
     }
+
     @Autowired
-    public void setScheduler(@Lazy Scheduler scheduler){
+    public void setScheduler(@Lazy Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 
@@ -52,28 +53,67 @@ public class QuartzJobService {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         QuartzJobModel model = request.toModel();
         quartzJobRepository.save(model);
-        CronTriggerFactoryBean trigger;
-        try{
-            trigger = createTrigger(model);
+        try {
+            CronTriggerFactoryBean trigger = createTrigger(model);
             AddQuartzJob(trigger);
-        }catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             response = ApiResponse.error(ApiResponseCode.CLASS_NOT_FOUND);
-        }catch (SchedulerException e){
+        } catch (SchedulerException e) {
             response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR);
         }
         return response;
     }
 
+    /**
+     * 把新增的任務加到現有排程器內
+     */
     private void AddQuartzJob(CronTriggerFactoryBean trigger) throws SchedulerException {
-        scheduler.scheduleJob((JobDetail)trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
+        scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
     }
 
-    public ResponseEntity<ApiResponse> update() {
-        return null;
+    public ResponseEntity<ApiResponse> update(QuartzJobRequest request) {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        Long id = request.getId();
+        Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
+        if (byId.isPresent()) {
+            QuartzJobModel model = byId.get();
+            if (request.getName() != null) model.setName(request.getName());
+            if (request.getGroup() != null) model.setGroupName(request.getGroup());
+            if (request.getCron() != null) model.setCron(request.getCron());
+            if (request.getParam() != null) model.setParam(request.getParam());
+            if (request.getInfo() != null) model.setInfo(request.getInfo());
+            if (request.getClassPath() != null) model.setClassPath(request.getClassPath());
+            quartzJobRepository.save(model);
+            try {
+                CronTrigger trigger = createTrigger(model).getObject();
+                if (trigger == null) throw new SchedulerException();
+                //更新現有排程器內的任務內容
+                scheduler.rescheduleJob(trigger.getKey(), trigger);
+            } catch (ClassNotFoundException e) {
+                response = ApiResponse.error(ApiResponseCode.CLASS_NOT_FOUND);
+            } catch (SchedulerException e) {
+                response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR);
+            }
+        } else {
+            response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        }
+        return response;
     }
 
-    public ResponseEntity<ApiResponse> delete() {
-        return null;
+    public ResponseEntity<ApiResponse> delete(Long id) {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
+        if (byId.isPresent()) {
+            QuartzJobModel model = byId.get();
+            JobKey jobKey = new JobKey(model.getName(), model.getGroupName());
+            try {
+                scheduler.deleteJob(jobKey);
+            } catch (SchedulerException e) {
+                response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR);
+            }
+            quartzJobRepository.deleteById(id);
+        }
+        return response;
     }
 
     @SuppressWarnings("unchecked")
@@ -83,19 +123,58 @@ public class QuartzJobService {
         CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
         JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
         jobDetailFactoryBean.setJobClass(jobClass);
+        jobDetailFactoryBean.setName(model.getName());
+        jobDetailFactoryBean.setGroup(model.getGroupName());
         jobDetailFactoryBean.setDurability(true);
         jobDetailFactoryBean.afterPropertiesSet();
-        if(jobDetailFactoryBean.getObject() != null){
+        if (jobDetailFactoryBean.getObject() != null) {
             trigger.setJobDetail(Objects.requireNonNull(jobDetailFactoryBean.getObject()));
             trigger.setCronExpression(model.getCron());
             trigger.setName(model.getName());
             trigger.setGroup(model.getGroupName());
         }
-        try{
+        try {
             trigger.afterPropertiesSet();
         } catch (ParseException e) {
             LOG.error("Quartz Trigger執行錯誤:{0}", e.getMessage());
         }
         return trigger;
+    }
+
+    public ResponseEntity<ApiResponse> toggle(IdRequest request) {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        Long id = request.getId();
+        quartzJobRepository.switchStatusById(id);
+        Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
+        if (byId.isPresent()) {
+            QuartzJobModel model = byId.get();
+            boolean status = model.isStatus();
+            JobKey jobKey = new JobKey(model.getName(), model.getGroupName());
+            try {
+                if (status) {
+                    scheduler.resumeJob(jobKey);
+                } else {
+                    scheduler.pauseJob(jobKey);
+                }
+            } catch (SchedulerException e) {
+                response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR);
+            }
+        }
+        return response;
+    }
+
+    public ResponseEntity<ApiResponse> exec(IdRequest request) {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        Long id = request.getId();
+        Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
+        if (byId.isPresent()) {
+            QuartzJobModel model = byId.get();
+            try {
+                scheduler.triggerJob(new JobKey(model.getName(), model.getGroupName()));
+            } catch (SchedulerException e) {
+                response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR);
+            }
+        }
+        return response;
     }
 }
