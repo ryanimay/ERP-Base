@@ -45,6 +45,7 @@ public class QuartzConfig {
         try{
             schedulerFactoryBean.afterPropertiesSet();
             schedulerFactoryBean.setTriggers(getNewTrigger(schedulerFactoryBean.getScheduler()));
+            LOG.info("init quartz scheduler");
         }catch (SchedulerException e){
             LOG.error("排程檢查發生錯誤,{0}", e.getMessage());
         }catch (ClassNotFoundException e){
