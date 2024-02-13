@@ -123,5 +123,6 @@ public interface Router {
         String UPDATE = QUARTZ_JOB + "/update";
         String TOGGLE = QUARTZ_JOB + "/toggle";
         String DELETE = QUARTZ_JOB + "/delete";
+        String EXEC = QUARTZ_JOB + "/exec";
     }
 }
