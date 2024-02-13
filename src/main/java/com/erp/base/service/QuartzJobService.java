@@ -56,6 +56,10 @@ public class QuartzJobService {
         try {
             CronTriggerFactoryBean trigger = createTrigger(model);
             AddQuartzJob(trigger);
+            //如果設置狀態為false就先暫停
+            if(!model.isStatus()){
+                scheduler.pauseJob(Objects.requireNonNull(trigger.getObject()).getJobKey());
+            }
         } catch (ClassNotFoundException e) {
             response = ApiResponse.error(ApiResponseCode.CLASS_NOT_FOUND);
         } catch (SchedulerException e) {
