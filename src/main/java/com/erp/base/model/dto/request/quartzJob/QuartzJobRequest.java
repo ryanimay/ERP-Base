@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 @Data
 public class QuartzJobRequest implements IBaseDto<QuartzJobModel> {
-    private static String DEFAULT_GROUP = "DEFAULT";
+    private Long id;
     private String name;
     private String group;
     private String cron;
@@ -20,7 +20,7 @@ public class QuartzJobRequest implements IBaseDto<QuartzJobModel> {
     public QuartzJobModel toModel() {
         QuartzJobModel model = new QuartzJobModel();
         model.setName(name);
-        model.setGroupName(group == null ? DEFAULT_GROUP : group);
+        model.setGroupName(group);
         model.setCron(cron);
         model.setParam(param);
         model.setClassPath(classPath);
