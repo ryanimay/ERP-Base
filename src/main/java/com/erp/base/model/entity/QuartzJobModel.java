@@ -30,6 +30,6 @@ public class QuartzJobModel implements IBaseModel {
     @Column(name = "class_path")
     private String classPath;
     @Column(name = "status")
-    private boolean status = true;
+    private boolean status = false;//預設為暫停狀態
 }
 
