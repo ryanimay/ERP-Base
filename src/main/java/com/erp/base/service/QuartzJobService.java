@@ -94,6 +94,7 @@ public class QuartzJobService {
                 if (trigger == null) throw new SchedulerException();
                 //更新現有排程器內的任務內容
                 scheduler.rescheduleJob(trigger.getKey(), trigger);
+                updateQuartzTableData(model);
             } catch (ClassNotFoundException e) {
                 response = ApiResponse.error(ApiResponseCode.CLASS_NOT_FOUND);
             } catch (SchedulerException e) {
@@ -120,6 +121,15 @@ public class QuartzJobService {
             quartzJobRepository.deleteById(id);
         }
         return response;
+    }
+
+    //更新預設表中的資料
+    private void updateQuartzTableData(QuartzJobModel model) {
+        String name = model.getName();
+        String cron = model.getCron();
+        String classPath = model.getClassPath();
+        quartzJobRepository.updateFromJobDetails(classPath, name);
+        quartzJobRepository.updateFromCronTriggers(cron, name);
     }
 
     //清除預設表中的資料，避免重啟專案後又讀到
