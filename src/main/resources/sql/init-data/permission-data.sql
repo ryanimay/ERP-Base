@@ -62,6 +62,12 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
              ('DEPARTMENT_LIST', '部門:清單', '/department/list', 'true'),
              ('DEPARTMENT_STAFF', '部門:員工', '/department/staff', 'true'),
              ('DEPARTMENT_EDIT', '部門:編輯', '/department/edit', 'true'),
-             ('DEPARTMENT_REMOVE', '部門:移除', '/department/remove', 'true')
+             ('DEPARTMENT_REMOVE', '部門:移除', '/department/remove', 'true'),
+             ('QUARTZ_LIST', '排程:排程清單', '/quartzJob/list', 'true'),
+             ('QUARTZ_ADD', '排程:新增排程任務', '/quartzJob/add', 'true'),
+             ('QUARTZ_UPDATE', '排程:更新排程任務', '/quartzJob/update', 'true'),
+             ('QUARTZ_TOGGLE', '排程:切換排程狀態', '/quartzJob/toggle', 'true'),
+             ('QUARTZ_DELETE', '排程:刪除排程', '/quartzJob/delete', 'true'),
+             ('QUARTZ_EXEC', '排程:執行一次排程任務', '/quartzJob/exec', 'true')
      ) AS source (authority, info, url, status)
 WHERE NOT EXISTS(SELECT 1 FROM permission WHERE source.url = permission.url);
