@@ -19,6 +19,7 @@
 採購(新增、編輯、狀態)Procurement
 報表excel=====================================
 前端路由(router)和權限相關聯，用作前端設置
+排程任務(quartzJob)
 -----
 用戶註冊(/register)只由有權限者協助添加
 只需要寫username和role，預設密碼和username相同
@@ -99,3 +100,5 @@ Department:
 (/add)新增排程，程式碼要先加上job實現，新增時要帶上jobClass路徑
 (/update)更動排程時間cron、狀態
 (/delete)刪除排程(job+trigger)
+(/toggle)切換排程狀態(暫停/開始)
+(/exec)單次執行排程任務
