@@ -117,7 +117,7 @@ public interface Router {
     }
 
     interface QUARTZ_JOB{
-        String QUARTZ_JOB = "/quartz_job";
+        String QUARTZ_JOB = "/quartzJob";
         String LIST = QUARTZ_JOB + "/list";
         String ADD = QUARTZ_JOB + "/add";
         String UPDATE = QUARTZ_JOB + "/update";
