@@ -20,4 +20,10 @@ public interface QuartzJobRepository extends JpaRepository<QuartzJobModel, Long>
     @Modifying
     @Query(value = "DELETE FROM QRTZ_CRON_TRIGGERS WHERE TRIGGER_NAME = :name",nativeQuery = true)
     void deleteFromCronTriggersByName(String name);
+    @Modifying
+    @Query(value = "UPDATE QRTZ_JOB_DETAILS SET JOB_CLASS_NAME = :classPath WHERE JOB_NAME = :name",nativeQuery = true)
+    void updateFromJobDetails(String classPath, String name);
+    @Modifying
+    @Query(value = "UPDATE QRTZ_CRON_TRIGGERS SET CRON_EXPRESSION = :cron WHERE TRIGGER_NAME = :name",nativeQuery = true)
+    void updateFromCronTriggers(String cron, String name);
 }
