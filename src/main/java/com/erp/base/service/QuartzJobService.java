@@ -81,8 +81,9 @@ public class QuartzJobService {
         Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
         if (byId.isPresent()) {
             QuartzJobModel model = byId.get();
-            if (request.getName() != null) model.setName(request.getName());
-            if (request.getGroup() != null) model.setGroupName(request.getGroup());
+            //有關triggerKey生成，不能更動
+//            if (request.getName() != null) model.setName(request.getName());
+//            if (request.getGroup() != null) model.setGroupName(request.getGroup());
             if (request.getCron() != null) model.setCron(request.getCron());
             if (request.getParam() != null) model.setParam(request.getParam());
             if (request.getInfo() != null) model.setInfo(request.getInfo());
@@ -111,13 +112,21 @@ public class QuartzJobService {
             QuartzJobModel model = byId.get();
             JobKey jobKey = new JobKey(model.getName(), model.getGroupName());
             try {
-                scheduler.deleteJob(jobKey);
+                scheduler.deleteJob(jobKey);//清除伺服器當前排程器內任務
             } catch (SchedulerException e) {
                 response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR);
             }
+            deleteFromQuartzTableByName(model.getName());
             quartzJobRepository.deleteById(id);
         }
         return response;
+    }
+
+    //清除預設表中的資料，避免重啟專案後又讀到
+    private void deleteFromQuartzTableByName(String name){
+        quartzJobRepository.deleteFromJobDetailsByName(name);
+        quartzJobRepository.deleteFromTriggersByName(name);
+        quartzJobRepository.deleteFromCronTriggersByName(name);
     }
 
     @SuppressWarnings("unchecked")
@@ -133,6 +142,7 @@ public class QuartzJobService {
         jobDetailFactoryBean.afterPropertiesSet();
         if (jobDetailFactoryBean.getObject() != null) {
             trigger.setJobDetail(Objects.requireNonNull(jobDetailFactoryBean.getObject()));
+            trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);//錯過觸發點不補執行
             trigger.setCronExpression(model.getCron());
             trigger.setName(model.getName());
             trigger.setGroup(model.getGroupName());
