@@ -11,4 +11,13 @@ public interface QuartzJobRepository extends JpaRepository<QuartzJobModel, Long>
     @Modifying
     @Query("UPDATE QuartzJobModel q SET q.status = CASE WHEN q.status = true THEN false ELSE true END WHERE q.id = :id")
     void switchStatusById(Long id);
+    @Modifying
+    @Query(value = "DELETE FROM QRTZ_JOB_DETAILS WHERE JOB_NAME = :name",nativeQuery = true)
+    void deleteFromJobDetailsByName(String name);
+    @Modifying
+    @Query(value = "DELETE FROM QRTZ_TRIGGERS WHERE TRIGGER_NAME = :name",nativeQuery = true)
+    void deleteFromTriggersByName(String name);
+    @Modifying
+    @Query(value = "DELETE FROM QRTZ_CRON_TRIGGERS WHERE TRIGGER_NAME = :name",nativeQuery = true)
+    void deleteFromCronTriggersByName(String name);
 }
