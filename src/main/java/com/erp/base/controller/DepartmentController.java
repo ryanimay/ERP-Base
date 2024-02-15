@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.department.DepartmentRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.DepartmentService;
@@ -24,12 +25,12 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse> staff(Long id){
         return departmentService.findStaffById(id);
     }
-
+    @Loggable
     @PostMapping(Router.DEPARTMENT.EDIT)
     public ResponseEntity<ApiResponse> edit(@RequestBody DepartmentRequest request){
         return departmentService.edit(request);
     }
-
+    @Loggable
     @DeleteMapping(Router.DEPARTMENT.REMOVE)
     public ResponseEntity<ApiResponse> remove(Long id){
         return departmentService.remove(id);

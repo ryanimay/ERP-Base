@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.service.CacheService;
@@ -18,7 +19,7 @@ public class CacheController {
     public void setCacheService(CacheService cacheService){
         this.cacheService = cacheService;
     }
-
+    @Loggable
     @GetMapping(Router.CACHE.REFRESH)
     public ResponseEntity<ApiResponse> refresh(String cacheKey){
         if(StringUtils.isNotEmpty(cacheKey)){

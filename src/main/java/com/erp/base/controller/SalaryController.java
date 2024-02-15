@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.salary.SalaryRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.SalaryService;
@@ -23,6 +24,7 @@ public class SalaryController {
         return salaryService.getRoots(request);
     }
     //編輯或新增Root
+    @Loggable
     @PostMapping(Router.SALARY.EDIT_ROOT)
     public ResponseEntity<ApiResponse> editRoot(@RequestBody SalaryRequest request){
         return salaryService.editRoot(request);

@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
@@ -27,27 +28,27 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse> list(PerformanceRequest request){
         return performanceService.getList(request);
     }
-
+    @Loggable
     @PostMapping(Router.PERFORMANCE.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody PerformanceRequest request){
         return performanceService.add(request);
     }
-
+    @Loggable
     @PutMapping(Router.PERFORMANCE.UPDATE)
     public ResponseEntity<ApiResponse> update(@RequestBody PerformanceRequest request){
         return performanceService.save(request);
     }
-
+    @Loggable
     @DeleteMapping(Router.PERFORMANCE.REMOVE)
     public ResponseEntity<ApiResponse> remove(Long eventId){
         return performanceService.remove(eventId);
     }
-
+    @Loggable
     @PutMapping(Router.PERFORMANCE.ACCEPT)
     public ResponseEntity<ApiResponse> accept(@RequestBody PerformanceAcceptRequest request){
         return performanceService.accept(request);
     }
-
+    @Loggable
     @GetMapping(Router.PERFORMANCE.CALCULATE)
     public ResponseEntity<ApiResponse> calculate(Long id) {
         return performanceService.calculate(id);

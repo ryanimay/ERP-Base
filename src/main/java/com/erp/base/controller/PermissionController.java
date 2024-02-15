@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.permission.BanRequest;
 import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
@@ -25,7 +26,7 @@ public class PermissionController {
     public ResponseEntity<ApiResponse> rolePermission(long roleId){
         return permissionService.getRolePermission(roleId);
     }
-
+    @Loggable
     @PutMapping(Router.PERMISSION.BAN)
     public ResponseEntity<ApiResponse> ban(@RequestBody BanRequest request){
         return permissionService.ban(request);
