@@ -36,8 +36,14 @@ public class ClientController {
     }
 
     @PutMapping(Router.CLIENT.RESET_PASSWORD)
-    public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest resetRequest) throws MessagingException {
-        return clientService.resetPassword(resetRequest);
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest resetRequest) {
+        ResponseEntity<ApiResponse> response;
+        try{
+            response = clientService.resetPassword(resetRequest);
+        } catch (MessagingException e) {
+            response = ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
+        }
+        return response;
     }
 
     @GetMapping(Router.CLIENT.LIST)
