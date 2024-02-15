@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "749c6bae-82ac-4490-a7aa-ec9a639bbb5f",
+		"_postman_id": "2b45da53-f651-45bc-9cf3-d5ed4a70d79e",
 		"name": "ERP",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31146439"
 	},
 	"item": [
 		{
@@ -3066,6 +3067,48 @@
 								"erp_base",
 								"quartzJob",
 								"exec"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "log",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Refresh-Token",
+								"value": "{{refresh_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/erp_base/log/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"erp_base",
+								"log",
+								"list"
 							]
 						}
 					},
