@@ -125,4 +125,9 @@ public interface Router {
         String DELETE = QUARTZ_JOB + "/delete";
         String EXEC = QUARTZ_JOB + "/exec";
     }
+
+    interface LOG{
+        String LOG = "/log";
+        String LIST = LOG + "/list";
+    }
 }

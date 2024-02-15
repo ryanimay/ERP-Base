@@ -28,3 +28,4 @@
   drop table router_role
   drop table salary
   drop table tracking_job
+  drop table log
