@@ -5,6 +5,7 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.model.entity.ClientModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,14 +14,23 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Schema(description = "專案共用請求")
 public class ProjectRequest extends PageRequestParam implements IBaseDto<ProjectModel> {
+    @Schema(description = "專案ID")
     private Long id;
+    @Schema(description = "專案名稱")
     private String name;
+    @Schema(description = "專案共用請求")
     private String type;//1.開發案 2.維護案
+    @Schema(description = "計畫開始時間")
     private LocalDateTime scheduledStartTime;
+    @Schema(description = "計畫結束時間")
     private LocalDateTime scheduledEndTime;
+    @Schema(description = "內容")
     private String info;
+    @Schema(description = "管理人ID")
     private Long managerId;
+    @Schema(description = "狀態")
     private Integer status;
 
     @Override

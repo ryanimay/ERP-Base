@@ -4,6 +4,7 @@ import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.ClientModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,10 +14,14 @@ import org.springframework.data.jpa.domain.Specification;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "註冊請求")
 public class RegisterRequest implements IBaseDto<ClientModel> {
     @NotBlank(message = "client.userNameNotEmpty")
+    @Schema(description = "用戶名")
     private String username;
+    @Schema(description = "建立人")
     private Long createBy;
+    @Schema(description = "部門ID")
     private Long departmentId;
 
     public ClientModel toModel() {

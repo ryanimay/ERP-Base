@@ -54,6 +54,7 @@ public class SecurityConfig {
 
         //permission表以外的設定
         http.authorizeHttpRequests(request -> request
+                        .requestMatchers("/swagger/swagger-ui.html", "/swagger/swagger-ui/**", "/swagger/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(denyPermissionFilter, UsernamePasswordAuthenticationFilter.class)
