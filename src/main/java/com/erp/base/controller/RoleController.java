@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
@@ -22,11 +23,12 @@ public class RoleController {
     public ResponseEntity<ApiResponse> list(){
         return roleService.roleNameList();
     }
+    @Loggable
     @PutMapping(Router.ROLE.UPDATE)
     public ResponseEntity<ApiResponse> update(@RequestBody RoleRequest request){
         return roleService.updateName(request);
     }
-
+    @Loggable
     @PostMapping(Router.ROLE.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody RoleRequest request){
         return roleService.addRole(request);
@@ -36,7 +38,7 @@ public class RoleController {
     public ResponseEntity<ApiResponse> rolePermission(@RequestBody RolePermissionRequest request){
         return roleService.updateRolePermission(request);
     }
-
+    @Loggable
     @DeleteMapping(Router.ROLE.REMOVE)
     public ResponseEntity<ApiResponse> remove(IdRequest request){
         return roleService.deleteById(request);

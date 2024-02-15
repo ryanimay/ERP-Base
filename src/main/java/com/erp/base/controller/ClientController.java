@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.client.ClientListRequest;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
@@ -65,12 +66,12 @@ public class ClientController {
     public ResponseEntity<ApiResponse> updatePassword(@RequestBody @Valid UpdatePasswordRequest request){
         return clientService.updatePassword(request);
     }
-
+    @Loggable
     @PutMapping(Router.CLIENT.CLIENT_LOCK)
     public ResponseEntity<ApiResponse> clientLock(@RequestBody ClientStatusRequest request){
         return clientService.lockClient(request);
     }
-
+    @Loggable
     @PutMapping(Router.CLIENT.CLIENT_STATUS)
     public ResponseEntity<ApiResponse> clientStatus(@RequestBody ClientStatusRequest request){
         return clientService.clientStatus(request);

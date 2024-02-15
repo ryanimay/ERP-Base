@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
@@ -20,22 +21,22 @@ public class ProjectController {
     public ResponseEntity<ApiResponse> list(ProjectRequest request){
         return projectService.list(request);
     }
-
+    @Loggable
     @PostMapping(Router.PROJECT.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody ProjectRequest request){
         return projectService.add(request);
     }
-
+    @Loggable
     @PutMapping(Router.PROJECT.UPDATE)
     public ResponseEntity<ApiResponse> update(@RequestBody ProjectRequest request){
         return projectService.update(request);
     }
-
+    @Loggable
     @PutMapping(Router.PROJECT.START)
     public ResponseEntity<ApiResponse> start(@RequestBody IdRequest request){
         return projectService.start(request.getId());
     }
-
+    @Loggable
     @PutMapping(Router.PROJECT.DONE)
     public ResponseEntity<ApiResponse> done(@RequestBody IdRequest request){
         return projectService.done(request.getId());

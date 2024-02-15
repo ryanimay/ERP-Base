@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.quartzJob.QuartzJobRequest;
@@ -22,6 +23,7 @@ public class QuartzJobController {
     public ResponseEntity<ApiResponse> list() {
         return quartzJobService.list();
     }
+    @Loggable
     @PostMapping(Router.QUARTZ_JOB.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody QuartzJobRequest request) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -34,6 +36,7 @@ public class QuartzJobController {
         }
         return response;
     }
+    @Loggable
     @PutMapping(Router.QUARTZ_JOB.UPDATE)
     public ResponseEntity<ApiResponse> update(@RequestBody QuartzJobRequest request) {
         ResponseEntity<ApiResponse> response;
@@ -46,6 +49,7 @@ public class QuartzJobController {
         }
         return response;
     }
+    @Loggable
     @PutMapping(Router.QUARTZ_JOB.TOGGLE)
     public ResponseEntity<ApiResponse> toggle(@RequestBody IdRequest request) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -56,6 +60,7 @@ public class QuartzJobController {
         }
         return response;
     }
+    @Loggable
     @DeleteMapping(Router.QUARTZ_JOB.DELETE)
     public ResponseEntity<ApiResponse> delete(Long id) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -66,6 +71,7 @@ public class QuartzJobController {
         }
         return response;
     }
+    @Loggable
     @PostMapping(Router.QUARTZ_JOB.EXEC)
     public ResponseEntity<ApiResponse> exec(@RequestBody IdRequest request) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);

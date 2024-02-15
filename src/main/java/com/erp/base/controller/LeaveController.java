@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
 import com.erp.base.enums.LeaveConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.PageRequestParam;
@@ -28,22 +29,22 @@ public class LeaveController {
     public ResponseEntity<ApiResponse> list(PageRequestParam page){
         return leaveService.list(page);
     }
-
+    @Loggable
     @PostMapping(Router.LEAVE.ADD)
     public ResponseEntity<ApiResponse> add(@RequestBody LeaveRequest leaveRequest){
         return leaveService.add(leaveRequest);
     }
-
+    @Loggable
     @PutMapping(Router.LEAVE.UPDATE)
     public ResponseEntity<ApiResponse> update(@RequestBody LeaveRequest addLeaveRequest){
         return leaveService.update(addLeaveRequest);
     }
-
+    @Loggable
     @DeleteMapping(Router.LEAVE.DELETE)
     public ResponseEntity<ApiResponse> delete(Long id){
         return leaveService.delete(id);
     }
-
+    @Loggable
     @PutMapping(Router.LEAVE.ACCEPT)
     public ResponseEntity<ApiResponse> accept(@RequestBody LeaveAcceptRequest request){
         return leaveService.accept(request);
