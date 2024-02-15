@@ -139,7 +139,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <!-- 修復java8 localDateTime轉換Json錯誤-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
