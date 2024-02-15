@@ -29,7 +29,7 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestedUrl = request.getServletPath();
 
-        if (requestedUrl != null) {
+        if (requestedUrl != null && notEqualSwaggerUrl(requestedUrl)) {
             //檢查路徑狀態是否為deny
             Boolean status = cacheService.permissionStatus(requestedUrl);
             if (status == null || Boolean.FALSE.equals(status)) {
@@ -40,5 +40,9 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean notEqualSwaggerUrl(String requestedUrl) {
+        return !requestedUrl.contains("swagger");
     }
 }

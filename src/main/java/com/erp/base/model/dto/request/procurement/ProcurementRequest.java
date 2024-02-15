@@ -4,6 +4,7 @@ import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ProcurementModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,15 +18,25 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "採購共用請求")
 public class ProcurementRequest extends PageRequestParam implements IBaseDto<ProcurementModel> {
+    @Schema(description = "採購單ID")
     private Long id;
+    @Schema(description = "類型")
     private Integer type;
+    @Schema(description = "品名")
     private String name;
+    @Schema(description = "單價")
     private BigDecimal price;
+    @Schema(description = "數量")
     private Long count;
+    @Schema(description = "描述")
     private String info;
+    @Schema(description = "開始時間")
     private LocalDateTime startTime;
+    @Schema(description = "結束時間")
     private LocalDateTime endTime;
+    @Schema(description = "狀態")
     private Integer status;
 
     @Override

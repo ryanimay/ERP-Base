@@ -6,12 +6,16 @@ import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.quartzJob.QuartzJobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.QuartzJobService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Tag(name = "QuartzJobController", description = "排程相關API")
 public class QuartzJobController {
     private QuartzJobService quartzJobService;
     @Autowired
@@ -20,11 +24,13 @@ public class QuartzJobController {
     }
 
     @GetMapping(Router.QUARTZ_JOB.LIST)
+    @Operation(summary = "排程清單")
     public ResponseEntity<ApiResponse> list() {
         return quartzJobService.list();
     }
     @Loggable
     @PostMapping(Router.QUARTZ_JOB.ADD)
+    @Operation(summary = "新增排程")
     public ResponseEntity<ApiResponse> add(@RequestBody QuartzJobRequest request) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         try {
@@ -38,6 +44,7 @@ public class QuartzJobController {
     }
     @Loggable
     @PutMapping(Router.QUARTZ_JOB.UPDATE)
+    @Operation(summary = "編輯排程")
     public ResponseEntity<ApiResponse> update(@RequestBody QuartzJobRequest request) {
         ResponseEntity<ApiResponse> response;
         try {
@@ -51,7 +58,8 @@ public class QuartzJobController {
     }
     @Loggable
     @PutMapping(Router.QUARTZ_JOB.TOGGLE)
-    public ResponseEntity<ApiResponse> toggle(@RequestBody IdRequest request) {
+    @Operation(summary = "排程狀態切換")
+    public ResponseEntity<ApiResponse> toggle(@Parameter(description = "排程ID") @RequestBody IdRequest request) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         try {
             quartzJobService.toggle(request);
@@ -62,7 +70,8 @@ public class QuartzJobController {
     }
     @Loggable
     @DeleteMapping(Router.QUARTZ_JOB.DELETE)
-    public ResponseEntity<ApiResponse> delete(Long id) {
+    @Operation(summary = "刪除排程")
+    public ResponseEntity<ApiResponse> delete(@Parameter(description = "排程ID") Long id) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         try {
             quartzJobService.delete(id);
@@ -73,7 +82,8 @@ public class QuartzJobController {
     }
     @Loggable
     @PostMapping(Router.QUARTZ_JOB.EXEC)
-    public ResponseEntity<ApiResponse> exec(@RequestBody IdRequest request) {
+    @Operation(summary = "單次執行任務")
+    public ResponseEntity<ApiResponse> exec(@Parameter(description = "排程ID") @RequestBody IdRequest request) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         try {
             quartzJobService.exec(request);

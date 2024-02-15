@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
@@ -86,6 +87,12 @@ public class GlobalExceptionHandler {
             errorMessage = messageSource.getMessage(defaultMessage, arguments, ClientIdentity.getLocale());
         }
         return ApiResponse.error(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseEntity<ApiResponse> insufficientAuthenticationExceptionHandler(InsufficientAuthenticationException e){
+        LOG.error(e.getMessage());
+        return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
     }
 
     @ExceptionHandler(Exception.class)

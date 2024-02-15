@@ -6,6 +6,9 @@ import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.service.ClientService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Tag(name = "ClientController", description = "用戶相關API")
 public class ClientController {
     private final ClientService clientService;
 
@@ -22,22 +26,26 @@ public class ClientController {
     }
 
     @GetMapping(Router.CLIENT.OP_VALID)
+    @Operation(summary = "測試接口")
     public ResponseEntity<ApiResponse> opValid(){
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     @PostMapping(Router.CLIENT.REGISTER)
-    public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest request){
+    @Operation(summary = "註冊")
+    public ResponseEntity<ApiResponse> register(@Parameter(description = "用戶註冊請求") @RequestBody @Valid RegisterRequest request){
         return clientService.register(request);
     }
 
     @PostMapping(Router.CLIENT.LOGIN)
-    public ResponseEntity<ApiResponse> login(@RequestBody @Valid LoginRequest request){
+    @Operation(summary = "登入")
+    public ResponseEntity<ApiResponse> login(@Parameter(description = "用戶登入請求") @RequestBody @Valid LoginRequest request){
         return clientService.login(request);
     }
 
     @PutMapping(Router.CLIENT.RESET_PASSWORD)
-    public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest resetRequest) {
+    @Operation(summary = "重設密碼")
+    public ResponseEntity<ApiResponse> resetPassword(@Parameter(description = "重設密碼請求") @RequestBody @Valid ResetPasswordRequest resetRequest) {
         ResponseEntity<ApiResponse> response;
         try{
             response = clientService.resetPassword(resetRequest);
@@ -48,36 +56,43 @@ public class ClientController {
     }
 
     @GetMapping(Router.CLIENT.LIST)
-    public ResponseEntity<ApiResponse> clientList(@ModelAttribute ClientListRequest param){
+    @Operation(summary = "用戶清單")
+    public ResponseEntity<ApiResponse> clientList(@Parameter(description = "用戶清單請求") @ModelAttribute ClientListRequest param){
         return ApiResponse.success(clientService.list(param));
     }
 
     @GetMapping(Router.CLIENT.GET_CLIENT)
-    public ResponseEntity<ApiResponse> getClient(long id){
+    @Operation(summary = "搜尋單一用戶")
+    public ResponseEntity<ApiResponse> getClient(@Parameter(description = "用戶ID") long id){
         return clientService.findByUserId(id);
     }
 
     @PutMapping(Router.CLIENT.UPDATE)
-    public ResponseEntity<ApiResponse> updateClient(@RequestBody @Valid UpdateClientInfoRequest request){
+    @Operation(summary = "更新用戶")
+    public ResponseEntity<ApiResponse> updateClient(@Parameter(description = "更新用戶請求") @RequestBody @Valid UpdateClientInfoRequest request){
         return clientService.updateUser(request);
     }
 
     @PutMapping(Router.CLIENT.UPDATE_PASSWORD)
-    public ResponseEntity<ApiResponse> updatePassword(@RequestBody @Valid UpdatePasswordRequest request){
+    @Operation(summary = "更新密碼")
+    public ResponseEntity<ApiResponse> updatePassword(@Parameter(description = "更新密碼請求") @RequestBody @Valid UpdatePasswordRequest request){
         return clientService.updatePassword(request);
     }
     @Loggable
     @PutMapping(Router.CLIENT.CLIENT_LOCK)
-    public ResponseEntity<ApiResponse> clientLock(@RequestBody ClientStatusRequest request){
+    @Operation(summary = "用戶鎖定/解鎖")
+    public ResponseEntity<ApiResponse> clientLock(@Parameter(description = "用戶狀態請求") @RequestBody ClientStatusRequest request){
         return clientService.lockClient(request);
     }
     @Loggable
     @PutMapping(Router.CLIENT.CLIENT_STATUS)
-    public ResponseEntity<ApiResponse> clientStatus(@RequestBody ClientStatusRequest request){
+    @Operation(summary = "用戶啟用/停用")
+    public ResponseEntity<ApiResponse> clientStatus(@Parameter(description = "用戶狀態請求") @RequestBody ClientStatusRequest request){
         return clientService.clientStatus(request);
     }
 
     @GetMapping(Router.CLIENT.NAME_LIST)
+    @Operation(summary = "用戶名清單")
     public ResponseEntity<ApiResponse> nameList(){
         return clientService.nameList();
     }

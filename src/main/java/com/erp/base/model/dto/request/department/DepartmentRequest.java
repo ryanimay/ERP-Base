@@ -5,15 +5,20 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.RoleModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Schema(description = "部門共用請求")
 public class DepartmentRequest extends PageRequestParam implements IBaseDto<DepartmentModel> {
+    @Schema(description = "部門ID")
     private Long id;
+    @Schema(description = "部門名稱")
     private String name;
+    @Schema(description = "部門預設權限ID")
     private Long defaultRoleId;
 
 

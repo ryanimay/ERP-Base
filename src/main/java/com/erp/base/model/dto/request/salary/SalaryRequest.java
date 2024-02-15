@@ -5,6 +5,7 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.SalaryModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,20 +14,23 @@ import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Schema(description = "薪資單共用請求")
 public class SalaryRequest extends PageRequestParam implements IBaseDto<SalaryModel> {
+    @Schema(description = "薪資單ID")
     private Long id;
+    @Schema(description = "用戶ID")
     private Long userId;
-    //本薪
+    @Schema(description = "本薪")
     private BigDecimal baseSalary;
-    //餐費
+    @Schema(description = "餐費")
     private BigDecimal mealAllowance;
-    //加給
+    @Schema(description = "加給")
     private BigDecimal bonus;
-    //勞保
+    @Schema(description = "勞保")
     private BigDecimal laborInsurance;
-    //健保
+    @Schema(description = "健保")
     private BigDecimal nationalHealthInsurance;
-    //基底
+    @Schema(description = "是否為薪資設定")
     private Boolean root;
 
     @Override
