@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +30,7 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestedUrl = request.getServletPath();
 
-        if (requestedUrl != null && notEqualSwaggerUrl(requestedUrl)) {
+        if (!StringUtils.isEmpty(requestedUrl) && notEqualSwaggerUrl(requestedUrl)) {
             //檢查路徑狀態是否為deny
             Boolean status = cacheService.permissionStatus(requestedUrl);
             if (status == null || Boolean.FALSE.equals(status)) {
