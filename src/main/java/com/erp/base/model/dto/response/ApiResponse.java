@@ -63,15 +63,15 @@ public class ApiResponse {
     }
 
     public static ResponseEntity<ApiResponse> error(HttpStatus status, Object data){
-        return ResponseEntity.status(status).body(new ApiResponse(status, data));
+        return ResponseEntity.ok().body(new ApiResponse(status, data));
     }
 
     public static ResponseEntity<ApiResponse> error(ApiResponseCode responseCode){
-        return ResponseEntity.status(responseCode.getStatus()).body(new ApiResponse(responseCode));
+        return ResponseEntity.ok().body(new ApiResponse(responseCode));
     }
 
     public static ResponseEntity<ApiResponse> error(ApiResponseCode responseCode, Object data){
-        return ResponseEntity.status(responseCode.getStatus()).body(new ApiResponse(responseCode, data));
+        return ResponseEntity.ok().body(new ApiResponse(responseCode, data));
     }
 
     public static void setMessageResource(MessageSource source) {
