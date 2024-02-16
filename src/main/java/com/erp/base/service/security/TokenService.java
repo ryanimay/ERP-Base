@@ -33,7 +33,7 @@ public class TokenService {
     private static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新
     public static final String REFRESH_TOKEN = "X-Refresh-Token";
     private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr
-    private static final String TOKEN_PROPERTIES_USERNAME = "username";
+    public static final String TOKEN_PROPERTIES_USERNAME = "username";
 
     @Autowired
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
