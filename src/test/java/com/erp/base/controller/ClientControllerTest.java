@@ -7,15 +7,19 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.ClientRepository;
+import com.erp.base.service.CacheService;
+import com.erp.base.service.MailService;
 import com.erp.base.service.security.TokenService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 import redis.embedded.RedisServer;
 
 import java.util.Objects;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest(classes = TestRedisConfiguration.class)
 @TestPropertySource(locations = {
@@ -47,6 +53,12 @@ class ClientControllerTest {
     private ClientRepository repository;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private CacheService cacheService;
+    @MockBean
+    private MailService mailService;
+    @PersistenceContext
+    private EntityManager entityManager;
     private static ClientModel testModel;
     private static final String testJson = """
             {
@@ -63,6 +75,12 @@ class ClientControllerTest {
         testModel = new ClientModel();
         testModel.setUsername("test");
         testModel.setPassword("test");
+        testModel.setEmail("testMail@gmail.com");
+    }
+
+    @BeforeEach
+    void beforeEach(){
+        cacheService.refreshAllCache();
     }
 
     @Test
@@ -204,5 +222,121 @@ class ClientControllerTest {
                     Assertions.assertEquals("test", tokenService.parseToken(refreshToken).get(TokenService.TOKEN_PROPERTIES_USERNAME));
                 });
         repository.deleteById(model.getId());
+    }
+
+    @Test
+    @DisplayName("重設密碼_用戶名為空_錯誤")
+    void resetPassword_requestUserNameBlank_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "用戶名不得為空");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "email": "testtest@gmail.com"
+                        }
+                        """);
+        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("重設密碼_輸入用戶mail為空_錯誤")
+    void resetPassword_requestEmailBlank_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email不得為空");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "username": "test"
+                        }
+                        """);
+        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("重設密碼_輸入用戶mail格式錯誤_錯誤")
+    void resetPassword_invalidEmailFormat_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email格式錯誤");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "username": "test",
+                        "email": "testMail"
+                        }
+                        """);
+        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("重設密碼_用戶不存在_錯誤")
+    void resetPassword_userNotFound_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_USER_OR_EMAIL);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "username": "test",
+                        "email": "testMail@gmail.com"
+                        }
+                        """);
+        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("重設密碼_email不存在_錯誤")
+    void resetPassword_emailNotFound_error() throws Exception {
+        ClientModel save = repository.save(testModel);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_USER_OR_EMAIL);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "username": "test",
+                        "email": "test@gmail.com"
+                        }
+                        """);
+        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("重設密碼_發送email異常_錯誤")
+    void resetPassword_sendEmailException_error() throws Exception {
+        Mockito.doThrow(MessagingException.class).when(mailService).sendMail(any(), any(), any(), any());
+        ClientModel save = repository.save(testModel);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "username": "test",
+                        "email": "testMail@gmail.com"
+                        }
+                        """);
+        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("重設密碼_成功")
+    void resetPassword_ok() throws Exception {
+        ClientModel save = repository.save(testModel);
+        ClientModel cacheClient = cacheService.getClient(testModel.getUsername());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "username": "test",
+                        "email": "testMail@gmail.com"
+                        }
+                        """);
+        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        //驗證資料庫資料
+        entityManager.clear();//事務內清除內建緩存
+        Assertions.assertNotEquals(save.getPassword(), repository.findByUsername(save.getUsername()).getPassword());
+        //驗證緩存刷新
+        Assertions.assertNotEquals(cacheClient.getPassword(), cacheService.getClient(testModel.getUsername()).getPassword());
+        repository.deleteById(save.getId());
     }
 }
