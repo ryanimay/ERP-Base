@@ -47,7 +47,7 @@ public class UserStatusFilter extends OncePerRequestFilter {
     @SuppressWarnings("unchecked")
     private void isUserLockedOrDisabled(HttpServletRequest request, Authentication authentication) {
         Map<String, Object> principal = ObjectTool.convert(authentication.getPrincipal(), Map.class);
-        ClientModel client = (ClientModel) principal.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT);
+        ClientModel client = ObjectTool.convert(principal.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class);
         String requestURL = request.getRequestURL().toString();
         if (client != null && (!(requestURL.contains(CLIENT_LOCK_URL) || requestURL.contains(CLIENT_STATUS_URL)))) checkClient(client);//驗證使用者狀態
     }
