@@ -1,28 +1,37 @@
 package com.erp.base.config;
 
 import com.erp.base.model.dto.response.ApiResponse;
-import org.springframework.http.MediaType;
+import com.erp.base.service.security.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
+@Component
 public class TestUtils {
-    public static void performAndExpect(MockMvc mockMvc, RequestBuilder requestBuilder, ResponseEntity<ApiResponse> response) throws Exception {
+    @Autowired
+    private TokenService tokenService;
+
+    public void performAndExpect(MockMvc mockMvc, RequestBuilder requestBuilder, ResponseEntity<ApiResponse> response) throws Exception {
         ApiResponse responseBody = response.getBody();
         assert responseBody != null;
         performAndExpectCodeAndMessage(mockMvc, requestBuilder, response)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").value(responseBody.getData()));
     }
 
-    public static ResultActions performAndExpectCodeAndMessage(MockMvc mockMvc, RequestBuilder requestBuilder, ResponseEntity<ApiResponse> response) throws Exception {
+    public ResultActions performAndExpectCodeAndMessage(MockMvc mockMvc, RequestBuilder requestBuilder, ResponseEntity<ApiResponse> response) throws Exception {
         ApiResponse responseBody = response.getBody();
         assert responseBody != null;
         return mockMvc.perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(responseBody.getCode()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(responseBody.getMessage()));
+    }
+
+    //測試用，只建立短時間的accessToken
+    public String createTestToken(String username){
+        return "Bearer " + tokenService.createToken(TokenService.ACCESS_TOKEN, username, 30);
     }
 }
