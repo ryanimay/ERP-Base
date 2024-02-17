@@ -24,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -48,6 +49,8 @@ class ClientControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
+    private TestUtils testUtils;
+    @Autowired
     private RedisServer redisServer;
     @Autowired
     private ClientRepository repository;
@@ -60,6 +63,7 @@ class ClientControllerTest {
     @PersistenceContext
     private EntityManager entityManager;
     private static ClientModel testModel;
+    private static ClientModel testModel1;
     private static final String testJson = """
             {
             "username": "test",
@@ -76,6 +80,10 @@ class ClientControllerTest {
         testModel.setUsername("test");
         testModel.setPassword("test");
         testModel.setEmail("testMail@gmail.com");
+        testModel1 = new ClientModel();
+        testModel1.setUsername("test1");
+        testModel1.setPassword("test1");
+        testModel1.setEmail("testMail1@gmail.com");
     }
 
     @BeforeEach
@@ -94,7 +102,7 @@ class ClientControllerTest {
     void testApi_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.OP_VALID);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
@@ -104,7 +112,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}");
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
@@ -115,7 +123,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         repository.deleteById(save.getId());
     }
 
@@ -126,10 +134,9 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         ClientModel model = repository.findByUsername("test");
         Assertions.assertNotNull(model);
-        System.out.println(model);
         repository.deleteById(model.getId());
     }
 
@@ -143,7 +150,7 @@ class ClientControllerTest {
                 .content("""
                         {"password": "test"}
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         repository.deleteById(save.getId());
     }
 
@@ -157,7 +164,7 @@ class ClientControllerTest {
                 .content("""
                         {"username": "test"}
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         repository.deleteById(save.getId());
     }
 
@@ -175,7 +182,7 @@ class ClientControllerTest {
                         {"username": "test",
                         "password": "zzz"}
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         repository.deleteById(model.getId());
     }
 
@@ -186,7 +193,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGIN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
@@ -200,7 +207,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGIN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);
-        ResultActions resultActions = TestUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.username").value("test"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId[0]").value(1))
@@ -235,7 +242,7 @@ class ClientControllerTest {
                         "email": "testtest@gmail.com"
                         }
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
@@ -249,7 +256,7 @@ class ClientControllerTest {
                         "username": "test"
                         }
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
@@ -264,7 +271,7 @@ class ClientControllerTest {
                         "email": "testMail"
                         }
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
@@ -279,7 +286,7 @@ class ClientControllerTest {
                         "email": "testMail@gmail.com"
                         }
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
@@ -295,7 +302,7 @@ class ClientControllerTest {
                         "email": "test@gmail.com"
                         }
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         repository.deleteById(save.getId());
     }
 
@@ -313,7 +320,7 @@ class ClientControllerTest {
                         "email": "testMail@gmail.com"
                         }
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         repository.deleteById(save.getId());
     }
 
@@ -331,12 +338,27 @@ class ClientControllerTest {
                         "email": "testMail@gmail.com"
                         }
                         """);
-        TestUtils.performAndExpect(mockMvc, requestBuilder, response);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
         //驗證資料庫資料
         entityManager.clear();//事務內清除內建緩存
         Assertions.assertNotEquals(save.getPassword(), repository.findByUsername(save.getUsername()).getPassword());
         //驗證緩存刷新
         Assertions.assertNotEquals(cacheClient.getPassword(), cacheService.getClient(testModel.getUsername()).getPassword());
         repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("用戶清單_全搜_成功")
+    @WithMockUser(authorities="CLIENT_LIST")
+    void clientList_findAll_ok() throws Exception {
+        ClientModel save = repository.save(testModel);
+        ClientModel save1 = repository.save(testModel1);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testJson)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        repository.deleteAll();
     }
 }
