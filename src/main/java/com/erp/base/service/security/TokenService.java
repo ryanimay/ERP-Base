@@ -30,7 +30,7 @@ public class TokenService {
     private JwtParser jwtParser;
     private AuthenticationProvider authenticationProvider;
     public static final String ACCESS_TOKEN = "X-Access-Token";
-    private static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新(秒為單位)
+    public static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新(秒為單位)
     public static final String REFRESH_TOKEN = "X-Refresh-Token";
     private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr(秒為單位)
     public static final String TOKEN_PROPERTIES_USERNAME = "username";
@@ -60,12 +60,6 @@ public class TokenService {
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         httpHeaders.add(REFRESH_TOKEN, refreshToken);
         return httpHeaders;
-    }
-
-    public String refreshAccessToken(String refreshToken){
-        Map<String, Object> payload = parseToken(refreshToken);
-        String username = (String) payload.get(TOKEN_PROPERTIES_USERNAME);
-        return createToken(REFRESH_TOKEN, username, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
     public Map<String,Object> parseToken(String token){

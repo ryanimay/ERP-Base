@@ -82,14 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private void authenticationToken(String token) {
         String accessToken = token.replace("Bearer ", "");
-        Map<String, Object> tokenDetail = tokenService.parseToken(accessToken);
-        String username = (String) tokenDetail.get(TokenService.TOKEN_PROPERTIES_USERNAME);
-        ClientModel client = cacheService.getClient(username);
-        Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
-        HashMap<String, Object> principalMap = new HashMap<>();
-        principalMap.put(PRINCIPAL_CLIENT, client);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        tokenService.parseToken(accessToken);
     }
 
     private Collection<? extends GrantedAuthority> getRolePermission(Set<RoleModel> roles) {
@@ -106,9 +99,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader(TokenService.REFRESH_TOKEN);
         if (token != null) {
-            String accessToken = tokenService.refreshAccessToken(token);
+            Map<String, Object> payload = tokenService.parseToken(token);
+            String username = (String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME);
+            String accessToken = tokenService.createToken(TokenService.REFRESH_TOKEN, username, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
             response.setHeader(TokenService.REFRESH_TOKEN, token);
+
+            //刷新Token時進行權限刷新
+            ClientModel client = cacheService.getClient(username);
+            Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
+            HashMap<String, Object> principalMap = new HashMap<>();
+            principalMap.put(PRINCIPAL_CLIENT, client);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
         }
