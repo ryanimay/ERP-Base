@@ -30,9 +30,9 @@ public class TokenService {
     private JwtParser jwtParser;
     private AuthenticationProvider authenticationProvider;
     public static final String ACCESS_TOKEN = "X-Access-Token";
-    private static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新
+    private static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新(秒為單位)
     public static final String REFRESH_TOKEN = "X-Refresh-Token";
-    private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr
+    private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr(秒為單位)
     public static final String TOKEN_PROPERTIES_USERNAME = "username";
 
     @Autowired
@@ -73,7 +73,7 @@ public class TokenService {
         return new HashMap<>(claims);
     }
 
-    private String createToken(String type, String username, int expirationTime) {
+    public String createToken(String type, String username, int expirationTime) {
         //轉毫秒
         long expirationMillis = getExpireMillisecond(expirationTime);
 
