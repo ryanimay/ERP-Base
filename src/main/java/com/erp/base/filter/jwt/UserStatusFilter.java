@@ -4,6 +4,7 @@ import com.erp.base.model.entity.ClientModel;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.tool.LogFactory;
+import com.erp.base.tool.ObjectTool;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +46,7 @@ public class UserStatusFilter extends OncePerRequestFilter {
     }
     @SuppressWarnings("unchecked")
     private void isUserLockedOrDisabled(HttpServletRequest request, Authentication authentication) {
-        Map<String, Object> principal = (Map<String, Object>) (authentication.getPrincipal());
+        Map<String, Object> principal = ObjectTool.convert(authentication.getPrincipal(), Map.class);
         ClientModel client = (ClientModel) principal.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT);
         String requestURL = request.getRequestURL().toString();
         if (!(requestURL.contains(CLIENT_LOCK_URL) || requestURL.contains(CLIENT_STATUS_URL))) checkClient(client);//驗證使用者狀態

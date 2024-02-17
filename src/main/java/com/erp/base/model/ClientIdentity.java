@@ -2,6 +2,7 @@ package com.erp.base.model;
 
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.tool.ObjectTool;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -42,7 +43,7 @@ public class ClientIdentity {
         if(authentication == null) return null;
         Object principal = authentication.getPrincipal();
         if(EMPTY_USER.equals(principal)) return null;
-        Map<String, Object> principalMap = (Map<String, Object>) principal;
+        Map<String, Object> principalMap = ObjectTool.convert(principal, Map.class);
         return principalMap.get(key);
     }
 }
