@@ -49,7 +49,7 @@ public class UserStatusFilter extends OncePerRequestFilter {
         Map<String, Object> principal = ObjectTool.convert(authentication.getPrincipal(), Map.class);
         ClientModel client = (ClientModel) principal.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT);
         String requestURL = request.getRequestURL().toString();
-        if (!(requestURL.contains(CLIENT_LOCK_URL) || requestURL.contains(CLIENT_STATUS_URL))) checkClient(client);//驗證使用者狀態
+        if (client != null && (!(requestURL.contains(CLIENT_LOCK_URL) || requestURL.contains(CLIENT_STATUS_URL)))) checkClient(client);//驗證使用者狀態
     }
 
     /**
