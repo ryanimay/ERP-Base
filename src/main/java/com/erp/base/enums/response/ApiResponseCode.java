@@ -13,7 +13,7 @@ public enum ApiResponseCode {
     USERNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.usernameAlreadyExists"),
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "response.userNotFound"),
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "response.emailAlreadyExists"),
-    UNKNOWN_EMAIL(HttpStatus.BAD_REQUEST, "response.unknownEmail"),
+    UNKNOWN_USER_OR_EMAIL(HttpStatus.BAD_REQUEST, "response.unknownUserOrEmail"),
     RESET_PASSWORD_SUCCESS(HttpStatus.OK, "response.resetPasswordSuccess"),
     UPDATE_PASSWORD_SUCCESS(HttpStatus.OK, "response.updatePasswordSuccess"),
     RESET_PASSWORD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "response.resetPasswordError"),

@@ -199,8 +199,8 @@ public class ClientService {
         return encodeTool.passwordEncode(password);
     }
 
-    private boolean isEmailExists(String email) {
-        return clientRepository.existsByEmail(email);
+    private boolean isUserEmailExists(String username, String email) {
+        return clientRepository.existsByUsernameAndEmail(username, email);
     }
 
     private boolean isUsernameExists(String username) {
@@ -216,12 +216,9 @@ public class ClientService {
     }
 
     private ApiResponseCode checkResetPassword(ResetPasswordRequest resetRequest) {
-        // 檢查使用者名稱是否已存在
-        if (!isUsernameExists(resetRequest.getUsername())) {
-            return ApiResponseCode.USER_NOT_FOUND;
-        }// 檢查使用者Email是否已存在
-        if (!isEmailExists(resetRequest.getEmail())) {
-            return ApiResponseCode.UNKNOWN_EMAIL;
+        // 檢查使用者名稱和對應Email是否已存在
+        if (!isUserEmailExists(resetRequest.getUsername(), resetRequest.getEmail())) {
+            return ApiResponseCode.UNKNOWN_USER_OR_EMAIL;
         }
         return null;
     }
