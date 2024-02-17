@@ -1,6 +1,6 @@
 package com.erp.base.model.dto.response;
 
-import com.erp.base.tool.JsonTool;
+import com.erp.base.tool.ObjectTool;
 import com.erp.base.enums.response.ApiResponseCode;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -13,7 +13,7 @@ public class FilterExceptionResponse {
         response.setStatus(code.getCode());
         response.setContentType("application/json; charset=utf-8");
         ApiResponse apiResponse = new ApiResponse(code);
-        String errorMessage = JsonTool.toJson(apiResponse);
+        String errorMessage = ObjectTool.toJson(apiResponse);
         response.getWriter().write(errorMessage);
     }
 }

@@ -10,7 +10,7 @@ import com.erp.base.service.DepartmentService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
 import com.erp.base.service.RouterService;
-import com.erp.base.tool.JsonTool;
+import com.erp.base.tool.ObjectTool;
 import com.erp.base.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -69,7 +69,7 @@ public class RolePermissionCache {
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSIONS)
     public List<PermissionModel> getPermission() {
         List<PermissionModel> allPermission = permissionService.findAll();
-        LOG.info("all permission: {0}", JsonTool.toJson(allPermission));
+        LOG.info("all permission: {0}", ObjectTool.toJson(allPermission));
         return allPermission;
     }
 

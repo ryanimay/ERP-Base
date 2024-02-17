@@ -7,7 +7,7 @@ import com.erp.base.filter.jwt.UserStatusFilter;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.service.PermissionService;
-import com.erp.base.tool.JsonTool;
+import com.erp.base.tool.ObjectTool;
 import com.erp.base.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -85,7 +85,7 @@ public class SecurityConfig {
     //動態設定所有權限
     private void configurePermission(HttpSecurity http) throws Exception {
         List<PermissionModel> permissions = permissionService.findAll();
-        LOG.info("all permission: {0}", JsonTool.toJson(permissions));
+        LOG.info("all permission: {0}", ObjectTool.toJson(permissions));
         http.authorizeHttpRequests(request -> {
             for (PermissionModel permission : permissions) {
                 String authority = permission.getAuthority();
