@@ -4,7 +4,7 @@ import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.LogModel;
 import com.erp.base.service.LogService;
-import com.erp.base.tool.JsonTool;
+import com.erp.base.tool.ObjectTool;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -47,7 +47,7 @@ public class LoggingAspect {
                 model.setResult(response.getMessage());//成功就只儲存成功信息
             }else{
                 model.setStatus(false);
-                model.setResult(JsonTool.toJson(response));//請求失敗儲存完整返回結果
+                model.setResult(ObjectTool.toJson(response));//請求失敗儲存完整返回結果
             }
         } catch (Throwable e) {
             model.setStatus(false);
@@ -66,7 +66,7 @@ public class LoggingAspect {
 
     private String getRequestArgs(ProceedingJoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
-        return JsonTool.toJson(args);
+        return ObjectTool.toJson(args);
     }
 
     private String getClientIp(HttpServletRequest request) {
