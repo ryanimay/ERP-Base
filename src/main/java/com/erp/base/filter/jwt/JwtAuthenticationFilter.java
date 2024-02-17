@@ -1,5 +1,6 @@
 package com.erp.base.filter.jwt;
 
+import com.erp.base.controller.Router;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
@@ -33,17 +34,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String PRINCIPAL_LOCALE = "locale";
     private TokenService tokenService;
     private CacheService cacheService;
-
+    private static final List<String> noRequiresAuthenticationList = new ArrayList<>();
+    //不須驗證JWT的url
+    static {
+        noRequiresAuthenticationList.add(Router.CLIENT.OP_VALID);
+        noRequiresAuthenticationList.add(Router.CLIENT.REGISTER);
+        noRequiresAuthenticationList.add(Router.CLIENT.LOGIN);
+        noRequiresAuthenticationList.add(Router.CLIENT.RESET_PASSWORD);
+        noRequiresAuthenticationList.add(Router.ROLE.LIST);
+    }
     @Autowired
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
     }
-
     @Autowired
     public void setCacheService(CacheService cacheService) {
         this.cacheService = cacheService;
     }
-
     /**
      * 針對已登入用戶後續存取api做token驗證和例外處理
      */
@@ -51,7 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if (token != null) {
+            if (requiresAuthentication(request.getRequestURI())) {
+                if(token == null) throw new AccessDeniedException("token is empty");
                 authenticationToken(token);
                 refreshToken(request, response);
             }
@@ -65,13 +73,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private boolean requiresAuthentication(String url) {
+        return !noRequiresAuthenticationList.contains(url);
+    }
+
     /**
      * 驗證AccessToken
      */
     private void authenticationToken(String token) {
         String accessToken = token.replace("Bearer ", "");
         Map<String, Object> tokenDetail = tokenService.parseToken(accessToken);
-        String username = (String) tokenDetail.get("username");
+        String username = (String) tokenDetail.get(TokenService.TOKEN_PROPERTIES_USERNAME);
         ClientModel client = cacheService.getClient(username);
         Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
         HashMap<String, Object> principalMap = new HashMap<>();
