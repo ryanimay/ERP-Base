@@ -132,3 +132,11 @@ FROM (VALUES ('departmentA', 2),
              ('departmentB', 2),
              ('departmentC', 2)) AS source(name, default_role)
 WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = department.name);
+
+--模擬登入用戶資料
+INSERT INTO client(username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id)
+SELECT username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id
+FROM (VALUES
+          ('test', 'test', true, false, 'testMail@gmail.com', 0, CURRENT_TIMESTAMP, false, 1, 1)
+      ) AS source(username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id)
+WHERE NOT EXISTS(SELECT 1 FROM client WHERE source.username = client.username);
