@@ -353,7 +353,7 @@ class ClientControllerTest {
     @DisplayName("測試API權限_無JWT_錯誤")
     @WithMockUser(authorities = "CLIENT_LIST")
     void testApiPermission_noJwt_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.INVALID_SIGNATURE);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);
@@ -364,7 +364,7 @@ class ClientControllerTest {
     @DisplayName("測試API權限_JWT錯誤_錯誤")
     @WithMockUser(authorities = "CLIENT_LIST")
     void testApiPermission_jwtError_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.INVALID_SIGNATURE);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);
@@ -375,7 +375,7 @@ class ClientControllerTest {
     @DisplayName("測試API權限_無權限_錯誤")
     void testApiPermission_noAuth_error() throws Exception {
         ClientModel save = repository.save(testModel);
-        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.ACCESS_DENIED);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson)
@@ -599,5 +599,63 @@ class ClientControllerTest {
             resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].roleId", Matchers.arrayContainingInAnyOrder(roles.toArray())));
         }
         repository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("搜單一用戶_成功")
+    @WithMockUser(authorities = "CLIENT_GETCLIENT")
+    void getClient_ok() throws Exception {
+        ClientResponseModel save = new ClientResponseModel(repository.save(testModel));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(save.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(save.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.username").value(save.getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.email").value(save.getEmail()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.lastLoginTime").value(save.getLastLoginTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createTime").value(save.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createBy").value(save.getCreateBy()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.mustUpdatePassword").value(save.isMustUpdatePassword()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.attendStatus").value(save.getAttendStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.department").value(save.getDepartment()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(save.isActive()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(save.isLock()));
+        List<Long> roles = save.getRoleId();
+        if (!roles.isEmpty()) {
+            resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId", Matchers.arrayContainingInAnyOrder(roles.toArray())));
+        }
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("搜單一用戶_未輸入ID_錯誤")
+    @WithMockUser(authorities = "CLIENT_GETCLIENT")
+    void getClient_noId_error() throws Exception {
+        ClientModel save = repository.save(testModel);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_INPUT);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("搜單一用戶_未知ID_錯誤")
+    @WithMockUser(authorities = "CLIENT_GETCLIENT")
+    void getClient_unknownId_error() throws Exception {
+        ClientModel save = repository.save(testModel);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", "99999")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        repository.deleteById(save.getId());
     }
 }
