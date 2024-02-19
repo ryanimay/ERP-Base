@@ -95,6 +95,12 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse> illegalStateExceptionHandler(IllegalStateException e){
+        LOG.error(e.getMessage());
+        return ApiResponse.error(ApiResponseCode.INVALID_INPUT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> globalHandler(Exception e){
         LOG.error(e);//未知錯誤全展開比較好排查
