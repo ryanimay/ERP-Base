@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String token = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (requiresAuthentication(request.getRequestURI())) {
-                if(token == null) throw new AccessDeniedException("token is empty");
+                if(token == null) throw new SignatureException("token is empty");
                 authenticationToken(token);
                 refreshToken(request, response);
             }
