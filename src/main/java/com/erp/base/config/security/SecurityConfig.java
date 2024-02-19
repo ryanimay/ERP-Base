@@ -70,7 +70,7 @@ public class SecurityConfig {
                                     }else if(authException instanceof DisabledException){
                                         FilterExceptionResponse.error(response, ApiResponseCode.CLIENT_DISABLED);
                                     }else{
-                                        FilterExceptionResponse.error(response, ApiResponseCode.INVALID_SIGNATURE);
+                                        FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
                                     }
                                     }
                                 ));
