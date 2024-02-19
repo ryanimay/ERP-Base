@@ -130,7 +130,7 @@ public class ClientService {
             allClient = clientRepository.findAll(param.getPage());
         } else {
             if (param.getType() == 1) {
-                allClient = clientRepository.findByIdContaining(param.getId(), param.getPage());
+                allClient = clientRepository.findById(param.getId(), param.getPage());
             } else if (param.getType() == 2) {
                 allClient = clientRepository.findByUsernameContaining(param.getName(), param.getPage());
             }
