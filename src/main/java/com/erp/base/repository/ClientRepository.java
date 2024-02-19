@@ -28,9 +28,6 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     @Modifying
     @Query("UPDATE ClientModel c SET c.isActive = :status WHERE c.id = :clientId AND c.username = :username")
     int switchClientStatusByIdAndUsername(long clientId, String username, boolean status);
-
-    Page<ClientModel> findByIdContaining(Long id, PageRequest page);
-
     Page<ClientModel> findByUsernameContaining(String name, PageRequest page);
     @Query("SELECT u FROM ClientModel u WHERE u.isActive AND u.isLock = false " +
             "AND NOT EXISTS " +
@@ -53,4 +50,5 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     String findUsernameById(long id);
     @Query("SELECT CASE WHEN EXISTS (SELECT 1 FROM ClientModel c JOIN c.roles r WHERE r.id = :id) THEN true ELSE false END FROM ClientModel c")
     boolean checkExistsRoleId(Long id);
+    Page<ClientModel> findById(Long id, PageRequest page);
 }
