@@ -34,4 +34,12 @@ public class TestUtils {
     public String createTestToken(String username){
         return "Bearer " + tokenService.createToken(TokenService.ACCESS_TOKEN, username, 30);
     }
+
+    public void comparePage(ResultActions resultActions, int pageSize, int totalPage, int totalElements, int PageNum) throws Exception {
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.pageSize").value(pageSize))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.totalPage").value(totalPage))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.totalElements").value(totalElements))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.pageNum").value(PageNum));
+    }
 }
