@@ -2,7 +2,6 @@ package com.erp.base.service.security;
 
 import com.erp.base.model.dto.request.client.LoginRequest;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -17,7 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Key;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,8 +27,7 @@ import java.util.Map;
 @Service
 @Transactional
 public class TokenService {
-    private Key secretKey;
-    private JwtParser jwtParser;
+    private KeyPair keyPair;
     private AuthenticationProvider authenticationProvider;
     public static final String ACCESS_TOKEN = "X-Access-Token";
     public static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新(秒為單位)
@@ -42,8 +42,7 @@ public class TokenService {
 
     @PostConstruct
     public void init(){
-        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);//伺服器重啟時刷新
-        jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
+        keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256); //做非對稱，伺服器重啟時刷新
     }
 
     public HttpHeaders createToken(LoginRequest request){
@@ -62,11 +61,14 @@ public class TokenService {
         return httpHeaders;
     }
 
+    //公鑰解密
     public Map<String,Object> parseToken(String token){
-        Claims claims = jwtParser.parseClaimsJws(token).getBody();
+        PublicKey publicKey = keyPair.getPublic();
+        Claims claims = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token).getBody();
         return new HashMap<>(claims);
     }
 
+    //私鑰解密
     public String createToken(String type, String username, int expirationTime) {
         //轉毫秒
         long expirationMillis = getExpireMillisecond(expirationTime);
@@ -79,9 +81,10 @@ public class TokenService {
         claims.put(TOKEN_PROPERTIES_USERNAME, username);
 
         // 簽名後產生 token
+        PrivateKey privateKey = keyPair.getPrivate();
         return Jwts.builder()
                 .setClaims(claims)
-                .signWith(secretKey)
+                .signWith(privateKey)
                 .compact();
     }
 
