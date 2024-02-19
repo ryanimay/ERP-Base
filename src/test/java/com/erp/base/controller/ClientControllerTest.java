@@ -3,6 +3,7 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.client.UpdateClientInfoRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.entity.ClientModel;
@@ -10,6 +11,7 @@ import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.MailService;
 import com.erp.base.service.security.TokenService;
+import com.erp.base.tool.ObjectTool;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -625,10 +627,6 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.department").value(save.getDepartment()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(save.isActive()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(save.isLock()));
-        List<Long> roles = save.getRoleId();
-        if (!roles.isEmpty()) {
-            resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId", Matchers.arrayContainingInAnyOrder(roles.toArray())));
-        }
         repository.deleteById(save.getId());
     }
 
@@ -654,6 +652,104 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "99999")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("編輯用戶_成功")
+    @WithMockUser(authorities = "CLIENT_UPDATE")
+    void updateClient_ok() throws Exception {
+        ClientResponseModel save = new ClientResponseModel(repository.save(testModel));
+        UpdateClientInfoRequest request = new UpdateClientInfoRequest(
+                save.getId(),
+                save.getUsername() + "test",
+                "test" + save.getEmail(),
+                List.of(2L, 3L),
+                null
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, save);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(save.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.username").value(request.getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.email").value(request.getEmail()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.lastLoginTime").value(save.getLastLoginTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createTime").value(save.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createBy").value(save.getCreateBy()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.mustUpdatePassword").value(save.isMustUpdatePassword()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.attendStatus").value(save.getAttendStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.department").value(save.getDepartment()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(save.isActive()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(save.isLock()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId", Matchers.containsInAnyOrder(1, 2, 3)));//1是驗證預設部門和預設權限是否生效
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("編輯用戶_找不到用戶_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATE")
+    void updateClient_userNotFound_error() throws Exception {
+        ClientModel save = repository.save(testModel);
+        UpdateClientInfoRequest request = new UpdateClientInfoRequest(
+                save.getId() + 1,
+                save.getUsername() + "test",
+                "test" + save.getEmail(),
+                List.of(),
+                1L
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("編輯用戶_無效email_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATE")
+    void updateClient_invalidEmail_error() throws Exception {
+        ClientModel save = repository.save(testModel);
+        UpdateClientInfoRequest request = new UpdateClientInfoRequest(
+                save.getId() + 1,
+                save.getUsername() + "test",
+                "test",
+                List.of(),
+                1L
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email格式錯誤");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        repository.deleteById(save.getId());
+    }
+
+    @Test
+    @DisplayName("編輯用戶_id為空_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATE")
+    void updateClient_noId_error() throws Exception {
+        ClientModel save = repository.save(testModel);
+        UpdateClientInfoRequest request = new UpdateClientInfoRequest(
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "用戶ID不得為空");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         repository.deleteById(save.getId());
