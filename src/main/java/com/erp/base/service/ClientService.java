@@ -12,7 +12,6 @@ import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.mail.ResetPasswordModel;
@@ -229,14 +228,13 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> updateUser(UpdateClientInfoRequest request) {
-        ClientModel client = cacheService.getClient(request.getUsername());
-        if (client == null) throw new UsernameNotFoundException("User Not Found");
-        String newMail = request.getEmail();
-        if (newMail != null && !newMail.equals(client.getEmail())) {
-            client.setEmail(newMail);
-        }
-        if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
-        if (request.getDepartmentId() != null) client.setDepartment(new DepartmentModel(request.getDepartmentId()));
+        Optional<ClientModel> clientOptional = clientRepository.findById(request.getId());
+        if (clientOptional.isEmpty()) throw new UsernameNotFoundException("User Not Found");
+        ClientModel client = clientOptional.get();
+        if (request.getUsername() != null) client.setUsername(request.getUsername());
+        if (request.getEmail() != null) client.setEmail(request.getEmail());
+        client.setRoles(getRoles(request.getRoles()));
+        departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
         ClientModel save = clientRepository.save(client);
         cacheService.refreshClient(client.getUsername());
         //非本人就發送通知
@@ -246,7 +244,7 @@ public class ClientService {
 
     private void checkUserOrSendMessage(ClientModel client) {
         ClientModel user = ClientIdentity.getUser();
-        if (user.getId() != client.getId()) {
+        if (user != null && user.getId() != client.getId()) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.UPDATE_USER, user.getUsername());
             MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(client.getId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
@@ -254,6 +252,7 @@ public class ClientService {
     }
 
     private Set<RoleModel> getRoles(List<Long> roles) {
+        if(roles == null) return Set.of();
         return roles.stream().map(RoleModel::new).collect(Collectors.toSet());
     }
 

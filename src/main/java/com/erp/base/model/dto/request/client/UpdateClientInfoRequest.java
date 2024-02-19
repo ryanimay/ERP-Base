@@ -2,7 +2,7 @@ package com.erp.base.model.dto.request.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,11 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @Schema(description = "更新用戶請求")
 public class UpdateClientInfoRequest {
-    @NotBlank(message = "client.userNameNotEmpty")
+    @NotNull(message = "client.userIdNotEmpty")
+    @Schema(description = "用戶id")
+    private Long id;
     @Schema(description = "用戶名")
     private String username;
-
-    @NotBlank(message = "client.emailNotEmpty")
     @Email(message = "client.invalidEmailFormat")
     @Schema(description = "用戶mail")
     private String email;
