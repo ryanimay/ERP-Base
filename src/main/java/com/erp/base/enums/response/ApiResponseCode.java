@@ -33,7 +33,8 @@ public enum ApiResponseCode {
     DEPARTMENT_IN_USE(HttpStatus.BAD_REQUEST, "response.departmentInUse"),
     CLASS_NOT_FOUND(HttpStatus.BAD_REQUEST, "response.classNotFound"),
     SCHEDULER_ERROR(HttpStatus.BAD_REQUEST, "response.schedulerError"),
-    INVALID_INPUT(HttpStatus.BAD_REQUEST, "response.invalidInput");
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, "response.invalidInput"),
+    UPDATE_ERROR(HttpStatus.BAD_REQUEST, "response.updateError");
 
     private final int code;
     private final String message;
