@@ -1,62 +1,72 @@
 package com.erp.base.service.security;
 
+import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.CacheService;
+import com.erp.base.tool.ObjectTool;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
-@Transactional
+@NoArgsConstructor
 public class UserDetailImpl implements UserDetails {
-    private ClientModel clientModel;
+    private Map<String, Object> dataMap;
+    @JsonIgnore
     private CacheService cacheService;
 
     public UserDetailImpl(ClientModel clientModel, CacheService cacheService) {
-        this.clientModel = clientModel;
         this.cacheService = cacheService;
+        this.dataMap = new HashMap<>();
+        this.dataMap.put(JwtAuthenticationFilter.PRINCIPAL_CLIENT, clientModel);
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
-        return clientModel.getUsername();
+        return ObjectTool.convert(dataMap.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class).getUsername();
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
-        return clientModel.getPassword();
+        return ObjectTool.convert(dataMap.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class).getPassword();
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
-        return clientModel.isActive();
+        return ObjectTool.convert(dataMap.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class).isActive();
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
-        return !clientModel.isLock();
+        return !ObjectTool.convert(dataMap.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class).isLock();
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRolePermission(clientModel.getRoles());
+        return getRolePermission(ObjectTool.convert(dataMap.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class).getRoles());
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
