@@ -8,7 +8,9 @@ import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
+import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
+import com.erp.base.tool.ObjectTool;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +22,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -106,12 +109,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setHeader(TokenService.REFRESH_TOKEN, token);
 
             //刷新Token時進行權限刷新
+            SecurityContext context = SecurityContextHolder.getContext();
+            UserDetailImpl userDetails = ObjectTool.convert(context.getAuthentication().getPrincipal(), UserDetailImpl.class);
             ClientModel client = cacheService.getClient(username);
             Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
-            HashMap<String, Object> principalMap = new HashMap<>();
+            Map<String, Object> principalMap = userDetails.getDataMap();
             principalMap.put(PRINCIPAL_CLIENT, client);
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            context.setAuthentication(authentication);
         } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
         }

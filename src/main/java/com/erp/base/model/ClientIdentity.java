@@ -2,6 +2,7 @@ package com.erp.base.model;
 
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.ObjectTool;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,13 +38,14 @@ public class ClientIdentity {
         Locale locale = (Locale) getPrincipal(JwtAuthenticationFilter.PRINCIPAL_LOCALE);
         return locale == null ? defaultLocale : locale;
     }
-    @SuppressWarnings("unchecked")
+
     private static Object getPrincipal(String key){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null) return null;
         Object principal = authentication.getPrincipal();
         if(EMPTY_USER.equals(principal)) return null;
-        Map<String, Object> principalMap = ObjectTool.convert(principal, Map.class);
-        return principalMap.get(key);
+        UserDetailImpl userDetails = ObjectTool.convert(principal, UserDetailImpl.class);
+        Map<String, Object> dataMap = userDetails.getDataMap();
+        return dataMap == null ? null : dataMap.get(key);
     }
 }
