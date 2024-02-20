@@ -9,6 +9,7 @@ import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.tool.DateTool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +32,11 @@ public class AttendService {
         this.attendRepository = attendRepository;
     }
 
-    public ResponseEntity<ApiResponse> signIn() {
+    public ResponseEntity<ApiResponse> signIn() throws IncorrectResultSizeDataAccessException {
         return sign(1);
     }
 
-    public ResponseEntity<ApiResponse> signOut() {
+    public ResponseEntity<ApiResponse> signOut() throws IncorrectResultSizeDataAccessException {
         return sign(2);
     }
 
@@ -56,7 +57,7 @@ public class AttendService {
                 status = 3;
             }
         }
-        if(count != 1) return ApiResponse.error(ApiResponseCode.SIGN_FAILED);
+        if(count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
         ClientModel clientModel = clientService.updateClientAttendStatus(user.getId(), status);
 
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(clientModel));
