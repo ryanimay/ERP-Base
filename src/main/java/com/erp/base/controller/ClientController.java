@@ -92,13 +92,28 @@ public class ClientController {
     @PutMapping(Router.CLIENT.CLIENT_LOCK)
     @Operation(summary = "用戶鎖定/解鎖")
     public ResponseEntity<ApiResponse> clientLock(@Parameter(description = "用戶狀態請求") @RequestBody ClientStatusRequest request){
-        return clientService.lockClient(request);
+        ResponseEntity<ApiResponse> response;
+        try{
+            response = clientService.lockClient(request);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            LOG.error(e.getMessage());
+            response = ApiResponse.error(ApiResponseCode.UPDATE_ERROR);
+        }
+        return response;
     }
+
     @Loggable
     @PutMapping(Router.CLIENT.CLIENT_STATUS)
     @Operation(summary = "用戶啟用/停用")
     public ResponseEntity<ApiResponse> clientStatus(@Parameter(description = "用戶狀態請求") @RequestBody ClientStatusRequest request){
-        return clientService.clientStatus(request);
+        ResponseEntity<ApiResponse> response;
+        try{
+            response = clientService.clientStatus(request);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            LOG.error(e.getMessage());
+            response = ApiResponse.error(ApiResponseCode.UPDATE_ERROR);
+        }
+        return response;
     }
 
     @GetMapping(Router.CLIENT.NAME_LIST)
