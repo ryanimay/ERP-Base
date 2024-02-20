@@ -21,6 +21,7 @@ import com.erp.base.tool.DateTool;
 import com.erp.base.tool.EncodeTool;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -160,17 +161,16 @@ public class ClientService {
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
     }
 
-    public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
+    public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) throws IncorrectResultSizeDataAccessException {
         ClientModel client = ClientIdentity.getUser();
         if (client == null || checkIdentity(client.getId(), request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
         String username = client.getUsername();
         if (checkNotEqualsOldPassword(client.getId(), request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
         int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail());
-        if (result == 1) {
-            cacheService.refreshClient(username);
-            return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
-        }
-        return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
+        //如果不為1代表更改有問題，拋出並回滾
+        if (result != 1) throw new IncorrectResultSizeDataAccessException(1, result);
+        cacheService.refreshClient(username);
+        return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
     }
 
     /**

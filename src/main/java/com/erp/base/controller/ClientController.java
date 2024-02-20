@@ -1,23 +1,25 @@
 package com.erp.base.controller;
 
 import com.erp.base.aspect.Loggable;
-import com.erp.base.model.dto.request.client.ClientListRequest;
+import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.service.ClientService;
+import com.erp.base.tool.LogFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "ClientController", description = "用戶相關API")
 public class ClientController {
+    LogFactory LOG = new LogFactory(ClientController.class);
     private final ClientService clientService;
 
     @Autowired
@@ -50,6 +52,7 @@ public class ClientController {
         try{
             response = clientService.resetPassword(resetRequest);
         } catch (MessagingException e) {
+            LOG.error(e.getMessage());
             response = ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
         }
         return response;
@@ -76,7 +79,14 @@ public class ClientController {
     @PutMapping(Router.CLIENT.UPDATE_PASSWORD)
     @Operation(summary = "更新密碼")
     public ResponseEntity<ApiResponse> updatePassword(@Parameter(description = "更新密碼請求") @RequestBody @Valid UpdatePasswordRequest request){
-        return clientService.updatePassword(request);
+        ResponseEntity<ApiResponse> response;
+        try{
+            response = clientService.updatePassword(request);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            LOG.error(e.getMessage());
+            response = ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
+        }
+        return response;
     }
     @Loggable
     @PutMapping(Router.CLIENT.CLIENT_LOCK)
