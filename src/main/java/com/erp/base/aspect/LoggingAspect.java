@@ -2,6 +2,7 @@ package com.erp.base.aspect;
 
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LogModel;
 import com.erp.base.service.LogService;
 import com.erp.base.tool.ObjectTool;
@@ -12,6 +13,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -35,7 +37,9 @@ public class LoggingAspect {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         model.setUrl(getRequestUrl(request));
         model.setParams(getRequestArgs(joinPoint));
-        model.setUserName(ClientIdentity.getUser().getUsername());
+        ClientModel user = ClientIdentity.getUser();
+        if(user == null) throw new UsernameNotFoundException("LoggingAspect:USER_NOT_FOUND");
+        model.setUserName(user.getUsername());
         model.setIp(getClientIp(request));
 
         ResponseEntity<ApiResponse> result;
