@@ -11,17 +11,17 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 @Aspect
 @Component
 public class LoggingAspect {
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
     private LogService logService;
     @Autowired
     public void setLogService(LogService logService){
@@ -59,9 +59,8 @@ public class LoggingAspect {
         return result;
     }
 
-    private String getRequestUrl(HttpServletRequest request) {
-        String url = request.getRequestURL().toString();
-        return url.split(contextPath)[1];
+    private String getRequestUrl(HttpServletRequest request) throws URISyntaxException {
+        return extractPath(request.getRequestURI());
     }
 
     private String getRequestArgs(ProceedingJoinPoint joinPoint) {
@@ -114,5 +113,10 @@ public class LoggingAspect {
     
     private boolean checkIp(String clientIp){
         return StringUtils.isEmpty(clientIp) || "unknown".equalsIgnoreCase(clientIp);
+    }
+
+    public static String extractPath(String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        return uri.getPath();
     }
 }
