@@ -7,6 +7,7 @@ import com.erp.base.model.dto.request.client.ClientStatusRequest;
 import com.erp.base.model.dto.request.client.UpdateClientInfoRequest;
 import com.erp.base.model.dto.request.client.UpdatePasswordRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.ClientRepository;
@@ -996,5 +997,22 @@ class ClientControllerTest {
         Optional<ClientModel> byId = repository.findById(1L);
         Assertions.assertTrue(byId.isPresent());
         Assertions.assertFalse(byId.get().isActive());
+    }
+
+    @Test
+    @DisplayName("用戶名稱清單_成功")
+    @WithMockUser(authorities = "CLIENT_NAMELIST")
+    void clientNameList_ok() throws Exception {
+        Optional<ClientModel> byId = repository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        ClientNameObject clientNameObject = new ClientNameObject(byId.get());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.NAME_LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(clientNameObject.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].username").value(clientNameObject.getUsername()));
     }
 }
