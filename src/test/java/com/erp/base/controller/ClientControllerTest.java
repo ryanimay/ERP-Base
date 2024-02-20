@@ -3,6 +3,7 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.client.ClientStatusRequest;
 import com.erp.base.model.dto.request.client.UpdateClientInfoRequest;
 import com.erp.base.model.dto.request.client.UpdatePasswordRequest;
 import com.erp.base.model.dto.response.ApiResponse;
@@ -30,7 +31,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
@@ -860,7 +860,6 @@ class ClientControllerTest {
                 .content(ObjectTool.toJson(request))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
-        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -884,7 +883,84 @@ class ClientControllerTest {
         Optional<ClientModel> byId = repository.findById(1L);
         Assertions.assertTrue(byId.isPresent());
         Assertions.assertTrue(encodeTool.match("Aa123123", byId.get().getPassword()));
-        SecurityContextHolder.clearContext();
         Mockito.reset(encodeTool);
+    }
+
+    @Test
+    @DisplayName("用戶鎖定_更新失敗_錯誤")
+    @WithUserDetails("test")
+    void lockUser_invalidInput_error() throws Exception {
+        ClientStatusRequest request = new ClientStatusRequest(
+                2L,
+                "test",
+                false
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UPDATE_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_LOCK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("用戶鎖定_成功")
+    @WithUserDetails("test")
+    void lockUser_ok() throws Exception {
+        ClientStatusRequest request = new ClientStatusRequest(
+                1L,
+                "test",
+                true
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_LOCK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        //驗證資料庫資料
+        entityManager.clear();//事務內清除內建緩存
+        Optional<ClientModel> byId = repository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        Assertions.assertTrue(byId.get().isLock());
+    }
+
+    @Test
+    @DisplayName("用戶停用_更新失敗_錯誤")
+    @WithUserDetails("test")
+    void userStatus_invalidInput_error() throws Exception {
+        ClientStatusRequest request = new ClientStatusRequest(
+                2L,
+                "test",
+                true
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UPDATE_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_STATUS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("用戶停用_成功")
+    @WithUserDetails("test")
+    void userStatus_ok() throws Exception {
+        ClientStatusRequest request = new ClientStatusRequest(
+                1L,
+                "test",
+                false
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_STATUS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        //驗證資料庫資料
+        entityManager.clear();//事務內清除內建緩存
+        Optional<ClientModel> byId = repository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        Assertions.assertFalse(byId.get().isActive());
     }
 }
