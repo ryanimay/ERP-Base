@@ -31,7 +31,7 @@ public class ClientIdentity {
     private static final String EMPTY_USER = "anonymousUser";//SpringSecurity預設未登入使用者字段
 
     public static ClientModel getUser(){
-        return (ClientModel) getPrincipal(JwtAuthenticationFilter.PRINCIPAL_CLIENT);
+        return ObjectTool.convert(getPrincipal(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class);
     }
 
     public static Locale getLocale(){
