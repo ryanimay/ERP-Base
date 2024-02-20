@@ -203,6 +203,40 @@ class ClientControllerTest {
     }
 
     @Test
+    @DisplayName("測試登入_用戶遭鎖定_失敗")
+    void login_userLock_error() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testJson));
+        ClientModel model = repository.findByUsername("testRegister");
+        repository.lockClientByIdAndUsername(model.getId(), model.getUsername(), true);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.CLIENT_LOCKED);
+        entityManager.clear();
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGIN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testJson);
+        testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        repository.deleteById(model.getId());
+    }
+
+    @Test
+    @DisplayName("測試登入_用戶停用_失敗")
+    void login_userStatusFalse_error() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testJson));
+        ClientModel model = repository.findByUsername("testRegister");
+        repository.switchClientStatusByIdAndUsername(model.getId(), model.getUsername(), false);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.CLIENT_DISABLED);
+        entityManager.clear();
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGIN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testJson);
+        testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        repository.deleteById(model.getId());
+    }
+
+    @Test
     @DisplayName("測試登入_成功")
     void login_ok() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
