@@ -32,7 +32,6 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -163,10 +162,9 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) {
         ClientModel client = ClientIdentity.getUser();
+        if (client == null || checkIdentity(client.getId(), request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
         String username = client.getUsername();
-        if (checkIdentity(username, request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
-        if (checkOldPassword(username, request.getOldPassword()))
-            return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
+        if (checkNotEqualsOldPassword(client.getId(), request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
         int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail());
         if (result == 1) {
             cacheService.refreshClient(username);
@@ -178,20 +176,21 @@ public class ClientService {
     /**
      * 比對舊帳密
      */
-    private boolean checkOldPassword(String username, String oldPassword) {
-        ClientModel originModel = clientRepository.findByUsername(username);
-        return !encodeTool.match(oldPassword, originModel.getPassword());
+    private boolean checkNotEqualsOldPassword(long id, String oldPassword) {
+        Optional<ClientModel> optionalModel = clientRepository.findById(id);
+        if(optionalModel.isEmpty()) return true;
+        return !encodeTool.match(oldPassword, optionalModel.get().getPassword());
     }
 
     /**
      * 不是本人拒絕更改
      */
-    private boolean checkIdentity(String username, UpdatePasswordRequest request) {
-        return !Objects.equals(username, request.getUsername());
+    private boolean checkIdentity(long uid, UpdatePasswordRequest request) {
+        return uid != request.getId();
     }
 
     private int updatePassword(String password, boolean status, String username, String email) {
-        return clientRepository.updatePasswordByClient(password, status, username, email);
+        return clientRepository.updatePasswordByUsernameAndEmail(password, status, username, email);
     }
 
     private String passwordEncode(String password) {

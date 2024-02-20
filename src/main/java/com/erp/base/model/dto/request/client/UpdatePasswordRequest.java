@@ -2,19 +2,23 @@ package com.erp.base.model.dto.request.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "用戶更新密碼請求")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdatePasswordRequest {
-
-    @NotBlank(message = "client.userNameNotEmpty")
-    @Schema(description = "用戶名")
-    private String username;
+    @NotNull(message = "client.userIdNotEmpty")
+    @Schema(description = "用戶id")
+    private Long id;
 
     @NotBlank(message = "client.passwordNotEmpty")
     @Schema(description = "舊密碼")
