@@ -140,3 +140,8 @@ FROM (VALUES
           ('test', 'test', true, false, 'testMail@gmail.com', 0, CURRENT_TIMESTAMP, false, 1, 1)
       ) AS source(username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id)
 WHERE NOT EXISTS(SELECT 1 FROM client WHERE source.username = client.username);
+
+INSERT INTO client_roles(client_id, role_id)
+SELECT client_id, role_id
+FROM (VALUES (1, 2)) AS source(client_id, role_id)
+WHERE NOT EXISTS(SELECT 1 FROM client_roles WHERE source.client_id = client_roles.client_id AND source.role_id = client_roles.role_id);

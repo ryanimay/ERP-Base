@@ -4,6 +4,7 @@ import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.UpdateClientInfoRequest;
+import com.erp.base.model.dto.request.client.UpdatePasswordRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.entity.ClientModel;
@@ -11,6 +12,7 @@ import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.MailService;
 import com.erp.base.service.security.TokenService;
+import com.erp.base.tool.EncodeTool;
 import com.erp.base.tool.ObjectTool;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
@@ -23,11 +25,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,6 +44,7 @@ import redis.embedded.RedisServer;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -64,6 +70,8 @@ class ClientControllerTest {
     private CacheService cacheService;
     @MockBean
     private MailService mailService;
+    @SpyBean
+    private EncodeTool encodeTool;
     @PersistenceContext
     private EntityManager entityManager;
     private static ClientModel testModel;
@@ -360,6 +368,7 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("測試API權限_無權限_錯誤")
+    @WithMockUser(authorities = "noAuth")
     void testApiPermission_noAuth_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
@@ -698,5 +707,184 @@ class ClientControllerTest {
                 .content(ObjectTool.toJson(request))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_id為空_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_noId_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                null,
+                "123",
+                "Aa123123"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "用戶ID不得為空");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_密碼為空_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_noPassword_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                null,
+                "Aa123123"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "密碼不得為空");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_密碼格式長度錯誤_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_inValidPasswordSize_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "123",
+                "Aa123"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "用戶密碼長度不得小於8, 不得大於20");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_密碼格式須包含小寫_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_inValidPasswordLowercase_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "123",
+                "A1234567"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "密碼必須包含小寫字母");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_密碼格式須包含大寫_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_inValidPasswordUppercase_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "123",
+                "a1234567"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "密碼必須包含大寫字母");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_密碼格式須包含數字_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_inValidPasswordNumber_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "123",
+                "Aaqweqwe"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "密碼必須包含數字");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_密碼格式不得包含特殊字符_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_inValidPasswordSpecialCharacters_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "123",
+                "Aa1231 23@"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "密碼不得包含空格或特殊字符");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_非本人不得更改_錯誤")
+    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
+    void updatePassword_identityError_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "123",
+                "Aa123123"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更改密碼_舊密碼錯誤_錯誤")
+    @WithUserDetails("test")
+    void updatePassword_inValidOldPassword_error() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "123",
+                "Aa123123"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    @DisplayName("更改密碼_成功")
+    @WithUserDetails("test")
+    void updatePassword_ok() throws Exception {
+        Mockito.doReturn(true).when(encodeTool).match(Mockito.any(), Mockito.any());
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                1L,
+                "test",
+                "Aa123123"
+        );
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        //驗證資料庫資料
+        entityManager.clear();//事務內清除內建緩存
+        Optional<ClientModel> byId = repository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        Assertions.assertTrue(encodeTool.match("Aa123123", byId.get().getPassword()));
+        SecurityContextHolder.clearContext();
+        Mockito.reset(encodeTool);
     }
 }
