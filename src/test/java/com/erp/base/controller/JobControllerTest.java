@@ -3,14 +3,18 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.JobResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.JobModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.repository.JobRepository;
+import com.erp.base.tool.DateTool;
+import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +34,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @SpringBootTest(classes = TestRedisConfiguration.class)
@@ -66,7 +72,7 @@ class JobControllerTest {
     @Test
     @DisplayName("任務卡清單_成功")
     @WithUserDetails(DEFAULT_USER_NAME)
-    void clientNameList_ok() throws Exception {
+    void jobList_ok() throws Exception {
         ClientModel jobClient = clientRepository.save(createClientModel());
         JobResponse userJobResponse = new JobResponse(jobRepository.save(createUserJob(me)));
         JobResponse trackingJobResponse = new JobResponse(jobRepository.save(createTrackingJob(jobClient, me)));
@@ -100,6 +106,36 @@ class JobControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].order").value(userJobResponse.getOrder()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].trackingSet").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].trackingSet").isEmpty());
+        clearData();
+    }
+
+    @Test
+    @DisplayName("新增任務卡_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void addJob_ok() throws Exception {
+        ClientModel jobClient = clientRepository.save(createClientModel());
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setInfo("測試任務卡內容1");
+        jobRequest.setUserId(1L);
+        jobRequest.setStartTime(DateTool.now());
+        jobRequest.setEndTime(DateTool.now());
+        jobRequest.setIdSet(Set.of(jobClient.getId()));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.JOB.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(jobRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        List<JobModel> list = jobRepository.findByUserOrTracking(me);
+        Optional<JobModel> model = list.stream().filter(m -> m.getInfo().equals("測試任務卡內容1")).findFirst();
+        Assertions.assertTrue(model.isPresent());
+        JobModel jobModel = model.get();
+        Assertions.assertEquals("測試任務卡內容1", jobModel.getInfo());
+        Assertions.assertEquals(1L, jobModel.getUser().getId());
+        Assertions.assertEquals(jobRequest.getStartTime(), jobModel.getStartTime());
+        Assertions.assertEquals(jobRequest.getEndTime(), jobModel.getEndTime());
         clearData();
     }
 
