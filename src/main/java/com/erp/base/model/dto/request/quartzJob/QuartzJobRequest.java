@@ -2,6 +2,7 @@ package com.erp.base.model.dto.request.quartzJob;
 
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.QuartzJobModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
@@ -41,6 +42,7 @@ public class QuartzJobRequest implements IBaseDto<QuartzJobModel> {
     }
 
     @Override
+    @JsonIgnore
     public Specification<QuartzJobModel> getSpecification() {
         return null;
     }

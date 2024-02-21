@@ -5,6 +5,7 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.LogModel;
 import com.erp.base.tool.DateTool;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,6 +41,7 @@ public class LogRequest extends PageRequestParam implements IBaseDto<LogModel> {
     }
 
     @Override
+    @JsonIgnore
     public Specification<LogModel> getSpecification() {
         GenericSpecifications<LogModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications

@@ -5,6 +5,7 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.model.entity.ClientModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,6 +47,7 @@ public class ProjectRequest extends PageRequestParam implements IBaseDto<Project
     }
 
     @Override
+    @JsonIgnore
     public Specification<ProjectModel> getSpecification() {
         GenericSpecifications<ProjectModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications

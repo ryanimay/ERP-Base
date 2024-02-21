@@ -6,6 +6,7 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.PerformanceModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -49,6 +50,7 @@ public class PerformanceRequest extends PageRequestParam implements IBaseDto<Per
     }
 
     @Override
+    @JsonIgnore
     public Specification<PerformanceModel> getSpecification() {
         GenericSpecifications<PerformanceModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications.add("id", GenericSpecifications.EQ, id)

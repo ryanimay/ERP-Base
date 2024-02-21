@@ -3,6 +3,7 @@ package com.erp.base.model.dto.request.leave;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.LeaveModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,6 +36,7 @@ public class LeaveRequest implements IBaseDto<LeaveModel> {
     }
 
     @Override
+    @JsonIgnore
     public Specification<LeaveModel> getSpecification() {
         return null;
     }
