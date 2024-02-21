@@ -34,7 +34,7 @@ public class JobRequest implements IBaseDto<JobModel> {
     @Schema(description = "任務卡排序")
     private Integer order;
     @Schema(description = "任務卡追蹤人ID清單")
-    private Set<Integer> idSet;
+    private Set<Long> idSet;
 
     @Override
     public JobModel toModel() {
