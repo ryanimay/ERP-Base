@@ -72,7 +72,7 @@ public class DepartmentService {
         DepartmentModel model = findById(id);
         if (model == null) {
             LOG.warn("DepartmentId Not Found.");
-            return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+            return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "DepartmentId Not Found.");
         }
         List<ClientModel> modelList = model.getClientModelList();
         return ApiResponse.success(sortClientByRoleLevel(modelList));

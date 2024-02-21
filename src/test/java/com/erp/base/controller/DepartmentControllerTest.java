@@ -158,4 +158,32 @@ class DepartmentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data").isEmpty());
     }
+
+    @Test
+    @DisplayName("部門員工清單_未知ID_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void departmentStaff_unknownId_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "DepartmentId Not Found.");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.STAFF)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", "99")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("部門員工清單_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void departmentStaff_ok() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.STAFF)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", "1")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].username").value("test"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].level").value(1));
+    }
 }
