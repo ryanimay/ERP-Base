@@ -40,7 +40,7 @@ public class JobModel implements IBaseModel {
     private ClientModel createBy;
     //只會有1.待執行 2.執行中 3.已完成
     @Column(name = "status", nullable = false)
-    private String status = StatusConstant.get(StatusConstant.PENDING_NO);
+    private Integer status = StatusConstant.PENDING_NO;
     @Column(name = "order_num")
     private Integer order;
     @ManyToMany(fetch = FetchType.LAZY)
