@@ -4,11 +4,13 @@ import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.*;
 import com.erp.base.service.cache.ClientCache;
+import com.erp.base.service.cache.ICache;
 import com.erp.base.service.cache.RolePermissionCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,17 +21,16 @@ import java.util.Set;
 @Service
 @Transactional
 public class CacheService {
-    private ClientCache clientCache;
-    private RolePermissionCache rolePermissionCache;
+    private final ClientCache clientCache;
+    private final RolePermissionCache rolePermissionCache;
+    private final Map<String, ICache> cacheMap = new HashMap<>();
 
     @Autowired
-    public void setRolePermissionCache(RolePermissionCache rolePermissionCache) {
-        this.rolePermissionCache = rolePermissionCache;
-    }
-
-    @Autowired
-    public void setClientCache(ClientCache clientCache) {
+    public CacheService(ClientCache clientCache, RolePermissionCache rolePermissionCache) {
         this.clientCache = clientCache;
+        this.rolePermissionCache = rolePermissionCache;
+        cacheMap.put("CLIENT", clientCache);
+        cacheMap.put("ROLE_PERMISSION", rolePermissionCache);
     }
 
     /**
@@ -90,5 +91,11 @@ public class CacheService {
 
     public DepartmentModel getDepartment(Long departmentId) {
         return rolePermissionCache.getDepartment(departmentId);
+    }
+
+    public void refreshCache(String cacheKey) {
+        ICache cache = cacheMap.get(cacheKey);
+        if(cache == null) throw new IllegalArgumentException("No cache found for key: " + cacheKey);
+        cache.refreshAll();
     }
 }

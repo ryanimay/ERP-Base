@@ -30,7 +30,7 @@ public class CacheController {
     @Operation(summary = "刷新緩存")
     public ResponseEntity<ApiResponse> refresh(@Parameter(description = "緩存key") String cacheKey) {
         if (StringUtils.isNotEmpty(cacheKey)) {
-
+            cacheService.refreshCache(cacheKey);
             LOG.info("refresh cacheName:" + cacheKey);
         } else {
             cacheService.refreshAllCache();
