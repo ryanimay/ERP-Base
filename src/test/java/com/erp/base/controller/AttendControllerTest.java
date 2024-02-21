@@ -64,7 +64,7 @@ class AttendControllerTest {
 
     @Test
     @DisplayName("簽到_系統異常簽到失敗_失敗")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void signIn_signFailed_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SIGN_FAILED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
@@ -75,7 +75,7 @@ class AttendControllerTest {
     
     @Test
     @DisplayName("簽到_成功")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void signIn_ok() throws Exception {
         AttendModel model = new AttendModel(new ClientModel(1L));
         attendRepository.save(model);
@@ -121,7 +121,7 @@ class AttendControllerTest {
 
     @Test
     @DisplayName("簽退_系統異常簽到失敗_失敗")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void signOut_signFailed_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SIGN_FAILED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
@@ -132,7 +132,7 @@ class AttendControllerTest {
 
     @Test
     @DisplayName("簽退_成功")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void signOut_ok() throws Exception {
         AttendModel model = new AttendModel(new ClientModel(1L));
         attendRepository.save(model);

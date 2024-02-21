@@ -879,7 +879,7 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_舊密碼錯誤_錯誤")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void updatePassword_inValidOldPassword_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -896,7 +896,7 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_成功")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void updatePassword_ok() throws Exception {
         Mockito.doReturn(true).when(encodeTool).match(Mockito.any(), Mockito.any());
         UpdatePasswordRequest request = new UpdatePasswordRequest(
@@ -920,7 +920,7 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶鎖定_更新失敗_錯誤")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void lockUser_invalidInput_error() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 2L,
@@ -937,7 +937,7 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶鎖定_成功")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void lockUser_ok() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 1L,
@@ -959,7 +959,7 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶停用_更新失敗_錯誤")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void userStatus_invalidInput_error() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 2L,
@@ -976,7 +976,7 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶停用_成功")
-    @WithUserDetails("test")
+    @WithUserDetails(DEFAULT_USER_NAME)
     void userStatus_ok() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 1L,
