@@ -34,7 +34,8 @@ public enum ApiResponseCode {
     CLASS_NOT_FOUND(HttpStatus.BAD_REQUEST, "response.classNotFound"),
     SCHEDULER_ERROR(HttpStatus.BAD_REQUEST, "response.schedulerError"),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "response.invalidInput"),
-    UPDATE_ERROR(HttpStatus.BAD_REQUEST, "response.updateError");
+    UPDATE_ERROR(HttpStatus.BAD_REQUEST, "response.updateError"),
+    CACHE_KEY_ERROR(HttpStatus.BAD_REQUEST, "response.cacheKeyError");
 
     private final int code;
     private final String message;
