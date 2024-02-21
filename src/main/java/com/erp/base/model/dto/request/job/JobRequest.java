@@ -5,6 +5,7 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.JobModel;
 import com.erp.base.tool.DateTool;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
@@ -51,6 +52,7 @@ public class JobRequest implements IBaseDto<JobModel> {
     }
 
     @Override
+    @JsonIgnore
     public Specification<JobModel> getSpecification() {
         return null;
     }

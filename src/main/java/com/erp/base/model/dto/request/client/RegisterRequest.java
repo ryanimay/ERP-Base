@@ -4,6 +4,7 @@ import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.ClientModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
     }
 
     @Override
+    @JsonIgnore
     public Specification<ClientModel> getSpecification() {
         GenericSpecifications<ClientModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications

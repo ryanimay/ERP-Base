@@ -5,6 +5,7 @@ import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.SalaryModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,6 +49,7 @@ public class SalaryRequest extends PageRequestParam implements IBaseDto<SalaryMo
     }
     //只用來搜root
     @Override
+    @JsonIgnore
     public Specification<SalaryModel> getSpecification() {
         GenericSpecifications<SalaryModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
