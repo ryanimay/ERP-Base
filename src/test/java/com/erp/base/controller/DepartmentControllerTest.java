@@ -5,6 +5,7 @@ import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.DepartmentModel;
+import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.DepartmentRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -247,5 +248,35 @@ class DepartmentControllerTest {
         Assertions.assertEquals("newDepartmentTest", model.getName());
         Assertions.assertEquals(1L, model.getDefaultRole().getId());
         Assertions.assertEquals("visitor", model.getDefaultRole().getRoleName());
+    }
+
+    @Test
+    @DisplayName("移除部門_部門使用中無法刪除_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void removeDepartment_departmentInUsed_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.DEPARTMENT_IN_USE);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.DEPARTMENT.REMOVE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", "1")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("移除部門_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void removeDepartment_ok() throws Exception {
+        DepartmentModel entity = new DepartmentModel();
+        entity.setName("testDelete");
+        entity.setDefaultRole(new RoleModel(1));
+        entity = departmentRepository.save(entity);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.DEPARTMENT.REMOVE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(entity.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        Optional<DepartmentModel> byId = departmentRepository.findById(entity.getId());
+        Assertions.assertTrue(byId.isEmpty());
     }
 }
