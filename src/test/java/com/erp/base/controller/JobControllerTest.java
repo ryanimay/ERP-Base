@@ -2,6 +2,7 @@ package com.erp.base.controller;
 
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
@@ -74,7 +75,9 @@ class JobControllerTest {
     @WithUserDetails(DEFAULT_USER_NAME)
     void jobList_ok() throws Exception {
         ClientModel jobClient = clientRepository.save(createClientModel());
+        testJobId = jobClient.getId();
         JobResponse userJobResponse = new JobResponse(jobRepository.save(createUserJob(me)));
+        userJobId = userJobResponse.getId();
         JobResponse trackingJobResponse = new JobResponse(jobRepository.save(createTrackingJob(jobClient, me)));
         entityManager.flush();
         entityManager.clear();
@@ -114,6 +117,7 @@ class JobControllerTest {
     @WithUserDetails(DEFAULT_USER_NAME)
     void addJob_ok() throws Exception {
         ClientModel jobClient = clientRepository.save(createClientModel());
+        testJobId = jobClient.getId();
         JobRequest jobRequest = new JobRequest();
         jobRequest.setInfo("測試任務卡內容1");
         jobRequest.setUserId(1L);
@@ -137,11 +141,62 @@ class JobControllerTest {
         clearData();
     }
 
+    @Test
+    @DisplayName("編輯任務卡_未知ID_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updateJob_unknownId_error() throws Exception {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setId(99L);
+        jobRequest.setInfo("錯誤測試");
+        jobRequest.setUserId(1L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found.");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.JOB.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(jobRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("編輯任務卡_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updateJob_ok() throws Exception {
+        JobModel userJob = jobRepository.save(createUserJob(me));
+        userJobId = userJob.getId();
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setId(userJobId);
+        jobRequest.setInfo(userJob.getInfo() + "test");
+        jobRequest.setUserId(me.getId());
+        jobRequest.setStartTime(DateTool.now());
+        jobRequest.setEndTime(DateTool.now());
+        jobRequest.setStatus(2);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.JOB.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(jobRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<JobModel> byId = jobRepository.findById(userJobId);
+        Assertions.assertTrue(byId.isPresent());
+        JobResponse jobModel = new JobResponse(byId.get());
+        System.out.println(jobModel);
+        Assertions.assertEquals(jobModel.getId(), userJobId);
+        Assertions.assertEquals(jobModel.getInfo(), jobRequest.getInfo());
+        Assertions.assertEquals(jobModel.getUsername(), me.getUsername());
+        Assertions.assertEquals(jobModel.getStartTime(), jobRequest.getStartTime());
+        Assertions.assertEquals(jobModel.getEndTime(), jobRequest.getEndTime());
+        Assertions.assertEquals(jobModel.getCreatedTime(), userJob.getCreatedTime());
+        Assertions.assertEquals(jobModel.getCreateBy(), DEFAULT_USER_NAME);
+        Assertions.assertEquals(jobModel.getStatus(), StatusConstant.get(2));
+        clearData();
+    }
+
     private ClientModel createClientModel(){
         ClientModel jobClient = new ClientModel();
         jobClient.setUsername("testJob");
         jobClient.setPassword("testJob");
-        testJobId = jobClient.getId();
         return jobClient;
     }
 
@@ -151,7 +206,6 @@ class JobControllerTest {
         userJob.setUser(me);
         userJob.setOrder(1);
         userJob.setCreateBy(me);
-        userJobId = userJob.getId();
         return userJob;
     }
 
