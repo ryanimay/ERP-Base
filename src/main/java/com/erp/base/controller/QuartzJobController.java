@@ -36,9 +36,9 @@ public class QuartzJobController {
         try {
             quartzJobService.add(request);
         } catch (ClassNotFoundException e) {
-            response = ApiResponse.error(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
         } catch (SchedulerException e) {
-            response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
@@ -50,9 +50,9 @@ public class QuartzJobController {
         try {
             response = quartzJobService.update(request);
         } catch (ClassNotFoundException e) {
-            response = ApiResponse.error(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
         } catch (SchedulerException e) {
-            response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
@@ -64,7 +64,7 @@ public class QuartzJobController {
         try {
             quartzJobService.toggle(request);
         } catch (SchedulerException e) {
-            response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
@@ -76,7 +76,7 @@ public class QuartzJobController {
         try {
             quartzJobService.delete(id);
         } catch (SchedulerException e) {
-            response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
@@ -88,7 +88,7 @@ public class QuartzJobController {
         try {
             quartzJobService.exec(request);
         } catch (SchedulerException e) {
-            response = ApiResponse.error(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
