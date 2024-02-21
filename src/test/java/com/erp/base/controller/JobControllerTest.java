@@ -126,8 +126,6 @@ class JobControllerTest {
                 .content(ObjectTool.toJson(jobRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
-        entityManager.flush();
-        entityManager.clear();
         List<JobModel> list = jobRepository.findByUserOrTracking(me);
         Optional<JobModel> model = list.stream().filter(m -> m.getInfo().equals("測試任務卡內容1")).findFirst();
         Assertions.assertTrue(model.isPresent());
