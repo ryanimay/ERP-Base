@@ -4,6 +4,11 @@ import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.entity.DepartmentModel;
+import com.erp.base.repository.DepartmentRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @SpringBootTest(classes = TestRedisConfiguration.class)
 @TestPropertySource(locations = {
         "classpath:application-redis-test.properties",
@@ -35,6 +42,10 @@ class DepartmentControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private TestUtils testUtils;
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
     private static final String DEFAULT_USER_NAME = "test";
 
     @Test
@@ -185,5 +196,56 @@ class DepartmentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].username").value("test"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].level").value(1));
+    }
+
+    @Test
+    @DisplayName("編輯/新增部門_編輯部門_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void editDepartment_updateDepartment_ok() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.DEPARTMENT.EDIT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "id": 3,
+                        "name": "departmentTest",
+                        "defaultRoleId": 1
+                        }
+                        """)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        Optional<DepartmentModel> departmentOptional = departmentRepository.findById(3L);
+        Assertions.assertTrue(departmentOptional.isPresent());
+        DepartmentModel model = departmentOptional.get();
+        Assertions.assertEquals(3L, model.getId());
+        Assertions.assertEquals("departmentTest", model.getName());
+        Assertions.assertEquals(1L, model.getDefaultRole().getId());
+        Assertions.assertEquals("visitor", model.getDefaultRole().getRoleName());
+    }
+
+    @Test
+    @DisplayName("編輯/新增部門_新增部門_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void editDepartment_addDepartment_ok() throws Exception {
+        Optional<DepartmentModel> departmentOptional = departmentRepository.findById(4L);
+        Assertions.assertTrue(departmentOptional.isEmpty());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.DEPARTMENT.EDIT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "name": "newDepartmentTest",
+                        "defaultRoleId": 1
+                        }
+                        """)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.clear();
+        departmentOptional = departmentRepository.findById(4L);
+        Assertions.assertTrue(departmentOptional.isPresent());
+        DepartmentModel model = departmentOptional.get();
+        Assertions.assertEquals("newDepartmentTest", model.getName());
+        Assertions.assertEquals(1L, model.getDefaultRole().getId());
+        Assertions.assertEquals("visitor", model.getDefaultRole().getRoleName());
     }
 }
