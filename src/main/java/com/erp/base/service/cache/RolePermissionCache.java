@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @CacheConfig(cacheNames = CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION)
 @Transactional
-public class RolePermissionCache {
+public class RolePermissionCache implements ICache{
     LogFactory LOG = new LogFactory(RolePermissionCache.class);
     private RoleService roleService;
     private PermissionService permissionService;

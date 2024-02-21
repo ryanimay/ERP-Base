@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 @CacheConfig(cacheNames = CacheConstant.CLIENT.NAME_CLIENT)
 @Transactional
-public class ClientCache {
+public class ClientCache implements ICache{
     LogFactory LOG = new LogFactory(ClientCache.class);
     private ClientService clientService;
 
