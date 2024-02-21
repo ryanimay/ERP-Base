@@ -34,6 +34,14 @@ public class ApiResponse {
         String formatMsg = getCurrentMessageSource().getMessage(customMessage, null, ClientIdentity.getLocale());
         this.data = formatMsg == null ? customMessage : formatMsg;
     }
+    @SuppressWarnings("ConstantConditions")
+    public ApiResponse(ApiResponseCode responseCode, Object[] args) {
+        this.code = responseCode.getCode();
+        this.message = responseCode.getMessage();
+        String customMessage = responseCode.getCustomMessage();
+        String formatMsg = getCurrentMessageSource().getMessage(customMessage, args, ClientIdentity.getLocale());
+        this.data = formatMsg == null ? customMessage : formatMsg;
+    }
 
     public ApiResponse(HttpStatus httpStatus) {
         this.code = httpStatus.value();
@@ -71,6 +79,10 @@ public class ApiResponse {
     }
 
     public static ResponseEntity<ApiResponse> error(ApiResponseCode responseCode, Object data){
+        return ResponseEntity.ok().body(new ApiResponse(responseCode, data));
+    }
+
+    public static ResponseEntity<ApiResponse> errorMsgFormat(ApiResponseCode responseCode, Object... data){
         return ResponseEntity.ok().body(new ApiResponse(responseCode, data));
     }
 
