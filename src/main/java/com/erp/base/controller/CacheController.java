@@ -29,12 +29,17 @@ public class CacheController {
     @GetMapping(Router.CACHE.REFRESH)
     @Operation(summary = "刷新緩存")
     public ResponseEntity<ApiResponse> refresh(@Parameter(description = "緩存key") String cacheKey) {
-        if (StringUtils.isNotEmpty(cacheKey)) {
-            cacheService.refreshCache(cacheKey);
-            LOG.info("refresh cacheName:" + cacheKey);
-        } else {
-            cacheService.refreshAllCache();
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
+        try{
+            if (StringUtils.isNotEmpty(cacheKey)) {
+                cacheService.refreshCache(cacheKey);
+                LOG.info("refresh cacheName:" + cacheKey);
+            } else {
+                cacheService.refreshAllCache();
+            }
+        }catch (IllegalArgumentException e){
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.CACHE_KEY_ERROR, e.getMessage());
         }
-        return ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
+        return response;
     }
 }
