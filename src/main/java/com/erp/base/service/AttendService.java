@@ -58,7 +58,7 @@ public class AttendService {
             }
         }
         if(count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        ClientModel clientModel = clientService.updateClientAttendStatus(user.getId(), status);
+        ClientModel clientModel = clientService.updateClientAttendStatus(user, status);
 
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(clientModel));
     }

@@ -20,6 +20,8 @@ import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.DateTool;
 import com.erp.base.tool.EncodeTool;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
@@ -49,6 +51,8 @@ public class ClientService {
     private NotificationService notificationService;
     private DepartmentService departmentService;
     private static final String RESET_PREFIX = "##";
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     public void setDepartmentService(DepartmentService departmentService){
         this.departmentService = departmentService;
@@ -297,15 +301,12 @@ public class ClientService {
         return clientRepository.findUsernameById(id);
     }
 
-    public ClientModel updateClientAttendStatus(long id, int status) {
-        clientRepository.updateClientAttendStatus(id, status);
-        Optional<ClientModel> byId = clientRepository.findById(id);
-        if (byId.isPresent()) {
-            ClientModel model = byId.get();
-            cacheService.refreshClient(model.getUsername());
-            return model;
-        }
-        return null;
+    public ClientModel updateClientAttendStatus(ClientModel model, int status) {
+        int resultCount = clientRepository.updateClientAttendStatus(model.getId(), status);
+        if(resultCount == 1) cacheService.refreshClient(model.getUsername());
+        entityManager.flush();//同一事務內先同步資料
+        entityManager.clear();//清除事務緩存
+        return cacheService.getClient(model.getUsername());
     }
 
     public boolean checkExistsRoleId(Long id) {
