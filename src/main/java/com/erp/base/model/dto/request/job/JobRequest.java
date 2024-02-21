@@ -1,6 +1,5 @@
 package com.erp.base.model.dto.request.job;
 
-import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.JobModel;
@@ -30,7 +29,7 @@ public class JobRequest implements IBaseDto<JobModel> {
     @DateTimeFormat(pattern = DateTool.YYYY_MM_DD_T_HH_MM_SS)
     private LocalDateTime endTime;
     @Schema(description = "任務卡狀態")
-    private int status;
+    private Integer status;
     @Schema(description = "任務卡排序")
     private Integer order;
     @Schema(description = "任務卡追蹤人ID清單")
@@ -55,9 +54,5 @@ public class JobRequest implements IBaseDto<JobModel> {
     @JsonIgnore
     public Specification<JobModel> getSpecification() {
         return null;
-    }
-
-    public String getStatus() {
-        return StatusConstant.get(status);
     }
 }

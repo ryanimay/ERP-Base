@@ -1,5 +1,6 @@
 package com.erp.base.model.dto.response;
 
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.entity.JobModel;
 import lombok.Data;
 
@@ -28,7 +29,7 @@ public class JobResponse {
         this.endTime = model.getEndTime();
         this.createdTime = model.getCreatedTime();
         this.createBy = model.getCreateBy().getUsername();
-        this.status = model.getStatus();
+        this.status = StatusConstant.get(model.getStatus());
         this.order = model.getOrder();
         this.trackingSet = model.getTrackingList().stream().map(ClientNameObject::new).collect(Collectors.toSet());
     }

@@ -1,5 +1,6 @@
 package com.erp.base.service;
 
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.job.JobRequest;
@@ -34,7 +35,7 @@ public class JobService {
 
         Map<String, List<JobResponse>> map = all.stream()
                 .collect(Collectors.groupingBy(
-                        model -> model.getUser().equals(user) ? model.getStatus() : "tracking",
+                        model -> model.getUser().equals(user) ? StatusConstant.get(model.getStatus()) : "tracking",
                         Collectors.mapping(JobResponse::new, Collectors.toList())
                 ));
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
@@ -60,10 +61,10 @@ public class JobService {
             if (request.getStatus() != null) model.setStatus(request.getStatus());
             if (request.getOrder() != null) model.setOrder(request.getOrder());
             if (request.getIdSet() != null) request.getIdSet().forEach(id -> model.addTracking(new ClientModel(id)));
-            jobRepository.save(model);
-            return ApiResponse.success(ApiResponseCode.SUCCESS, new JobResponse(model));
+            JobModel save = jobRepository.save(model);
+            return ApiResponse.success(ApiResponseCode.SUCCESS, new JobResponse(save));
         }
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found.");
     }
 
     public ResponseEntity<ApiResponse> deleteById(Long id) {
