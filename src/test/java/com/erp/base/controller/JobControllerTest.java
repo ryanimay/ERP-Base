@@ -181,7 +181,6 @@ class JobControllerTest {
         Optional<JobModel> byId = jobRepository.findById(userJobId);
         Assertions.assertTrue(byId.isPresent());
         JobResponse jobModel = new JobResponse(byId.get());
-        System.out.println(jobModel);
         Assertions.assertEquals(jobModel.getId(), userJobId);
         Assertions.assertEquals(jobModel.getInfo(), jobRequest.getInfo());
         Assertions.assertEquals(jobModel.getUsername(), me.getUsername());
