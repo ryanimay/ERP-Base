@@ -16,11 +16,11 @@ public interface LeaveRepository extends JpaRepository<LeaveModel, Long> {
     @Query("UPDATE LeaveModel l SET l.status = :status2 WHERE l.id = :id AND l.status = :status1")
     int updateLeaveStatus(long id, int status1, int status2);
     //狀態待審並且部門相同
-    @Query("SELECT l FROM LeaveModel l WHERE l.status = :status AND l.user.department.name = :departmentName")
-    Page<LeaveModel> findByStatusAndDepartment(String departmentName, int status, PageRequest page);
+    @Query("SELECT l FROM LeaveModel l WHERE l.status = :status AND l.user.department.id = :id AND l.user.id <> :userId")
+    Page<LeaveModel> findByStatusAndDepartment(long userId, long id, int status, PageRequest page);
     //狀態待審
-    @Query("SELECT l FROM LeaveModel l WHERE l.status = :status")
-    Page<LeaveModel> findByStatus(int status, PageRequest page);
+    @Query("SELECT l FROM LeaveModel l WHERE l.status = :status AND l.user.id <> :userId")
+    Page<LeaveModel> findByStatus(long userId, int status, PageRequest page);
     @Modifying
     @Query("DELETE FROM LeaveModel l  WHERE l.id = :id AND l.status = :pendingNo")
     int deleteByIdAndStatus(long id, int pendingNo);

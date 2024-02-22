@@ -115,9 +115,9 @@ public class LeaveService {
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門
         if(isManager){
-            allPending = leaveRepository.findByStatus(StatusConstant.PENDING_NO, page.getPage());
+            allPending = leaveRepository.findByStatus(user.getId(), StatusConstant.PENDING_NO, page.getPage());
         }else{
-            allPending = leaveRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, page.getPage());
+            allPending = leaveRepository.findByStatusAndDepartment(user.getId(), user.getDepartment().getId(), StatusConstant.PENDING_NO, page.getPage());
         }
         return ApiResponse.success(new PageResponse<>(allPending, LeaveResponse.class));
     }
