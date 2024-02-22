@@ -305,6 +305,62 @@ class LeaveControllerTest {
         leaveRepository.deleteAll();
     }
 
+    @Test
+    @DisplayName("更新假單_找不到人_錯誤")
+    @WithMockUser(authorities = "LEAVE_UPDATE")
+    void updateLeave_userNotFound_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.LEAVE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更新假單_未知Id_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updateLeave_unknownId_error() throws Exception {
+        LeaveRequest leaveRequest = new LeaveRequest();
+        leaveRequest.setId(99L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.LEAVE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(leaveRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更新假單_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updateLeave_ok() throws Exception {
+        LeaveModel leaveModel = createLeave(me);
+        LeaveRequest leaveRequest = new LeaveRequest();
+        leaveRequest.setId(leaveModel.getId());
+        leaveRequest.setInfo("測試更新");
+        leaveRequest.setType(3);
+        leaveRequest.setStartTime(DateTool.now());
+        leaveRequest.setEndTime(DateTool.now());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.LEAVE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(leaveRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(leaveRequest.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(me.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(me.getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.type").value(LeaveConstant.get(leaveRequest.getType())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(leaveRequest.getStartTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(leaveRequest.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.status").value(StatusConstant.get(StatusConstant.PENDING_NO)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.info").value(leaveRequest.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createdTime").value(leaveModel.getCreatedTime().toString()));
+        leaveRepository.deleteById(leaveModel.getId());
+    }
+
     private void refreshCache(){
         entityManager.flush();
         entityManager.clear();
