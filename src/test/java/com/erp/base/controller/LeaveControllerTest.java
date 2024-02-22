@@ -42,6 +42,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -429,6 +430,26 @@ class LeaveControllerTest {
         LeaveModel model = byId.get();
         Assertions.assertEquals(StatusConstant.APPROVED_NO, model.getStatus());
         leaveRepository.deleteById(leaveModel.getId());
+    }
+
+    @Test
+    @DisplayName("請假類別清單_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void leaveTypeList_ok() throws Exception {
+        List<String> list = LeaveConstant.list();
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.TYPE_LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0]").value(list.get(0)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1]").value(list.get(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2]").value(list.get(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[3]").value(list.get(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[4]").value(list.get(4)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[5]").value(list.get(5)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[6]").value(list.get(6)));
     }
 
     private void refreshCache(){
