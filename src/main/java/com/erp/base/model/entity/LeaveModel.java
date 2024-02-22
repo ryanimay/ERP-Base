@@ -1,5 +1,6 @@
 package com.erp.base.model.entity;
 
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ public class LeaveModel implements IBaseModel {
 
     @Column(name = "status", nullable = false)
     //只會有1.待審 2.已審未執行 3.已執行
-    private int status;
+    private int status = StatusConstant.PENDING_NO;
     @Column(name = "info")
     private String info;
     @Column(name = "created_time", nullable = false)
