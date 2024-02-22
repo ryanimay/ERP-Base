@@ -2,7 +2,10 @@ package com.erp.base.controller;
 
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
+import com.erp.base.enums.LeaveConstant;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.LeaveResponse;
 import com.erp.base.model.entity.ClientModel;
@@ -14,6 +17,7 @@ import com.erp.base.repository.LeaveRepository;
 import com.erp.base.repository.RoleRepository;
 import com.erp.base.service.CacheService;
 import com.erp.base.tool.DateTool;
+import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
@@ -260,6 +264,45 @@ class LeaveControllerTest {
         leaveRepository.deleteById(selfLeave1.getId());
         leaveRepository.deleteById(selfLeave2.getId());
         leaveRepository.deleteById(selfLeave3.getId());
+    }
+
+    @Test
+    @DisplayName("新增假單_找不到人_錯誤")
+    @WithMockUser(authorities = "LEAVE_ADD")
+    void addLeave_userNotFound_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.LEAVE.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("新增假單_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void addLeave_ok() throws Exception {
+        LeaveRequest leaveRequest = new LeaveRequest();
+        leaveRequest.setType(2);
+        leaveRequest.setInfo("測試新增");
+        leaveRequest.setStartTime(DateTool.now());
+        leaveRequest.setEndTime(DateTool.now());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.LEAVE.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(leaveRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(me.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(me.getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.type").value(LeaveConstant.get(leaveRequest.getType())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(leaveRequest.getStartTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(leaveRequest.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.status").value(StatusConstant.get(StatusConstant.PENDING_NO)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.info").value(leaveRequest.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createdTime").isNotEmpty());
+        leaveRepository.deleteAll();
     }
 
     private void refreshCache(){
