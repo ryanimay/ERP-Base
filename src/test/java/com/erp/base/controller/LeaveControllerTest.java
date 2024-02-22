@@ -5,6 +5,7 @@ import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.LeaveConstant;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.leave.LeaveAcceptRequest;
 import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.LeaveResponse;
@@ -388,6 +389,45 @@ class LeaveControllerTest {
         entityManager.clear();
         Optional<LeaveModel> byId = leaveRepository.findById(leaveModel.getId());
         Assertions.assertTrue(byId.isEmpty());
+        leaveRepository.deleteById(leaveModel.getId());
+    }
+
+    @Test
+    @DisplayName("審核假單_未知Id_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void acceptLeave_unknownId_error() throws Exception {
+        LeaveAcceptRequest leaveAcceptRequest = new LeaveAcceptRequest();
+        leaveAcceptRequest.setId(99L);
+        leaveAcceptRequest.setEventUserId(99L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.LEAVE.ACCEPT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(leaveAcceptRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("審核假單_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void acceptLeave_ok() throws Exception {
+        LeaveModel leaveModel = createLeave(me);
+        Assertions.assertEquals(StatusConstant.PENDING_NO, leaveModel.getStatus());
+        LeaveAcceptRequest leaveAcceptRequest = new LeaveAcceptRequest();
+        leaveAcceptRequest.setId(leaveModel.getId());
+        leaveAcceptRequest.setEventUserId(leaveModel.getUser().getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.LEAVE.ACCEPT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(leaveAcceptRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<LeaveModel> byId = leaveRepository.findById(leaveModel.getId());
+        Assertions.assertTrue(byId.isPresent());
+        LeaveModel model = byId.get();
+        Assertions.assertEquals(StatusConstant.APPROVED_NO, model.getStatus());
         leaveRepository.deleteById(leaveModel.getId());
     }
 

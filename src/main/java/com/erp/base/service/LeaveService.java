@@ -106,7 +106,7 @@ public class LeaveService {
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "accept: " + i);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
