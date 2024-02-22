@@ -125,9 +125,9 @@ public class PerformanceService {
         Page<PerformanceModel> list;
         //管理權限全搜不分部門
         if (isManager) {
-            list = performanceRepository.findAllByStatus(StatusConstant.PENDING_NO, request.getPage());
+            list = performanceRepository.findAllByStatus(StatusConstant.PENDING_NO, user.getId(), request.getPage());
         } else {
-            list = performanceRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, request.getPage());
+            list = performanceRepository.findByStatusAndDepartment(user.getDepartment().getName(), StatusConstant.PENDING_NO, user.getId(), request.getPage());
         }
         return ApiResponse.success(new PageResponse<>(list, PerformanceResponse.class));
     }

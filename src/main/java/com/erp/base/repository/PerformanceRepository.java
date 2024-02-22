@@ -16,10 +16,10 @@ public interface PerformanceRepository extends JpaRepository<PerformanceModel, L
     @Modifying
     @Query("UPDATE PerformanceModel p SET p.status = :updateStatus WHERE p.id = :eventId AND p.status = :status")
     int updateStatus(Long eventId, int status, int updateStatus);
-    @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status")
-    Page<PerformanceModel> findAllByStatus(int status, PageRequest page);
-    @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status AND p.user.department.name = :departmentName")
-    Page<PerformanceModel> findByStatusAndDepartment(String departmentName, int status, PageRequest page);
+    @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status AND p.user.id <> :id")
+    Page<PerformanceModel> findAllByStatus(int status, long id, PageRequest page);
+    @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status AND p.user.department.name = :departmentName AND p.user.id <> :id")
+    Page<PerformanceModel> findByStatusAndDepartment(String departmentName, int status, long id, PageRequest page);
     @Query("SELECT p.user, SUM(p.fixedBonus), SUM(p.performanceRatio), FUNCTION('YEAR', CURRENT_DATE) AS settleYear, COUNT(p) FROM PerformanceModel p " +
             "WHERE (:id IS NULL OR p.user.id = :id) " +
             "AND p.status = :status " +
