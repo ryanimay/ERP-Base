@@ -3,6 +3,7 @@ package com.erp.base.model.dto.response;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.PerformanceModel;
+import com.erp.base.tool.ObjectTool;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -31,5 +32,12 @@ public class PerformanceResponse {
         this.createTime = model.getCreateTime();
         this.createBy = model.getCreateBy().getUsername();
         this.status = StatusConstant.get(model.getStatus());
+    }
+
+    public String getFixedBonus() {
+        return ObjectTool.formatBigDecimal(fixedBonus);
+    }
+    public String getPerformanceRatio() {
+        return ObjectTool.formatBigDecimal(performanceRatio);
     }
 }
