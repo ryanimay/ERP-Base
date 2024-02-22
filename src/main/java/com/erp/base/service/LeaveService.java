@@ -88,13 +88,13 @@ public class LeaveService {
             LeaveModel saved = updateOrSave(leaveModel, user);
             return ApiResponse.success(ApiResponseCode.SUCCESS, new LeaveResponse(saved));
         }
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
     }
 
     public ResponseEntity<ApiResponse> delete(long id) {
         int i = leaveRepository.deleteByIdAndStatus(id, StatusConstant.PENDING_NO);
         if(i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "delete: " + i);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
     }
 
     public ResponseEntity<ApiResponse> accept(LeaveAcceptRequest request) {
