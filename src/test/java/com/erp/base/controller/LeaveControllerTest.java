@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -162,7 +163,9 @@ class LeaveControllerTest {
         leaveRepository.deleteById(otherLeave1.getId());
         leaveRepository.deleteById(otherLeave2.getId());
         leaveRepository.deleteById(selfLeave.getId());
-    }@Test
+    }
+
+    @Test
     @DisplayName("待審核假單_測試分頁2_成功")
     @WithUserDetails(DEFAULT_USER_NAME)
     void leavePendingList_page2_ok() throws Exception {
@@ -199,6 +202,64 @@ class LeaveControllerTest {
         clientRepository.deleteById(newClient2.getId());
         leaveRepository.deleteById(otherLeave1.getId());
         leaveRepository.deleteById(otherLeave2.getId());
+    }
+
+    @Test
+    @DisplayName("本人假單_找不到人_錯誤")
+    @WithMockUser(authorities = "LEAVE_LIST")
+    void leaveList_userNotFound_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("本人假單_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void leaveList_ok() throws Exception {
+        LeaveResponse selfLeave1 = new LeaveResponse(createLeave(me));
+        LeaveResponse selfLeave2 = new LeaveResponse(createLeave(me));
+        LeaveResponse selfLeave3 = new LeaveResponse(createLeave(me));
+        refreshCache();
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        testUtils.comparePage(resultActions, 15, 1, 3, 1);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(selfLeave1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(selfLeave1.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(selfLeave1.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(selfLeave1.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(selfLeave1.getStartTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(selfLeave1.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(selfLeave1.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(selfLeave1.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(selfLeave1.getCreatedTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(selfLeave2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.id").value(selfLeave2.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.username").value(selfLeave2.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].type").value(selfLeave2.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(selfLeave2.getStartTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(selfLeave2.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(selfLeave2.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].info").value(selfLeave2.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createdTime").value(selfLeave2.getCreatedTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].id").value(selfLeave3.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].user.id").value(selfLeave3.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].user.username").value(selfLeave3.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].type").value(selfLeave3.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].startTime").value(selfLeave3.getStartTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].endTime").value(selfLeave3.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].status").value(selfLeave3.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].info").value(selfLeave3.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].createdTime").value(selfLeave3.getCreatedTime().toString()));
+        leaveRepository.deleteById(selfLeave1.getId());
+        leaveRepository.deleteById(selfLeave2.getId());
+        leaveRepository.deleteById(selfLeave3.getId());
     }
 
     private void refreshCache(){
