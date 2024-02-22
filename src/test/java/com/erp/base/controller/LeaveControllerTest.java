@@ -361,6 +361,36 @@ class LeaveControllerTest {
         leaveRepository.deleteById(leaveModel.getId());
     }
 
+    @Test
+    @DisplayName("刪除假單_未知Id_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void deleteLeave_unknownId_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.LEAVE.DELETE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", "99")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("刪除假單_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void deleteLeave_ok() throws Exception {
+        LeaveModel leaveModel = createLeave(me);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.LEAVE.DELETE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(leaveModel.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<LeaveModel> byId = leaveRepository.findById(leaveModel.getId());
+        Assertions.assertTrue(byId.isEmpty());
+        leaveRepository.deleteById(leaveModel.getId());
+    }
+
     private void refreshCache(){
         entityManager.flush();
         entityManager.clear();
