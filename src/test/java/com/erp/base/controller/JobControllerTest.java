@@ -193,6 +193,25 @@ class JobControllerTest {
         clearData();
     }
 
+    @Test
+    @DisplayName("刪除任務卡_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void deleteJob_ok() throws Exception {
+        JobModel userJob = jobRepository.save(createUserJob(me));
+        userJobId = userJob.getId();
+        Assertions.assertNotNull(userJob);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.JOB.REMOVE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(userJobId))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<JobModel> byId = jobRepository.findById(userJobId);
+        Assertions.assertTrue(byId.isEmpty());
+    }
+
     private ClientModel createClientModel(){
         ClientModel jobClient = new ClientModel();
         jobClient.setUsername("testJob");
