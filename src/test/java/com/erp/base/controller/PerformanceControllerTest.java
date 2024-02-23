@@ -7,6 +7,8 @@ import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.ClientNameObject;
+import com.erp.base.model.dto.response.PerformanceCalculateResponse;
 import com.erp.base.model.dto.response.PerformanceResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
@@ -495,6 +497,55 @@ class PerformanceControllerTest {
         PerformanceModel performanceModel = byId.get();
         Assertions.assertEquals(StatusConstant.APPROVED_NO, performanceModel.getStatus());
         performanceRepository.deleteById(performance.getId());
+    }
+
+    @Test
+    @DisplayName("統計年度績效_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void calculatePerformance_ok() throws Exception {
+        PerformanceModel performance = createPerformance(me);
+        performance.setStatus(StatusConstant.APPROVED_NO);
+        performanceRepository.save(performance);
+        entityManager.flush();
+        entityManager.clear();
+        PerformanceCalculateResponse performanceCalculateResponse = new PerformanceCalculateResponse();
+        performanceCalculateResponse.setUser(new ClientNameObject(me));
+        performanceCalculateResponse.setFixedBonus(performance.getFixedBonus());
+        performanceCalculateResponse.setPerformanceRatio(performance.getPerformanceRatio());
+        performanceCalculateResponse.setSettleYear(String.valueOf(performance.getCreateTime().getYear()));
+        performanceCalculateResponse.setCount(1L);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERFORMANCE.CALCULATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(me.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(performanceCalculateResponse.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(performanceCalculateResponse.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.fixedBonus").value(performanceCalculateResponse.getFixedBonus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.performanceRatio").value(performanceCalculateResponse.getPerformanceRatio()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.settleYear").value(performanceCalculateResponse.getSettleYear()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.count").value(performanceCalculateResponse.getCount()));
+        performanceRepository.deleteById(performance.getId());
+    }
+
+    @Test
+    @DisplayName("統計年度績效_未知用戶_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void calculatePerformance_unknownUser_ok() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERFORMANCE.CALCULATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(99L))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.fixedBonus").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.performanceRatio").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.settleYear").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.count").isEmpty());
     }
 
     private void refreshCache(){
