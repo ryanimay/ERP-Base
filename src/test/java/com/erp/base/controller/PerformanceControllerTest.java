@@ -4,6 +4,7 @@ import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PerformanceResponse;
@@ -454,6 +455,45 @@ class PerformanceControllerTest {
         Assertions.assertTrue(byId.isPresent());
         PerformanceModel performanceModel = byId.get();
         Assertions.assertEquals(StatusConstant.REMOVED_NO, performanceModel.getStatus());
+        performanceRepository.deleteById(performance.getId());
+    }
+
+    @Test
+    @DisplayName("審核績效_未知ID_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void acceptPerformance_unknownId_error() throws Exception {
+        PerformanceAcceptRequest performanceAcceptRequest = new PerformanceAcceptRequest();
+        performanceAcceptRequest.setEventId(99L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + 99 + "] not found");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERFORMANCE.ACCEPT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(performanceAcceptRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("審核績效_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void acceptPerformance_ok() throws Exception {
+        PerformanceModel performance = createPerformance(me);
+        Optional<PerformanceModel> byId = performanceRepository.findById(performance.getId());
+        Assertions.assertTrue(byId.isPresent());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        PerformanceAcceptRequest performanceAcceptRequest = new PerformanceAcceptRequest();
+        performanceAcceptRequest.setEventId(performance.getId());
+        performanceAcceptRequest.setEventUserId(me.getId());
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERFORMANCE.ACCEPT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(performanceAcceptRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        byId = performanceRepository.findById(performance.getId());
+        Assertions.assertTrue(byId.isPresent());
+        PerformanceModel performanceModel = byId.get();
+        Assertions.assertEquals(StatusConstant.APPROVED_NO, performanceModel.getStatus());
         performanceRepository.deleteById(performance.getId());
     }
 
