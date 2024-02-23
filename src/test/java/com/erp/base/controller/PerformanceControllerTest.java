@@ -205,6 +205,120 @@ class PerformanceControllerTest {
         performanceRepository.deleteById(performance2.getId());
     }
 
+    @Test
+    @DisplayName("績效清單_全搜_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void performanceList_findAll_ok() throws Exception {
+        //本人
+        PerformanceResponse selfPerformance1 = new PerformanceResponse(createPerformance(me));
+        PerformanceResponse selfPerformance2 = new PerformanceResponse(createPerformance(me));
+        refreshCache();
+
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERFORMANCE.LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(selfPerformance1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].event").value(selfPerformance1.getEvent()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(selfPerformance1.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(selfPerformance1.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(selfPerformance1.getFixedBonus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(selfPerformance1.getPerformanceRatio()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(selfPerformance1.getEventTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(selfPerformance1.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(selfPerformance1.getCreateBy()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(selfPerformance1.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(selfPerformance2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].event").value(selfPerformance2.getEvent()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.id").value(selfPerformance2.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.username").value(selfPerformance2.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].fixedBonus").value(selfPerformance2.getFixedBonus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].performanceRatio").value(selfPerformance2.getPerformanceRatio()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].eventTime").value(selfPerformance2.getEventTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createTime").value(selfPerformance2.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createBy").value(selfPerformance2.getCreateBy()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(selfPerformance2.getStatus()));
+
+        performanceRepository.deleteById(selfPerformance1.getId());
+        performanceRepository.deleteById(selfPerformance2.getId());
+    }
+
+    @Test
+    @DisplayName("績效清單_指定用戶_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void performanceList_findByUser_ok() throws Exception {
+        //同部門非本人
+        ClientModel newClient1 = createDifferentDepartmentUser("testPerformance1", me.getDepartment().getId());
+        PerformanceResponse performance1 = new PerformanceResponse(createPerformance(newClient1));
+        //本人
+        PerformanceResponse selfPerformance2 = new PerformanceResponse(createPerformance(me));
+        refreshCache();
+
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERFORMANCE.LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("userId", String.valueOf(me.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(selfPerformance2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].event").value(selfPerformance2.getEvent()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(selfPerformance2.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(selfPerformance2.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(selfPerformance2.getFixedBonus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(selfPerformance2.getPerformanceRatio()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(selfPerformance2.getEventTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(selfPerformance2.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(selfPerformance2.getCreateBy()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(selfPerformance2.getStatus()));
+        clientRepository.deleteById(newClient1.getId());
+        performanceRepository.deleteById(performance1.getId());
+        performanceRepository.deleteById(selfPerformance2.getId());
+    }
+
+    @Test
+    @DisplayName("績效清單_測試分頁_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void performanceList_testPaging_ok() throws Exception {
+        //同部門非本人
+        ClientModel newClient1 = createDifferentDepartmentUser("testPerformance1", me.getDepartment().getId());
+        PerformanceResponse performance1 = new PerformanceResponse(createPerformance(newClient1));
+        //本人
+        PerformanceResponse selfPerformance2 = new PerformanceResponse(createPerformance(me));
+        refreshCache();
+
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERFORMANCE.LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageSize", "1")
+                .param("pageNum", "2")
+                .param("sort", "2")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        testUtils.comparePage(resultActions, 1, 2, 2, 2);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(performance1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].event").value(performance1.getEvent()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(performance1.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(performance1.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(performance1.getFixedBonus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(performance1.getPerformanceRatio()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance1.getEventTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance1.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(performance1.getCreateBy()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(performance1.getStatus()));
+        clientRepository.deleteById(newClient1.getId());
+        performanceRepository.deleteById(performance1.getId());
+        performanceRepository.deleteById(selfPerformance2.getId());
+    }
+
     private void refreshCache(){
         entityManager.flush();
         entityManager.clear();
