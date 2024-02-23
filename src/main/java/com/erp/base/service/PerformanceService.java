@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -132,19 +130,17 @@ public class PerformanceService {
         return ApiResponse.success(new PageResponse<>(list, PerformanceResponse.class));
     }
 
-    public ResponseEntity<ApiResponse> calculate(Long id) {
-        List<PerformanceCalculateResponse> resultList = new ArrayList<>();
-        Set<Object[]> set = performanceRepository.calculateByCreateYear(id, StatusConstant.APPROVED_NO);
+    public ResponseEntity<ApiResponse> calculate(Long userId) {
+        Set<Object[]> set = performanceRepository.calculateByCreateYear(userId, StatusConstant.APPROVED_NO);
+        PerformanceCalculateResponse performanceCalculateResponse = new PerformanceCalculateResponse();
         set.forEach(obj -> {
-            PerformanceCalculateResponse performanceCalculateResponse = new PerformanceCalculateResponse();
             ClientModel user = (ClientModel) obj[0];
             performanceCalculateResponse.setUser(new ClientNameObject(user));
             performanceCalculateResponse.setFixedBonus((BigDecimal) obj[1]);
             performanceCalculateResponse.setPerformanceRatio((BigDecimal) obj[2]);
             performanceCalculateResponse.setSettleYear(String.valueOf(obj[3]));
             performanceCalculateResponse.setCount((Long) obj[4]);
-            resultList.add(performanceCalculateResponse);
         });
-        return ApiResponse.success(ApiResponseCode.SUCCESS, resultList);
+        return ApiResponse.success(ApiResponseCode.SUCCESS, performanceCalculateResponse);
     }
 }

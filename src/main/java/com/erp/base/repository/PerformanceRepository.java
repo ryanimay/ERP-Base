@@ -21,9 +21,9 @@ public interface PerformanceRepository extends JpaRepository<PerformanceModel, L
     @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status AND p.user.department.name = :departmentName AND p.user.id <> :id")
     Page<PerformanceModel> findByStatusAndDepartment(String departmentName, int status, long id, PageRequest page);
     @Query("SELECT p.user, SUM(p.fixedBonus), SUM(p.performanceRatio), FUNCTION('YEAR', CURRENT_DATE) AS settleYear, COUNT(p) FROM PerformanceModel p " +
-            "WHERE (:id IS NULL OR p.user.id = :id) " +
+            "WHERE (:userId IS NULL OR p.user.id = :userId) " +
             "AND p.status = :status " +
             "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) " +
             "GROUP BY p.user")
-    Set<Object[]> calculateByCreateYear(Long id, int status);
+    Set<Object[]> calculateByCreateYear(Long userId, int status);
 }
