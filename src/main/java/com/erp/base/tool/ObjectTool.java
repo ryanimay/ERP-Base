@@ -37,7 +37,7 @@ public class ObjectTool {
         if (num.stripTrailingZeros().scale() <= 0) {
             return num.toBigInteger().toString();
         } else {
-            return num.setScale(2, RoundingMode.HALF_UP).toString();
+            return num.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toString();
         }
     }
 }
