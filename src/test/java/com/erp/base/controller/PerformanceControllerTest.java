@@ -4,6 +4,7 @@ import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PerformanceResponse;
 import com.erp.base.model.entity.ClientModel;
@@ -15,6 +16,7 @@ import com.erp.base.repository.PerformanceRepository;
 import com.erp.base.repository.RoleRepository;
 import com.erp.base.service.CacheService;
 import com.erp.base.tool.DateTool;
+import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
@@ -38,6 +40,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -317,6 +320,39 @@ class PerformanceControllerTest {
         clientRepository.deleteById(newClient1.getId());
         performanceRepository.deleteById(performance1.getId());
         performanceRepository.deleteById(selfPerformance2.getId());
+    }
+
+    @Test
+    @DisplayName("新增績效_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void addPerformance_ok() throws Exception {
+        PerformanceRequest performanceRequest = new PerformanceRequest();
+        performanceRequest.setEvent("測試績效:" + me.getUsername());
+        performanceRequest.setUserId(me.getId());
+        performanceRequest.setFixedBonus(new BigDecimal(1000));
+        performanceRequest.setPerformanceRatio(new BigDecimal("0.5"));
+        performanceRequest.setEventTime(DateTool.now());
+
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERFORMANCE.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(performanceRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        List<PerformanceModel> all = performanceRepository.findAll();
+        Optional<PerformanceModel> first = all.stream().filter(p -> p.getEvent().equals(performanceRequest.getEvent())).findFirst();
+        Assertions.assertTrue(first.isPresent());
+        PerformanceResponse model = new PerformanceResponse(first.get());
+        Assertions.assertEquals(performanceRequest.getEvent(), model.getEvent());
+        Assertions.assertEquals(performanceRequest.getUserId(), model.getUser().getId());
+        Assertions.assertEquals(performanceRequest.getFixedBonus().toString(), model.getFixedBonus());
+        Assertions.assertEquals(performanceRequest.getPerformanceRatio().toString(), model.getPerformanceRatio());
+        Assertions.assertEquals(performanceRequest.getEventTime(), model.getEventTime());
+        Assertions.assertEquals(me.getUsername(), model.getCreateBy());
+        Assertions.assertEquals(StatusConstant.get(StatusConstant.PENDING_NO), model.getStatus());
+        performanceRepository.deleteById(model.getId());
     }
 
     private void refreshCache(){
