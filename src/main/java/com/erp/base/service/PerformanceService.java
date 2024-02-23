@@ -98,7 +98,7 @@ public class PerformanceService {
             performanceRepository.save(model);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance not found: id[" + request.getId() + "]");
     }
 
     public ResponseEntity<ApiResponse> remove(Long eventId) {
