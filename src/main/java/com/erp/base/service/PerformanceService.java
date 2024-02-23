@@ -88,13 +88,13 @@ public class PerformanceService {
         Optional<PerformanceModel> byId = performanceRepository.findById(request.getId());
         if (byId.isPresent()) {
             PerformanceModel model = byId.get();
+            if(model.getStatus() != StatusConstant.PENDING_NO) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Can only modify performances in 'Pending' status.");
             if (request.getEvent() != null) model.setEvent(request.getEvent());
             Long userId = request.getUserId();
             model.setUser(userId == null ? user : new ClientModel(userId));
             if (request.getFixedBonus() != null) model.setFixedBonus(request.getFixedBonus());
             if (request.getPerformanceRatio() != null) model.setPerformanceRatio(request.getPerformanceRatio());
             if (request.getEventTime() != null) model.setEventTime(request.getEventTime());
-            if (request.getStatus() != null) model.setStatus(request.getStatus());
             performanceRepository.save(model);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
