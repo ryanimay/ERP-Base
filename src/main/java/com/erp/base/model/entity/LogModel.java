@@ -25,7 +25,7 @@ public class LogModel implements IBaseModel {
     private String userName;
     @Column(name = "url")
     private String url;
-    @Column(name = "params")
+    @Column(name = "params", length = 500)
     private String params;
     @Column(name = "result")
     private String result;
