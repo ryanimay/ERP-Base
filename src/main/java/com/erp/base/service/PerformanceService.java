@@ -104,7 +104,7 @@ public class PerformanceService {
     public ResponseEntity<ApiResponse> remove(Long eventId) {
         int i = performanceRepository.updateStatus(eventId, StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO);
         if (i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "removed:" + i);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + eventId + "] not found");
     }
 
     public ResponseEntity<ApiResponse> accept(PerformanceAcceptRequest request) {
@@ -116,7 +116,7 @@ public class PerformanceService {
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
-        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "accept:" + i);
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + request.getEventId() + "] not found");
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam request) {
