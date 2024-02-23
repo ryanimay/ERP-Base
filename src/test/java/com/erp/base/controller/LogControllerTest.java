@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -65,6 +66,18 @@ class LogControllerTest {
         Assertions.assertEquals("test", logModel.getUserName());
         Assertions.assertEquals(Router.CACHE.REFRESH, logModel.getUrl());
         logRepository.deleteById(logModel.getId());
+    }
+
+    @Test
+    @DisplayName("日誌清單_測試AOP找不到用戶_錯誤")
+    @WithMockUser(authorities = "CACHE_FRESH")
+    void logList_userNotFound_error() throws Exception {
+        logRepository.deleteAll();
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
