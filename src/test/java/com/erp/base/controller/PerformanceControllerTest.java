@@ -355,6 +355,74 @@ class PerformanceControllerTest {
         performanceRepository.deleteById(model.getId());
     }
 
+    @Test
+    @DisplayName("更新績效_未知ID_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updatePerformance_unknownId_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance not found: id[" + 99 + "]");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERFORMANCE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "id": 99
+                        }
+                        """)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("更新績效_只能更改Pending績效_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updatePerformance_canOnlyModifyPerformancesInPending_error() throws Exception {
+        PerformanceModel performance = createPerformance(me);
+        performance.setStatus(StatusConstant.APPROVED_NO);
+        performanceRepository.save(performance);
+        entityManager.flush();
+        entityManager.clear();
+
+        PerformanceRequest performanceRequest = new PerformanceRequest();
+        performanceRequest.setId(performance.getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Can only modify performances in 'Pending' status.");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERFORMANCE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(performanceRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        performanceRepository.deleteById(performance.getId());
+    }
+
+    @Test
+    @DisplayName("更新績效_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updatePerformance_ok() throws Exception {
+        PerformanceModel performance = createPerformance(me);
+        PerformanceRequest performanceRequest = new PerformanceRequest();
+        performanceRequest.setId(performance.getId());
+        performanceRequest.setEvent(performance.getEvent() + "test");
+        performanceRequest.setUserId(performance.getUser().getId());
+        performanceRequest.setFixedBonus(performance.getFixedBonus());
+        performanceRequest.setPerformanceRatio(performance.getPerformanceRatio());
+        performanceRequest.setEventTime(performance.getEventTime().plusDays(10));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERFORMANCE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(performanceRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        Optional<PerformanceModel> byId = performanceRepository.findById(performance.getId());
+        Assertions.assertTrue(byId.isPresent());
+        PerformanceModel performanceModel = byId.get();
+        Assertions.assertEquals(performanceRequest.getId(), performanceModel.getId());
+        Assertions.assertEquals(performanceRequest.getEvent(), performanceModel.getEvent());
+        Assertions.assertEquals(performanceRequest.getUserId(), performanceModel.getUser().getId());
+        Assertions.assertEquals(performanceRequest.getFixedBonus(), performanceModel.getFixedBonus());
+        Assertions.assertEquals(performanceRequest.getPerformanceRatio(), performanceModel.getPerformanceRatio());
+        Assertions.assertEquals(performanceRequest.getEventTime(), performanceModel.getEventTime());
+        Assertions.assertEquals(StatusConstant.PENDING_NO, performanceModel.getStatus());
+        performanceRepository.deleteById(performance.getId());
+    }
+
     private void refreshCache(){
         entityManager.flush();
         entityManager.clear();
