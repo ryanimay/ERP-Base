@@ -423,6 +423,40 @@ class PerformanceControllerTest {
         performanceRepository.deleteById(performance.getId());
     }
 
+    @Test
+    @DisplayName("刪除績效_未知ID_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void removePerformance_unknownId_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + 99 + "] not found");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.PERFORMANCE.REMOVE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("eventId", "99")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("刪除績效_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void removePerformance_ok() throws Exception {
+        PerformanceModel performance = createPerformance(me);
+        Optional<PerformanceModel> byId = performanceRepository.findById(performance.getId());
+        Assertions.assertTrue(byId.isPresent());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.PERFORMANCE.REMOVE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("eventId", String.valueOf(performance.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        byId = performanceRepository.findById(performance.getId());
+        Assertions.assertTrue(byId.isPresent());
+        PerformanceModel performanceModel = byId.get();
+        Assertions.assertEquals(StatusConstant.REMOVED_NO, performanceModel.getStatus());
+        performanceRepository.deleteById(performance.getId());
+    }
+
     private void refreshCache(){
         entityManager.flush();
         entityManager.clear();
