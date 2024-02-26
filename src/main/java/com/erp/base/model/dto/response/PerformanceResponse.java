@@ -3,11 +3,11 @@ package com.erp.base.model.dto.response;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.PerformanceModel;
+import com.erp.base.tool.DateTool;
 import com.erp.base.tool.ObjectTool;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 public class PerformanceResponse {
@@ -16,8 +16,8 @@ public class PerformanceResponse {
     private ClientNameObject user;
     private BigDecimal fixedBonus;//固定額度績效
     private BigDecimal performanceRatio;//績效比率
-    private LocalDateTime eventTime;
-    private LocalDateTime createTime;
+    private String eventTime;
+    private String createTime;
     private String createBy;
     private String status;
 
@@ -28,8 +28,8 @@ public class PerformanceResponse {
         this.user = new ClientNameObject(u.getId(), u.getUsername());
         this.fixedBonus = model.getFixedBonus();
         this.performanceRatio = model.getPerformanceRatio();
-        this.eventTime = model.getEventTime();
-        this.createTime = model.getCreateTime();
+        this.eventTime = DateTool.format(model.getEventTime());
+        this.createTime = DateTool.format(model.getCreateTime());
         this.createBy = model.getCreateBy().getUsername();
         this.status = StatusConstant.get(model.getStatus());
     }

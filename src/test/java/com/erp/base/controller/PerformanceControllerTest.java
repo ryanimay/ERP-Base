@@ -111,8 +111,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(performance1.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(performance1.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(performance1.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance1.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance1.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance1.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance1.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(performance1.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(performance1.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(performance2.getId()))
@@ -121,8 +121,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.username").value(performance2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].fixedBonus").value(performance2.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].performanceRatio").value(performance2.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].eventTime").value(performance2.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createTime").value(performance2.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].eventTime").value(performance2.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createTime").value(performance2.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createBy").value(performance2.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(performance2.getStatus()));
         updateRoleLevel(2);
@@ -161,8 +161,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(performance2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(performance2.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(performance2.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance2.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance2.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance2.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance2.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(performance2.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(performance2.getStatus()));
 
@@ -200,8 +200,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(performance2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(performance2.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(performance2.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance2.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance2.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance2.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance2.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(performance2.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(performance2.getStatus()));
 
@@ -234,8 +234,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(selfPerformance1.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(selfPerformance1.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(selfPerformance1.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(selfPerformance1.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(selfPerformance1.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(selfPerformance1.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(selfPerformance1.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(selfPerformance1.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(selfPerformance1.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(selfPerformance2.getId()))
@@ -244,8 +244,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.username").value(selfPerformance2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].fixedBonus").value(selfPerformance2.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].performanceRatio").value(selfPerformance2.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].eventTime").value(selfPerformance2.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createTime").value(selfPerformance2.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].eventTime").value(selfPerformance2.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createTime").value(selfPerformance2.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createBy").value(selfPerformance2.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(selfPerformance2.getStatus()));
 
@@ -279,8 +279,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(selfPerformance2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(selfPerformance2.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(selfPerformance2.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(selfPerformance2.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(selfPerformance2.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(selfPerformance2.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(selfPerformance2.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(selfPerformance2.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(selfPerformance2.getStatus()));
         clientRepository.deleteById(newClient1.getId());
@@ -316,8 +316,8 @@ class PerformanceControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(performance1.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].fixedBonus").value(performance1.getFixedBonus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].performanceRatio").value(performance1.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance1.getEventTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance1.getCreateTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].eventTime").value(performance1.getEventTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(performance1.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy").value(performance1.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(performance1.getStatus()));
         clientRepository.deleteById(newClient1.getId());
@@ -352,7 +352,7 @@ class PerformanceControllerTest {
         Assertions.assertEquals(performanceRequest.getUserId(), model.getUser().getId());
         Assertions.assertEquals(performanceRequest.getFixedBonus().toString(), model.getFixedBonus());
         Assertions.assertEquals(performanceRequest.getPerformanceRatio().toString(), model.getPerformanceRatio());
-        Assertions.assertEquals(performanceRequest.getEventTime(), model.getEventTime());
+        Assertions.assertEquals(DateTool.format(performanceRequest.getEventTime()), model.getEventTime());
         Assertions.assertEquals(me.getUsername(), model.getCreateBy());
         Assertions.assertEquals(StatusConstant.get(StatusConstant.PENDING_NO), model.getStatus());
         performanceRepository.deleteById(model.getId());

@@ -4,11 +4,11 @@ import com.erp.base.enums.LeaveConstant;
 import com.erp.base.enums.StatusConstant;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LeaveModel;
+import com.erp.base.tool.DateTool;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 public class LeaveResponse implements Serializable {
@@ -18,21 +18,21 @@ public class LeaveResponse implements Serializable {
     private long id;
     private ClientNameObject user;
     private String type; //請假類型
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private String startTime;
+    private String endTime;
     private String status;
     private String info;
-    private LocalDateTime createdTime;
+    private String createdTime;
 
     public LeaveResponse(LeaveModel model) {
         this.id = model.getId();
         ClientModel u = model.getUser();
         this.user = new ClientNameObject(u.getId(), u.getUsername());
         this.type = LeaveConstant.get(model.getType());
-        this.startTime = model.getStartTime();
-        this.endTime = model.getEndTime();
+        this.startTime = DateTool.format(model.getStartTime());
+        this.endTime = DateTool.format(model.getEndTime());
         this.status = StatusConstant.get(model.getStatus());
         this.info = model.getInfo();
-        this.createdTime = model.getCreatedTime();
+        this.createdTime = DateTool.format(model.getCreatedTime());
     }
 }
