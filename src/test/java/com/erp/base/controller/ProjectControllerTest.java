@@ -224,6 +224,32 @@ class ProjectControllerTest {
         projectRepository.deleteById(model.getId());
     }
 
+    @Test
+    @DisplayName("更新專案_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updateProject_ok() throws Exception {
+        ProjectModel project = createProject(me, "1");
+        ProjectRequest request = new ProjectRequest();
+        request.setId(project.getId());
+        request.setName(project.getName() + "test");
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        Optional<ProjectModel> first = projectRepository.findById(project.getId());
+        Assertions.assertTrue(first.isPresent());
+        ProjectModel model = first.get();
+        Assertions.assertEquals(request.getName(), model.getName());
+        Assertions.assertEquals(project.getType(), model.getType());
+        Assertions.assertEquals(project.getScheduledStartTime(), model.getScheduledStartTime());
+        Assertions.assertEquals(project.getScheduledEndTime(), model.getScheduledEndTime());
+        Assertions.assertEquals(project.getInfo(), model.getInfo());
+        Assertions.assertEquals(project.getManager().getId(), model.getManager().getId());
+        projectRepository.deleteById(model.getId());
+    }
+
     private ProjectModel createProject(ClientModel model, String type){
         ProjectModel projectModel = new ProjectModel();
         projectModel.setName("專案名_" + model.getUsername());
