@@ -2,6 +2,7 @@ package com.erp.base.tool;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class DateTool {
     public static final String YYYY_MM_DD_T_HH_MM_SS = "yyyy-MM-dd'T'HH:mm:ss";
@@ -16,6 +17,6 @@ public class DateTool {
         return LocalDateTime.parse(time, formatter);
     }
     public static LocalDateTime now(){
-        return LocalDateTime.now().withNano(0);
+        return LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 }
