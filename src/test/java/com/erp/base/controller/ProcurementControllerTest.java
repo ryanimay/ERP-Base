@@ -194,6 +194,48 @@ class ProcurementControllerTest {
         procurementRepository.deleteById(model.getId());
     }
 
+    @Test
+    @DisplayName("更新採購_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updateProcurement_ok() throws Exception {
+        ProcurementModel procurement = createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING);
+        ProcurementRequest procurementRequest = new ProcurementRequest();
+        procurementRequest.setId(procurement.getId());
+        procurementRequest.setPrice(new BigDecimal(100000));
+        procurementRequest.setCount(3L);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROCUREMENT.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(procurementRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        List<ProcurementModel> all = procurementRepository.findAll();
+        Optional<ProcurementModel> first = all.stream().filter(p -> p.getId() == procurementRequest.getId()).findFirst();
+        Assertions.assertTrue(first.isPresent());
+        ProcurementModel model = first.get();
+        Assertions.assertEquals(procurement.getType(), model.getType());
+        Assertions.assertEquals(procurement.getName(), model.getName());
+        Assertions.assertEquals(procurementRequest.getPrice(), model.getPrice());
+        Assertions.assertEquals(procurementRequest.getCount(), model.getCount());
+        Assertions.assertEquals(procurement.getInfo(), model.getInfo());
+        Assertions.assertEquals(ProcurementConstant.STATUS_PENDING, model.getStatus());
+        procurementRepository.deleteById(model.getId());
+    }
+
+    @Test
+    @DisplayName("更新採購_未知Id_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void updateProcurement_unknownId_error() throws Exception {
+        ProcurementRequest procurementRequest = new ProcurementRequest();
+        procurementRequest.setId(99L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROCUREMENT.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(procurementRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
     private ProcurementModel createProcurement(int type, ClientModel model, int price, int count, int status){
         ProcurementModel procurementModel = new ProcurementModel();
         procurementModel.setType(type);
