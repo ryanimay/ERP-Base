@@ -4,21 +4,19 @@ import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.request.permission.BanRequest;
+import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PermissionModel;
-import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.PermissionRepository;
 import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @SpringBootTest(classes = TestRedisConfiguration.class)
 @TestPropertySource(locations = {
@@ -55,16 +52,10 @@ class PermissionControllerTest {
     private EntityManager entityManager;
     @Autowired
     private PermissionRepository permissionRepository;
+    @Value("${security.password}")
+    private String securityPwd;
     private static final String DEFAULT_USER_NAME = "test";
-    private static ClientModel me;
     private final List<Integer> permissionArray = List.of(35,18,5,9,31,59,49,37,40,44,52,63,3,56,39,34,29,11,30,42,28,58,1,68,36,12,4,7,21,19,27,6,64,10,13,41,17,62,57,48,32,51,2,67,47,50,43,14,46,20,66,24,60,55,15,23,45,54,22,53,38,69,65,16,25,26,61,33,8);
-    @BeforeAll
-    static void beforeAll(){
-        me = new ClientModel(1L);
-        me.setUsername(DEFAULT_USER_NAME);
-        me.setRoles(Set.of(new RoleModel(2L)));
-        me.setDepartment(new DepartmentModel(1L));
-    }
 
     @Test
     @DisplayName("權限清單_成功")
@@ -181,6 +172,34 @@ class PermissionControllerTest {
         model = byId.get();
         Assertions.assertTrue(model.getStatus());
         requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.OP_VALID);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("安全認證_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void securityConfirm_ok() throws Exception {
+        SecurityConfirmRequest request = new SecurityConfirmRequest();
+        request.setSecurityPassword(securityPwd);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, true);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.SECURITY_CONFIRM)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("安全認證_失敗")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void securityConfirm_wrongPwd_error() throws Exception {
+        SecurityConfirmRequest request = new SecurityConfirmRequest();
+        request.setSecurityPassword("zzzzzzzzzzzzzzz");
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SECURITY_ERROR, false);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.SECURITY_CONFIRM)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }
