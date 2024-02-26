@@ -6,6 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class ObjectTool {
     private static final LogFactory LOG = new LogFactory(ObjectTool.class);
@@ -39,5 +41,10 @@ public class ObjectTool {
         } else {
             return num.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toString();
         }
+    }
+
+    public static String extractPath(String requestUrl) throws URISyntaxException {
+        URI uri = new URI(requestUrl);
+        return uri.getPath();
     }
 }

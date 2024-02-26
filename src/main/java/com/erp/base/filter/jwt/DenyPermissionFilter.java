@@ -4,6 +4,7 @@ import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.service.CacheService;
 import com.erp.base.tool.LogFactory;
+import com.erp.base.tool.ObjectTool;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 @Component
 public class DenyPermissionFilter extends OncePerRequestFilter {
@@ -28,7 +30,14 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String requestedUrl = request.getServletPath();
+        String requestedUrl;
+        try {
+            requestedUrl = ObjectTool.extractPath(request.getRequestURI());
+        } catch (URISyntaxException e) {
+            LOG.error("request path: [{0}] trans error", request.getRequestURI());
+            FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
+            return;
+        }
 
         if (!StringUtils.isEmpty(requestedUrl) && notEqualSwaggerUrl(requestedUrl)) {
             //檢查路徑狀態是否為deny
@@ -39,7 +48,6 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
         filterChain.doFilter(request, response);
     }
 
