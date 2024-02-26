@@ -108,20 +108,20 @@ class LeaveControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(otherLeave1.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(otherLeave1.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(otherLeave1.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(otherLeave1.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(otherLeave1.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(otherLeave1.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(otherLeave1.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(otherLeave1.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(otherLeave1.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(otherLeave1.getCreatedTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(otherLeave1.getCreatedTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(otherLeave2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.id").value(otherLeave2.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.username").value(otherLeave2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].type").value(otherLeave2.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(otherLeave2.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(otherLeave2.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(otherLeave2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(otherLeave2.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(otherLeave2.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].info").value(otherLeave2.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createdTime").value(otherLeave2.getCreatedTime().toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createdTime").value(otherLeave2.getCreatedTime()));
 
         clientRepository.deleteById(newClient1.getId());
         clientRepository.deleteById(newClient2.getId());
@@ -158,11 +158,11 @@ class LeaveControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(otherLeave2.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(otherLeave2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(otherLeave2.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(otherLeave2.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(otherLeave2.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(otherLeave2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(otherLeave2.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(otherLeave2.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(otherLeave2.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(otherLeave2.getCreatedTime().toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(otherLeave2.getCreatedTime()));
 
         clientRepository.deleteById(newClient1.getId());
         clientRepository.deleteById(newClient2.getId());
@@ -198,11 +198,11 @@ class LeaveControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(otherLeave2.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(otherLeave2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(otherLeave2.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(otherLeave2.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(otherLeave2.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(otherLeave2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(otherLeave2.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(otherLeave2.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(otherLeave2.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(otherLeave2.getCreatedTime().toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(otherLeave2.getCreatedTime()));
 
         clientRepository.deleteById(newClient1.getId());
         clientRepository.deleteById(newClient2.getId());
@@ -240,29 +240,29 @@ class LeaveControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(selfLeave1.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(selfLeave1.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(selfLeave1.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(selfLeave1.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(selfLeave1.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(selfLeave1.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(selfLeave1.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(selfLeave1.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(selfLeave1.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(selfLeave1.getCreatedTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(selfLeave1.getCreatedTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(selfLeave2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.id").value(selfLeave2.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.username").value(selfLeave2.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].type").value(selfLeave2.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(selfLeave2.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(selfLeave2.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(selfLeave2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(selfLeave2.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(selfLeave2.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].info").value(selfLeave2.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createdTime").value(selfLeave2.getCreatedTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createdTime").value(selfLeave2.getCreatedTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].id").value(selfLeave3.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].user.id").value(selfLeave3.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].user.username").value(selfLeave3.getUser().getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].type").value(selfLeave3.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].startTime").value(selfLeave3.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].endTime").value(selfLeave3.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].startTime").value(selfLeave3.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].endTime").value(selfLeave3.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].status").value(selfLeave3.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].info").value(selfLeave3.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].createdTime").value(selfLeave3.getCreatedTime().toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].createdTime").value(selfLeave3.getCreatedTime()));
         leaveRepository.deleteById(selfLeave1.getId());
         leaveRepository.deleteById(selfLeave2.getId());
         leaveRepository.deleteById(selfLeave3.getId());
@@ -299,8 +299,8 @@ class LeaveControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(me.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(me.getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.type").value(LeaveConstant.get(leaveRequest.getType())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(leaveRequest.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(leaveRequest.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(DateTool.format(leaveRequest.getStartTime())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(DateTool.format(leaveRequest.getEndTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.status").value(StatusConstant.get(StatusConstant.PENDING_NO)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.info").value(leaveRequest.getInfo()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.createdTime").isNotEmpty());
@@ -355,11 +355,11 @@ class LeaveControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(me.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(me.getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.type").value(LeaveConstant.get(leaveRequest.getType())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(leaveRequest.getStartTime().toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(leaveRequest.getEndTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(DateTool.format(leaveRequest.getStartTime())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(DateTool.format(leaveRequest.getEndTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.status").value(StatusConstant.get(StatusConstant.PENDING_NO)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.info").value(leaveRequest.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createdTime").value(leaveModel.getCreatedTime().toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createdTime").value(DateTool.format(leaveModel.getCreatedTime())));
         leaveRepository.deleteById(leaveModel.getId());
     }
 

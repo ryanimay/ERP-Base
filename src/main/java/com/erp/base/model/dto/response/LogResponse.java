@@ -1,9 +1,8 @@
 package com.erp.base.model.dto.response;
 
 import com.erp.base.model.entity.LogModel;
+import com.erp.base.tool.DateTool;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 public class LogResponse {
@@ -13,7 +12,7 @@ public class LogResponse {
     private String url;
     private String ip;
     private String params;
-    private LocalDateTime time;
+    private String time;
     private String result;
 
     public LogResponse(LogModel model) {
@@ -23,7 +22,7 @@ public class LogResponse {
         this.url = model.getUrl();
         this.params = model.getParams();
         this.ip = model.getIp();
-        this.time = model.getTime();
+        this.time = DateTool.format(model.getTime());
         this.result = model.getResult();
     }
 }

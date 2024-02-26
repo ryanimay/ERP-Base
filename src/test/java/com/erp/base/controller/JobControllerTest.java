@@ -92,7 +92,7 @@ class JobControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].username").value(trackingJobResponse.getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].startTime").value(trackingJobResponse.getStartTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].endTime").value(trackingJobResponse.getEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].createdTime").value(trackingJobResponse.getCreatedTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].createdTime").value(trackingJobResponse.getCreatedTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].createBy").value(trackingJobResponse.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].status").value(trackingJobResponse.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].order").value(trackingJobResponse.getOrder()))
@@ -103,7 +103,7 @@ class JobControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].username").value(userJobResponse.getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].startTime").value(userJobResponse.getStartTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].endTime").value(userJobResponse.getEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].createdTime").value(userJobResponse.getCreatedTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].createdTime").value(userJobResponse.getCreatedTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].createBy").value(userJobResponse.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].status").value(userJobResponse.getStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].order").value(userJobResponse.getOrder()))
@@ -184,9 +184,9 @@ class JobControllerTest {
         Assertions.assertEquals(jobModel.getId(), userJobId);
         Assertions.assertEquals(jobModel.getInfo(), jobRequest.getInfo());
         Assertions.assertEquals(jobModel.getUsername(), me.getUsername());
-        Assertions.assertEquals(jobModel.getStartTime(), jobRequest.getStartTime());
-        Assertions.assertEquals(jobModel.getEndTime(), jobRequest.getEndTime());
-        Assertions.assertEquals(jobModel.getCreatedTime(), userJob.getCreatedTime());
+        Assertions.assertEquals(jobModel.getStartTime(), DateTool.format(jobRequest.getStartTime()));
+        Assertions.assertEquals(jobModel.getEndTime(), DateTool.format(jobRequest.getEndTime()));
+        Assertions.assertEquals(jobModel.getCreatedTime(), DateTool.format(userJob.getCreatedTime()));
         Assertions.assertEquals(jobModel.getCreateBy(), DEFAULT_USER_NAME);
         Assertions.assertEquals(jobModel.getStatus(), StatusConstant.get(2));
         clearData();

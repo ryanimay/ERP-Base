@@ -103,7 +103,7 @@ class LogControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].url").value(log1.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].ip").value(log1.getIp()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].params").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(log1.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(DateTool.format(log1.getTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].result").value(log1.getResult()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(log2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(log2.getStatus()))
@@ -111,7 +111,7 @@ class LogControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].url").value(log2.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].ip").value(log2.getIp()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].params").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].time").value(log2.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].time").value(DateTool.format(log2.getTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].result").value(log2.getResult()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].id").value(log3.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].status").value(log3.getStatus()))
@@ -119,7 +119,7 @@ class LogControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].url").value(log3.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].ip").value(log3.getIp()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].params").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].time").value(log3.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].time").value(DateTool.format(log3.getTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].result").value(log3.getResult()));
         logRepository.deleteById(log1.getId());
         logRepository.deleteById(log2.getId());
@@ -150,7 +150,7 @@ class LogControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].url").value(log3.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].ip").value(log3.getIp()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].params").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(log3.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(DateTool.format(log3.getTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].result").value(log3.getResult()));
         logRepository.deleteById(log1.getId());
         logRepository.deleteById(log2.getId());
@@ -170,7 +170,7 @@ class LogControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LOG.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("endTime", log2.getTime().toString())
+                .param("endTime", DateTool.format(log2.getTime()))
                 .param("sort", "2")
                 .param("sortBy", "time")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
@@ -183,7 +183,7 @@ class LogControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].url").value(log2.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].ip").value(log2.getIp()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].params").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(log2.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(DateTool.format(log2.getTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].result").value(log2.getResult()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(log1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(log1.getStatus()))
@@ -191,7 +191,7 @@ class LogControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].url").value(log1.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].ip").value(log1.getIp()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].params").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].time").value(log1.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].time").value(DateTool.format(log1.getTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].result").value(log1.getResult()));
         logRepository.deleteById(log1.getId());
         logRepository.deleteById(log2.getId());
@@ -222,7 +222,7 @@ class LogControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].url").value(log3.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].ip").value(log3.getIp()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].params").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(log3.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].time").value(DateTool.format(log3.getTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].result").value(log3.getResult()));
         logRepository.deleteById(log1.getId());
         logRepository.deleteById(log2.getId());

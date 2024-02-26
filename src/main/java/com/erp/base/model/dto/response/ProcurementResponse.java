@@ -2,10 +2,10 @@ package com.erp.base.model.dto.response;
 
 import com.erp.base.enums.ProcurementConstant;
 import com.erp.base.model.entity.ProcurementModel;
+import com.erp.base.tool.DateTool;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 @Data
 public class ProcurementResponse {
     private long id;
@@ -15,7 +15,7 @@ public class ProcurementResponse {
     private long count;
     private BigDecimal total;
     private String info;
-    private LocalDateTime createTime;
+    private String createTime;
     private ClientNameObject createBy;
     private String status;
 
@@ -26,7 +26,7 @@ public class ProcurementResponse {
         this.price = model.getPrice();
         this.count = model.getCount();
         this.info = model.getInfo();
-        this.createTime = model.getCreateTime();
+        this.createTime = DateTool.format(model.getCreateTime());
         this.createBy = new ClientNameObject(model.getCreateBy());
         this.status = ProcurementConstant.get(model.getStatus());
         this.total = price.multiply(BigDecimal.valueOf(count));
