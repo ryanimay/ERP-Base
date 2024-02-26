@@ -3,6 +3,7 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ProjectResponse;
 import com.erp.base.model.entity.ClientModel;
@@ -11,6 +12,8 @@ import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.ProjectRepository;
 import com.erp.base.tool.DateTool;
+import com.erp.base.tool.ObjectTool;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @SpringBootTest(classes = TestRedisConfiguration.class)
@@ -61,7 +66,7 @@ class ProjectControllerTest {
     @Test
     @DisplayName("專案清單_全搜_成功")
     @WithUserDetails(DEFAULT_USER_NAME)
-    void project_findAll_ok() throws Exception {
+    void projectList_findAll_ok() throws Exception {
         ProjectResponse projectResponse1 = new ProjectResponse(createProject(me, "1"));
         ProjectResponse projectResponse2 = new ProjectResponse(createProject(me, "2"));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -106,7 +111,7 @@ class ProjectControllerTest {
     @Test
     @DisplayName("專案清單_搜TYPE_成功")
     @WithUserDetails(DEFAULT_USER_NAME)
-    void project_findByType_ok() throws Exception {
+    void projectList_findByType_ok() throws Exception {
         ProjectResponse projectResponse1 = new ProjectResponse(createProject(me, "1"));
         ProjectResponse projectResponse2 = new ProjectResponse(createProject(me, "2"));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -138,7 +143,7 @@ class ProjectControllerTest {
     @Test
     @DisplayName("專案清單_搜Manager_成功")
     @WithUserDetails(DEFAULT_USER_NAME)
-    void project_findByManager_ok() throws Exception {
+    void projectList_findByManager_ok() throws Exception {
         ProjectResponse projectResponse1 = new ProjectResponse(createProject(me, "1"));
         ProjectResponse projectResponse2 = new ProjectResponse(createProject(me, "2"));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -187,6 +192,36 @@ class ProjectControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data").isEmpty());
         projectRepository.deleteById(projectResponse1.getId());
         projectRepository.deleteById(projectResponse2.getId());
+    }
+
+    @Test
+    @DisplayName("新增專案_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void addProject_ok() throws Exception {
+        ProjectRequest request = new ProjectRequest();
+        request.setName("測試專案");
+        request.setType("1");
+        request.setScheduledStartTime(DateTool.now());
+        request.setScheduledEndTime(DateTool.now());
+        request.setInfo("測試專案內容");
+        request.setManagerId(me.getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PROJECT.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        List<ProjectModel> all = projectRepository.findAll();
+        Optional<ProjectModel> first = all.stream().filter(p -> p.getName().equals(request.getName())).findFirst();
+        Assertions.assertTrue(first.isPresent());
+        ProjectModel model = first.get();
+        Assertions.assertEquals(request.getName(), model.getName());
+        Assertions.assertEquals(request.getType(), model.getType());
+        Assertions.assertEquals(request.getScheduledStartTime(), model.getScheduledStartTime());
+        Assertions.assertEquals(request.getScheduledEndTime(), model.getScheduledEndTime());
+        Assertions.assertEquals(request.getInfo(), model.getInfo());
+        Assertions.assertEquals(request.getManagerId(), model.getManager().getId());
+        projectRepository.deleteById(model.getId());
     }
 
     private ProjectModel createProject(ClientModel model, String type){
