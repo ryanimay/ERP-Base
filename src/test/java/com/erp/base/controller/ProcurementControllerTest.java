@@ -13,8 +13,6 @@ import com.erp.base.model.entity.ProcurementModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.ProcurementRepository;
 import com.erp.base.tool.ObjectTool;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -55,8 +53,6 @@ class ProcurementControllerTest {
     private TestUtils testUtils;
     @Autowired
     private ProcurementRepository procurementRepository;
-    @PersistenceContext
-    private EntityManager entityManager;
     private static final String DEFAULT_USER_NAME = "test";
     private static ClientModel me;
 
@@ -234,6 +230,23 @@ class ProcurementControllerTest {
                 .content(ObjectTool.toJson(procurementRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("移除採購_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void deleteProcurement_ok() throws Exception {
+        ProcurementModel procurement = createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING);
+        Optional<ProcurementModel> byId = procurementRepository.findById(procurement.getId());
+        Assertions.assertTrue(byId.isPresent());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.PROCUREMENT.DELETE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(procurement.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        byId = procurementRepository.findById(procurement.getId());
+        Assertions.assertTrue(byId.isEmpty());
     }
 
     private ProcurementModel createProcurement(int type, ClientModel model, int price, int count, int status){
