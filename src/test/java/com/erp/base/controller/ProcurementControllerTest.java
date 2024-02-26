@@ -4,6 +4,7 @@ import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.ProcurementConstant;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.procurement.ProcurementRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ProcurementResponse;
 import com.erp.base.model.entity.ClientModel;
@@ -11,8 +12,10 @@ import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.ProcurementModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.ProcurementRepository;
+import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +36,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @SpringBootTest(classes = TestRedisConfiguration.class)
@@ -69,7 +74,7 @@ class ProcurementControllerTest {
     void procurementList_findAll_ok() throws Exception {
         ProcurementResponse procurement1 = new ProcurementResponse(createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING));
         ProcurementResponse procurement2 = new ProcurementResponse(createProcurement(2, me, 30000, 3, ProcurementConstant.STATUS_PENDING));
-        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, true);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROCUREMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
@@ -108,7 +113,7 @@ class ProcurementControllerTest {
     void procurementList_findByType_ok() throws Exception {
         ProcurementResponse procurement1 = new ProcurementResponse(createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING));
         ProcurementResponse procurement2 = new ProcurementResponse(createProcurement(2, me, 30000, 3, ProcurementConstant.STATUS_PENDING));
-        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, true);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROCUREMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("type", "1")
@@ -137,7 +142,7 @@ class ProcurementControllerTest {
     void procurementList_findByStatus_ok() throws Exception {
         ProcurementResponse procurement1 = new ProcurementResponse(createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING));
         ProcurementResponse procurement2 = new ProcurementResponse(createProcurement(2, me, 30000, 3, ProcurementConstant.STATUS_APPROVED));
-        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, true);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROCUREMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("status", "2")
@@ -158,6 +163,35 @@ class ProcurementControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(procurement2.getStatus()));
         procurementRepository.deleteById(procurement1.getId());
         procurementRepository.deleteById(procurement2.getId());
+    }
+
+    @Test
+    @DisplayName("新增採購_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void addProcurement_ok() throws Exception {
+        ProcurementRequest procurementRequest = new ProcurementRequest();
+        procurementRequest.setType(1);
+        procurementRequest.setName("test");
+        procurementRequest.setPrice(new BigDecimal(500));
+        procurementRequest.setCount(5L);
+        procurementRequest.setInfo("testInfo");
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PROCUREMENT.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(procurementRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        List<ProcurementModel> all = procurementRepository.findAll();
+        Optional<ProcurementModel> first = all.stream().filter(p -> p.getName().equals(procurementRequest.getName())).findFirst();
+        Assertions.assertTrue(first.isPresent());
+        ProcurementModel model = first.get();
+        Assertions.assertEquals(procurementRequest.getType(), model.getType());
+        Assertions.assertEquals(procurementRequest.getName(), model.getName());
+        Assertions.assertEquals(procurementRequest.getPrice(), model.getPrice());
+        Assertions.assertEquals(procurementRequest.getCount(), model.getCount());
+        Assertions.assertEquals(procurementRequest.getInfo(), model.getInfo());
+        Assertions.assertEquals(ProcurementConstant.STATUS_PENDING, model.getStatus());
+        procurementRepository.deleteById(model.getId());
     }
 
     private ProcurementModel createProcurement(int type, ClientModel model, int price, int count, int status){
