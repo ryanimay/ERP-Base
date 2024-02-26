@@ -2,7 +2,9 @@ package com.erp.base.controller;
 
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
+import com.erp.base.enums.StatusConstant;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ProjectResponse;
@@ -13,6 +15,8 @@ import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.ProjectRepository;
 import com.erp.base.tool.DateTool;
 import com.erp.base.tool.ObjectTool;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -52,6 +56,8 @@ class ProjectControllerTest {
     private TestUtils testUtils;
     @Autowired
     private ProjectRepository projectRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
     private static final String DEFAULT_USER_NAME = "test";
     private static ClientModel me;
 
@@ -247,6 +253,91 @@ class ProjectControllerTest {
         Assertions.assertEquals(project.getScheduledEndTime(), model.getScheduledEndTime());
         Assertions.assertEquals(project.getInfo(), model.getInfo());
         Assertions.assertEquals(project.getManager().getId(), model.getManager().getId());
+        projectRepository.deleteById(model.getId());
+    }
+
+    @Test
+    @DisplayName("啟動專案_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void startProject_ok() throws Exception {
+        ProjectModel project = createProject(me, "1");
+        Assertions.assertEquals(StatusConstant.PENDING_NO, project.getStatus());
+        IdRequest request = new IdRequest();
+        request.setId(project.getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.START)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<ProjectModel> first = projectRepository.findById(project.getId());
+        Assertions.assertTrue(first.isPresent());
+        ProjectModel model = first.get();
+        Assertions.assertEquals(StatusConstant.APPROVED_NO, model.getStatus());
+        projectRepository.deleteById(model.getId());
+    }
+
+    @Test
+    @DisplayName("啟動專案_未知Id_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void startProject_unknownId_ok() throws Exception {
+        IdRequest request = new IdRequest();
+        request.setId(99L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UPDATE FAILED, ID[" + 99 + "]");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.START)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("專案結案_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void doneProject_ok() throws Exception {
+        ProjectModel project = createProject(me, "1");
+        project.setStatus(StatusConstant.APPROVED_NO);
+        project = projectRepository.save(project);
+        Assertions.assertEquals(StatusConstant.APPROVED_NO, project.getStatus());
+        IdRequest request = new IdRequest();
+        request.setId(project.getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.DONE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<ProjectModel> first = projectRepository.findById(project.getId());
+        Assertions.assertTrue(first.isPresent());
+        ProjectModel model = first.get();
+        Assertions.assertEquals(StatusConstant.CLOSED_NO, model.getStatus());
+        projectRepository.deleteById(model.getId());
+    }
+
+    @Test
+    @DisplayName("專案結案_未執行不可結案_失敗")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void doneProject_unApproved_error() throws Exception {
+        ProjectModel project = createProject(me, "1");
+        Assertions.assertEquals(StatusConstant.PENDING_NO, project.getStatus());
+        IdRequest request = new IdRequest();
+        request.setId(project.getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UPDATE FAILED, ID[" + project.getId() + "]");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.DONE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<ProjectModel> first = projectRepository.findById(project.getId());
+        Assertions.assertTrue(first.isPresent());
+        ProjectModel model = first.get();
+        Assertions.assertEquals(StatusConstant.PENDING_NO, model.getStatus());
         projectRepository.deleteById(model.getId());
     }
 
