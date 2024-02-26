@@ -3,12 +3,14 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.permission.BanRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.PermissionRepository;
+import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hamcrest.Matchers;
@@ -140,6 +142,45 @@ class PermissionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("roleId", "99")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("權限停用/啟用_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void banPermission_ok() throws Exception {
+        BanRequest banRequest = new BanRequest();
+        banRequest.setId(1);
+        banRequest.setStatus(false);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERMISSION.BAN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(banRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<PermissionModel> byId = permissionRepository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        PermissionModel model = byId.get();
+        Assertions.assertFalse(model.getStatus());
+        requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.OP_VALID);
+        response = ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        banRequest.setStatus(true);
+        requestBuilder = MockMvcRequestBuilders.put(Router.PERMISSION.BAN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(banRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        byId = permissionRepository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        model = byId.get();
+        Assertions.assertTrue(model.getStatus());
+        requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.OP_VALID);
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }
