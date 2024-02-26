@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public interface ProjectRepository extends JpaRepository<ProjectModel, Long>, JpaSpecificationExecutor<ProjectModel> {
     @Modifying
     @Query("UPDATE ProjectModel p SET p.status = :statusApproved, p.startTime = :now WHERE p.status = :statusPending AND p.id = :projectId")
-    void start(Long projectId, LocalDateTime now, int statusPending, int statusApproved);
+    int start(Long projectId, LocalDateTime now, int statusPending, int statusApproved);
     @Modifying
     @Query("UPDATE ProjectModel p SET p.status = :statusClosed, p.endTime = :now WHERE p.status = :statusApproved AND p.id = :projectId")
-    void done(Long projectId, LocalDateTime now, int statusApproved, int statusClosed);
+    int done(Long projectId, LocalDateTime now, int statusApproved, int statusClosed);
 }

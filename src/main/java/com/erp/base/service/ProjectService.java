@@ -58,12 +58,16 @@ public class ProjectService {
     }
 
     public ResponseEntity<ApiResponse> start(Long projectId) {
-        projectRepository.start(projectId, DateTool.now(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        int count = projectRepository.start(projectId, DateTool.now(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
+        return count == 1
+                ? ApiResponse.success(ApiResponseCode.SUCCESS)
+                : ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UPDATE FAILED, ID[" + projectId + "]");
     }
 
     public ResponseEntity<ApiResponse> done(Long projectId) {
-        projectRepository.done(projectId, DateTool.now(), StatusConstant.APPROVED_NO, StatusConstant.CLOSED_NO);
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        int count = projectRepository.done(projectId, DateTool.now(), StatusConstant.APPROVED_NO, StatusConstant.CLOSED_NO);
+        return count == 1
+                ? ApiResponse.success(ApiResponseCode.SUCCESS)
+                : ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UPDATE FAILED, ID[" + projectId + "]");
     }
 }
