@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 @Aspect
@@ -64,7 +63,7 @@ public class LoggingAspect {
     }
 
     private String getRequestUrl(HttpServletRequest request) throws URISyntaxException {
-        return extractPath(request.getRequestURI());
+        return ObjectTool.extractPath(request.getRequestURI());
     }
 
     private String getRequestArgs(ProceedingJoinPoint joinPoint) {
@@ -117,10 +116,5 @@ public class LoggingAspect {
     
     private boolean checkIp(String clientIp){
         return StringUtils.isEmpty(clientIp) || "unknown".equalsIgnoreCase(clientIp);
-    }
-
-    public static String extractPath(String url) throws URISyntaxException {
-        URI uri = new URI(url);
-        return uri.getPath();
     }
 }
