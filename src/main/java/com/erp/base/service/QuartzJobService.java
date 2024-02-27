@@ -88,7 +88,7 @@ public class QuartzJobService {
             scheduler.rescheduleJob(trigger.getKey(), trigger);
             updateQuartzTableData(model);
         } else {
-            response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+            response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "JobId Not Found.");
         }
         return response;
     }
@@ -115,8 +115,8 @@ public class QuartzJobService {
 
     //清除預設表中的資料，避免重啟專案後又讀到
     private void deleteFromQuartzTableByName(String name) {
-        quartzJobRepository.deleteFromJobDetailsByName(name);
         quartzJobRepository.deleteFromTriggersByName(name);
+        quartzJobRepository.deleteFromJobDetailsByName(name);
         quartzJobRepository.deleteFromCronTriggersByName(name);
     }
 
