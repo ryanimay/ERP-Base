@@ -11,12 +11,14 @@ import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @Component
@@ -46,6 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         noRequiresAuthenticationList.add(Router.CLIENT.RESET_PASSWORD);
         noRequiresAuthenticationList.add(Router.ROLE.LIST);
     }
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
     @Autowired
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -60,17 +65,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            String url = ObjectTool.extractPath(request.getRequestURI()).replace(contextPath, "");
             String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if (requiresAuthentication(request.getRequestURI())) {
+            if (requiresAuthentication(url)) {
                 if(token == null) throw new SignatureException("token is empty");
                 authenticationToken(token);
-                refreshToken(request, response);
             }
         } catch (SignatureException e) {
-            exceptionResponse(e, response, ApiResponseCode.INVALID_SIGNATURE);
-            return;
-        } catch (AccessDeniedException e) {
+            try{
+                LOG.info("AccessToken inValid, refresh");
+                refreshToken(request, response);
+            }catch (SignatureException e1){
+                exceptionResponse(e1, response, ApiResponseCode.INVALID_SIGNATURE);
+                return;
+            }
+        } catch (AccessDeniedException | MalformedJwtException e) {
             exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
+            return;
+        } catch (URISyntaxException e) {
+            LOG.error("request path: [{0}] trans error", request.getRequestURI());
+            FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
             return;
         }
         filterChain.doFilter(request, response);
@@ -110,15 +124,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             //刷新Token時進行權限刷新
             SecurityContext context = SecurityContextHolder.getContext();
-            UserDetailImpl userDetails = ObjectTool.convert(context.getAuthentication().getPrincipal(), UserDetailImpl.class);
             ClientModel client = cacheService.getClient(username);
+            UserDetailImpl userDetail = new UserDetailImpl(client, cacheService);
             Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
-            Map<String, Object> principalMap = userDetails.getDataMap();
+            Map<String, Object> principalMap = userDetail.getDataMap();
             principalMap.put(PRINCIPAL_CLIENT, client);
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);
             context.setAuthentication(authentication);
         } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
+            throw new SignatureException("");
         }
     }
 
