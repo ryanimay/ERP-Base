@@ -49,7 +49,7 @@ public class QuartzJobService {
         return quartzJobRepository.findAll();
     }
 
-    public void add(QuartzJobRequest request) throws ClassNotFoundException, SchedulerException {
+    public void add(QuartzJobRequest request) throws ClassNotFoundException, SchedulerException, ParseException {
         QuartzJobModel model = request.toModel();
         quartzJobRepository.save(model);
         CronTriggerFactoryBean trigger = createTrigger(model);
@@ -67,7 +67,7 @@ public class QuartzJobService {
         scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
     }
 
-    public ResponseEntity<ApiResponse> update(QuartzJobRequest request) throws ClassNotFoundException, SchedulerException {
+    public ResponseEntity<ApiResponse> update(QuartzJobRequest request) throws ClassNotFoundException, SchedulerException, ParseException {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         Long id = request.getId();
         Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
@@ -121,7 +121,7 @@ public class QuartzJobService {
     }
 
     @SuppressWarnings("unchecked")
-    public CronTriggerFactoryBean createTrigger(QuartzJobModel model) throws ClassNotFoundException {
+    public CronTriggerFactoryBean createTrigger(QuartzJobModel model) throws ClassNotFoundException, ParseException {
         Class<? extends Job> jobClass;
         jobClass = (Class<? extends Job>) Class.forName(model.getClassPath());
         CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
@@ -142,6 +142,7 @@ public class QuartzJobService {
             trigger.afterPropertiesSet();
         } catch (ParseException e) {
             LOG.error("Quartz Trigger執行錯誤:{0}", e.getMessage());
+            throw e;
         }
         return trigger;
     }

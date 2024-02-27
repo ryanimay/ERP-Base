@@ -14,10 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 @RestController
 @Tag(name = "QuartzJobController", description = "排程相關API")
 public class QuartzJobController {
     private QuartzJobService quartzJobService;
+
     @Autowired
     public void setQuartzJobService(QuartzJobService quartzJobService) {
         this.quartzJobService = quartzJobService;
@@ -28,6 +31,7 @@ public class QuartzJobController {
     public ResponseEntity<ApiResponse> list() {
         return quartzJobService.list();
     }
+
     @Loggable
     @PostMapping(Router.QUARTZ_JOB.ADD)
     @Operation(summary = "新增排程")
@@ -37,11 +41,12 @@ public class QuartzJobController {
             quartzJobService.add(request);
         } catch (ClassNotFoundException e) {
             response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
-        } catch (SchedulerException e) {
+        } catch (SchedulerException | ParseException e) {
             response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
+
     @Loggable
     @PutMapping(Router.QUARTZ_JOB.UPDATE)
     @Operation(summary = "編輯排程")
@@ -51,11 +56,12 @@ public class QuartzJobController {
             response = quartzJobService.update(request);
         } catch (ClassNotFoundException e) {
             response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
-        } catch (SchedulerException e) {
+        } catch (SchedulerException | ParseException e) {
             response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
+
     @Loggable
     @PutMapping(Router.QUARTZ_JOB.TOGGLE)
     @Operation(summary = "排程狀態切換")
@@ -68,6 +74,7 @@ public class QuartzJobController {
         }
         return response;
     }
+
     @Loggable
     @DeleteMapping(Router.QUARTZ_JOB.DELETE)
     @Operation(summary = "刪除排程")
@@ -80,6 +87,7 @@ public class QuartzJobController {
         }
         return response;
     }
+
     @Loggable
     @PostMapping(Router.QUARTZ_JOB.EXEC)
     @Operation(summary = "單次執行任務")
