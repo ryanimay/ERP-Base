@@ -328,6 +328,26 @@ class QuartzJobControllerTest {
         quartzJobRepository.deleteById(quartzJob.getId());
     }
 
+    @Test
+    @DisplayName("單次觸發任務_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void execQuartzJob_ok() throws Exception {
+        QuartzJobModel quartzJob = createQuartzJob();
+        quartzJob.setCron("*/3 * * * * ?");
+        CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
+        scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
+        JobKey jobKey = new JobKey(quartzJob.getName(), quartzJob.getGroupName());
+        scheduler.pauseJob(jobKey);
+        IdRequest idRequest = new IdRequest();
+        idRequest.setId(quartzJob.getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.QUARTZ_JOB.EXEC)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(idRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
     private QuartzJobModel createQuartzJob() {
         QuartzJobModel quartzJobModel = new QuartzJobModel();
         quartzJobModel.setName("測試排程");
