@@ -303,7 +303,29 @@ class QuartzJobControllerTest {
         quartzJobRepository.deleteFromTriggersByName(name);
         quartzJobRepository.deleteFromJobDetailsByName(name);
         quartzJobRepository.deleteFromCronTriggersByName(name);
+        quartzJobRepository.deleteById(quartzJob.getId());
         scheduler.clear();
+    }
+
+    @Test
+    @DisplayName("刪除排程_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void deleteQuartzJob_ok() throws Exception {
+        QuartzJobModel quartzJob = createQuartzJob();
+        CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
+        scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
+        JobKey jobKey = new JobKey(quartzJob.getName(), quartzJob.getGroupName());
+        Assertions.assertNotNull(scheduler.getJobDetail(jobKey));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.QUARTZ_JOB.DELETE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(quartzJob.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        Assertions.assertNull(scheduler.getJobDetail(jobKey));
+        Optional<QuartzJobModel> byId = quartzJobRepository.findById(quartzJob.getId());
+        Assertions.assertTrue(byId.isEmpty());
+        quartzJobRepository.deleteById(quartzJob.getId());
     }
 
     private QuartzJobModel createQuartzJob() {
