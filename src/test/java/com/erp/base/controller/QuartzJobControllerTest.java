@@ -3,6 +3,7 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.quartzJob.QuartzJobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.QuartzJobResponse;
@@ -245,6 +246,59 @@ class QuartzJobControllerTest {
         CronTrigger updatedTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
         Assertions.assertNotNull(updatedTrigger);
         Assertions.assertEquals("*/10 * * * * ?", updatedTrigger.getCronExpression());
+
+        quartzJobRepository.deleteFromTriggersByName(name);
+        quartzJobRepository.deleteFromJobDetailsByName(name);
+        quartzJobRepository.deleteFromCronTriggersByName(name);
+        scheduler.clear();
+    }
+
+    @Test
+    @DisplayName("排程狀態切換_未知Id_錯誤")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void toggleQuartzJob_unknownId_error() throws Exception {
+        IdRequest request = new IdRequest();
+        request.setId(99L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "JobId Not Found.");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.TOGGLE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("排程狀態切換_成功")
+    @WithUserDetails(DEFAULT_USER_NAME)
+    void toggleQuartzJob_ok() throws Exception {
+        QuartzJobModel quartzJob = createQuartzJob();
+        CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
+        scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
+        String name = quartzJob.getName();
+        String groupName = quartzJob.getGroupName();
+        JobKey jobKey = new JobKey(name, groupName);
+        TriggerKey triggerKey = new TriggerKey(name, groupName);
+        quartzJob.setStatus(false);
+        quartzJobRepository.save(quartzJob);
+        scheduler.pauseJob(jobKey);
+        entityManager.flush();
+        entityManager.clear();
+        Assertions.assertFalse(quartzJob.isStatus());
+        Assertions.assertEquals(Trigger.TriggerState.PAUSED, scheduler.getTriggerState(triggerKey));
+
+        IdRequest request = new IdRequest();
+        request.setId(quartzJob.getId());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.TOGGLE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Assertions.assertEquals(Trigger.TriggerState.NORMAL, scheduler.getTriggerState(triggerKey));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        Assertions.assertEquals(Trigger.TriggerState.PAUSED, scheduler.getTriggerState(triggerKey));
 
         quartzJobRepository.deleteFromTriggersByName(name);
         quartzJobRepository.deleteFromJobDetailsByName(name);
