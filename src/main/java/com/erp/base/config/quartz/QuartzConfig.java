@@ -16,6 +16,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 import javax.sql.DataSource;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,17 +47,17 @@ public class QuartzConfig {
             schedulerFactoryBean.afterPropertiesSet();
             schedulerFactoryBean.setTriggers(getNewTrigger(schedulerFactoryBean.getScheduler()));
             LOG.info("init quartz scheduler");
-        }catch (SchedulerException e){
+        }catch (SchedulerException | ParseException e){
             LOG.error("排程檢查發生錯誤,{0}", e.getMessage());
         }catch (ClassNotFoundException e){
             LOG.error("類名轉換發生錯誤,{0}", e.getMessage());
-        } catch (Exception e) {
+        }catch (Exception e) {
             LOG.error("排程發生未知錯誤,{0}", e.getMessage());
         }
         return schedulerFactoryBean;
     }
 
-    private Trigger[] getNewTrigger(Scheduler scheduler) throws SchedulerException, ClassNotFoundException {
+    private Trigger[] getNewTrigger(Scheduler scheduler) throws SchedulerException, ClassNotFoundException, ParseException {
         List<QuartzJobModel> allModel = quartzJobService.findAll();
         List<Trigger> triggerList = new ArrayList<>();
         for (QuartzJobModel model : allModel) {
