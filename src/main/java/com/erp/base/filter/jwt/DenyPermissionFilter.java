@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,6 +22,8 @@ import java.net.URISyntaxException;
 public class DenyPermissionFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(DenyPermissionFilter.class);
     private CacheService cacheService;
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     @Autowired
     public void setClientCache(CacheService cacheService) {
@@ -32,7 +35,7 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestedUrl;
         try {
-            requestedUrl = ObjectTool.extractPath(request.getRequestURI());
+            requestedUrl = ObjectTool.extractPath(request.getRequestURI()).replace(contextPath, "");
         } catch (URISyntaxException e) {
             LOG.error("request path: [{0}] trans error", request.getRequestURI());
             FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);
