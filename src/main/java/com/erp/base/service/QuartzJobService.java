@@ -147,7 +147,7 @@ public class QuartzJobService {
         return trigger;
     }
 
-    public void toggle(IdRequest request) throws SchedulerException {
+    public ResponseEntity<ApiResponse> toggle(IdRequest request) throws SchedulerException {
         Long id = request.getId();
         quartzJobRepository.switchStatusById(id);
         Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
@@ -160,6 +160,9 @@ public class QuartzJobService {
             } else {
                 scheduler.pauseJob(jobKey);
             }
+            return ApiResponse.success(ApiResponseCode.SUCCESS);
+        }else{
+            return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "JobId Not Found.");
         }
     }
 
