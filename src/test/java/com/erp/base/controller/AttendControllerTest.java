@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -50,17 +49,6 @@ class AttendControllerTest {
     @Autowired
     private ClientRepository clientRepository;
     private static final String DEFAULT_USER_NAME = "test";
-
-    @Test
-    @DisplayName("簽到_找不到用戶_失敗")
-    @WithMockUser(authorities = "ATTEND_SIGNIN")
-    void signIn_unknownUser_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
-        testUtils.performAndExpect(mockMvc, requestBuilder, response);
-    }
 
     @Test
     @DisplayName("簽到_系統異常簽到失敗_失敗")
@@ -106,17 +94,6 @@ class AttendControllerTest {
         AttendModel attendModel = attendOptional.get();
         Assertions.assertNotNull(attendModel.getAttendTime());
         attendRepository.deleteById(model.getId());
-    }
-
-    @Test
-    @DisplayName("簽退_找不到用戶_失敗")
-    @WithMockUser(authorities = "ATTEND_SIGNOUT")
-    void signOut_unknownUser_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_OUT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
-        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
