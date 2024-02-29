@@ -3,6 +3,7 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.RoleModel;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -141,6 +143,49 @@ class RoleControllerTest {
         roleRequest.setName("Basic");
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("編輯角色權限_成功")
+    void rolePermission_ok() throws Exception {
+        Optional<RoleModel> byId = roleRepository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        Assertions.assertTrue(byId.get().getPermissions().isEmpty());
+        RolePermissionRequest roleRequest = new RolePermissionRequest();
+        roleRequest.setId(1L);
+        List<Long> list = new ArrayList<>();
+        list.add(1L);
+        list.add(2L);
+        list.add(3L);
+        roleRequest.setPermissionIds(list);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ROLE_PERMISSION)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        byId = roleRepository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        RoleModel model = byId.get();
+        Assertions.assertEquals(3, model.getPermissions().size());
+    }
+
+    @Test
+    @DisplayName("編輯角色權限_未知ID_錯誤")
+    void rolePermission_unknownId_error() throws Exception {
+        RolePermissionRequest roleRequest = new RolePermissionRequest();
+        roleRequest.setId(99L);
+        List<Long> list = new ArrayList<>();
+        list.add(1L);
+        list.add(2L);
+        list.add(3L);
+        roleRequest.setPermissionIds(list);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ROLE_PERMISSION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
