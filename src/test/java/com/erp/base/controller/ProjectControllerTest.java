@@ -27,7 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -71,7 +70,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("專案清單_全搜_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void projectList_findAll_ok() throws Exception {
         ProjectResponse projectResponse1 = new ProjectResponse(createProject(me, "1"));
         ProjectResponse projectResponse2 = new ProjectResponse(createProject(me, "2"));
@@ -116,7 +114,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("專案清單_搜TYPE_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void projectList_findByType_ok() throws Exception {
         ProjectResponse projectResponse1 = new ProjectResponse(createProject(me, "1"));
         ProjectResponse projectResponse2 = new ProjectResponse(createProject(me, "2"));
@@ -148,7 +145,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("專案清單_搜Manager_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void projectList_findByManager_ok() throws Exception {
         ProjectResponse projectResponse1 = new ProjectResponse(createProject(me, "1"));
         ProjectResponse projectResponse2 = new ProjectResponse(createProject(me, "2"));
@@ -202,7 +198,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("新增專案_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addProject_ok() throws Exception {
         ProjectRequest request = new ProjectRequest();
         request.setName("測試專案");
@@ -232,7 +227,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("更新專案_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateProject_ok() throws Exception {
         ProjectModel project = createProject(me, "1");
         ProjectRequest request = new ProjectRequest();
@@ -258,7 +252,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("啟動專案_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void startProject_ok() throws Exception {
         ProjectModel project = createProject(me, "1");
         Assertions.assertEquals(StatusConstant.PENDING_NO, project.getStatus());
@@ -281,7 +274,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("啟動專案_未知Id_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void startProject_unknownId_ok() throws Exception {
         IdRequest request = new IdRequest();
         request.setId(99L);
@@ -295,7 +287,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("專案結案_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void doneProject_ok() throws Exception {
         ProjectModel project = createProject(me, "1");
         project.setStatus(StatusConstant.APPROVED_NO);
@@ -320,7 +311,6 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("專案結案_未執行不可結案_失敗")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void doneProject_unApproved_error() throws Exception {
         ProjectModel project = createProject(me, "1");
         Assertions.assertEquals(StatusConstant.PENDING_NO, project.getStatus());

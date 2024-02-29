@@ -10,6 +10,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.MailService;
@@ -20,7 +21,10 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +36,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,9 +46,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import redis.embedded.RedisServer;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -378,7 +378,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("測試API權限_無JWT_錯誤")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void testApiPermission_noJwt_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
@@ -389,7 +388,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("測試API權限_JWT錯誤_錯誤")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void testApiPermission_jwtError_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
@@ -401,19 +399,19 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("測試API權限_無權限_錯誤")
-    @WithMockUser(authorities = "noAuth")
     void testApiPermission_noAuth_error() throws Exception {
+        editRole(1L);
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        editRole(2L);
     }
 
     @Test
     @DisplayName("用戶清單_預設全搜_成功")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void clientList_findAll_ok() throws Exception {
         ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
         ClientResponseModel save1 = new ClientResponseModel(repository.save(testModel));
@@ -454,7 +452,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶清單_id搜尋_成功")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void clientList_findById_ok() throws Exception {
         ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
         ClientModel save1 = repository.save(testModel);
@@ -485,7 +482,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶清單_名稱搜尋_成功")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void clientList_findByName_ok() throws Exception {
         ClientResponseModel save1 = new ClientResponseModel(repository.save(testModel));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
@@ -514,7 +510,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("測試分頁_搜一筆_成功")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void clientList_findFirst_ok() throws Exception {
         ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
         ClientResponseModel save1 = new ClientResponseModel(repository.save(testModel));
@@ -544,7 +539,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("測試分頁_搜一筆倒序_成功")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void clientList_findFirstDesc_ok() throws Exception {
         ClientResponseModel save1 = new ClientResponseModel(repository.save(testModel));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
@@ -573,7 +567,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("測試分頁_第二頁_成功")
-    @WithMockUser(authorities = "CLIENT_LIST")
     void clientList_secPage_ok() throws Exception {
         ClientResponseModel save1 = new ClientResponseModel(repository.save(testModel));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
@@ -602,7 +595,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("搜單一用戶_成功")
-    @WithMockUser(authorities = "CLIENT_GETCLIENT")
     void getClient_ok() throws Exception {
         ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
@@ -629,7 +621,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("搜單一用戶_未輸入ID_錯誤")
-    @WithMockUser(authorities = "CLIENT_GETCLIENT")
     void getClient_noId_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_INPUT);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
@@ -640,7 +631,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("搜單一用戶_未知ID_錯誤")
-    @WithMockUser(authorities = "CLIENT_GETCLIENT")
     void getClient_unknownId_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
@@ -652,7 +642,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("編輯用戶_成功")
-    @WithMockUser(authorities = "CLIENT_UPDATE")
     void updateClient_ok() throws Exception {
         ClientResponseModel save = new ClientResponseModel(repository.save(testModel));
         UpdateClientInfoRequest request = new UpdateClientInfoRequest(
@@ -666,7 +655,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(save.getId()))
@@ -687,7 +676,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("編輯用戶_找不到用戶_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATE")
     void updateClient_userNotFound_error() throws Exception {
         UpdateClientInfoRequest request = new UpdateClientInfoRequest(
                 9999L,
@@ -700,13 +688,12 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(testModel.getUsername()));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
     @Test
     @DisplayName("編輯用戶_無效email_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATE")
     void updateClient_invalidEmail_error() throws Exception {
         UpdateClientInfoRequest request = new UpdateClientInfoRequest(
                 1L,
@@ -725,7 +712,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("編輯用戶_id為空_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATE")
     void updateClient_noId_error() throws Exception {
         UpdateClientInfoRequest request = new UpdateClientInfoRequest(
                 null,
@@ -744,7 +730,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_id為空_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_noId_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 null,
@@ -761,7 +746,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_密碼為空_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_noPassword_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -778,7 +762,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_密碼格式長度錯誤_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_inValidPasswordSize_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -795,7 +778,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_密碼格式須包含小寫_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_inValidPasswordLowercase_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -812,7 +794,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_密碼格式須包含大寫_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_inValidPasswordUppercase_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -829,7 +810,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_密碼格式須包含數字_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_inValidPasswordNumber_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -846,7 +826,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_密碼格式不得包含特殊字符_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_inValidPasswordSpecialCharacters_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -863,10 +842,9 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_非本人不得更改_錯誤")
-    @WithMockUser(authorities = "CLIENT_UPDATEPASSWORD")
     void updatePassword_identityError_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
-                1L,
+                999L,
                 "123",
                 "Aa123123"
         );
@@ -880,7 +858,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_舊密碼錯誤_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updatePassword_inValidOldPassword_error() throws Exception {
         UpdatePasswordRequest request = new UpdatePasswordRequest(
                 1L,
@@ -897,7 +874,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("更改密碼_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updatePassword_ok() throws Exception {
         Mockito.doReturn(true).when(encodeTool).match(Mockito.any(), Mockito.any());
         UpdatePasswordRequest request = new UpdatePasswordRequest(
@@ -921,7 +897,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶鎖定_更新失敗_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void lockUser_invalidInput_error() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 2L,
@@ -938,7 +913,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶鎖定_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void lockUser_ok() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 1L,
@@ -960,7 +934,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶停用_更新失敗_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void userStatus_invalidInput_error() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 2L,
@@ -977,7 +950,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶停用_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void userStatus_ok() throws Exception {
         ClientStatusRequest request = new ClientStatusRequest(
                 1L,
@@ -999,7 +971,6 @@ class ClientControllerTest {
 
     @Test
     @DisplayName("用戶名稱清單_成功")
-    @WithMockUser(authorities = "CLIENT_NAMELIST")
     void clientNameList_ok() throws Exception {
         Optional<ClientModel> byId = repository.findById(1L);
         Assertions.assertTrue(byId.isPresent());
@@ -1012,5 +983,16 @@ class ClientControllerTest {
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(clientNameObject.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].username").value(clientNameObject.getUsername()));
+    }
+    //更改role用於測試權限
+    private void editRole(long roleId){
+        Optional<ClientModel> byId = repository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        ClientModel model = byId.get();
+        Set<RoleModel> set = new HashSet<>();
+        set.add(new RoleModel(roleId));
+        model.setRoles(set);
+        repository.save(model);
+        cacheService.refreshAllCache();
     }
 }

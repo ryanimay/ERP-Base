@@ -22,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,7 +58,6 @@ class PermissionControllerTest {
 
     @Test
     @DisplayName("權限清單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void permissionList_ok() throws Exception {
         Optional<PermissionModel> byId = permissionRepository.findById(1L);
         Assertions.assertTrue(byId.isPresent());
@@ -95,7 +93,6 @@ class PermissionControllerTest {
 
     @Test
     @DisplayName("角色權限_無權限角色_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void rolePermission_noPermissionRole_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.ROLE)
@@ -110,7 +107,6 @@ class PermissionControllerTest {
 
     @Test
     @DisplayName("角色權限_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void rolePermission_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.ROLE)
@@ -126,7 +122,6 @@ class PermissionControllerTest {
 
     @Test
     @DisplayName("角色權限_未知角色_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void rolePermission_unknownRole_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Unknown roleId: [" + 99 + "]");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.ROLE)
@@ -138,7 +133,6 @@ class PermissionControllerTest {
 
     @Test
     @DisplayName("權限停用/啟用_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void banPermission_ok() throws Exception {
         BanRequest banRequest = new BanRequest();
         banRequest.setId(1);
@@ -177,7 +171,6 @@ class PermissionControllerTest {
 
     @Test
     @DisplayName("安全認證_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void securityConfirm_ok() throws Exception {
         SecurityConfirmRequest request = new SecurityConfirmRequest();
         request.setSecurityPassword(securityPwd);
@@ -191,7 +184,6 @@ class PermissionControllerTest {
 
     @Test
     @DisplayName("安全認證_失敗")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void securityConfirm_wrongPwd_error() throws Exception {
         SecurityConfirmRequest request = new SecurityConfirmRequest();
         request.setSecurityPassword("zzzzzzzzzzzzzzz");

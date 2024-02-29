@@ -32,7 +32,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -83,7 +82,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("待審核績效_管理層不分部門全搜_不搜自己_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void performancePendingList_managerSearch_ok() throws Exception {
         //不同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testPerformance1", 3L);//
@@ -135,7 +133,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("待審核績效_部門主管部門全搜_不搜自己_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void performancePendingList_departmentManagerSearch_ok() throws Exception {
         //不同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testPerformance1", 3L);//
@@ -175,7 +172,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("待審核績效_測試分頁2_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void performancePendingList_page2_ok() throws Exception {
         //同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testPerformance1", me.getDepartment().getId());
@@ -213,7 +209,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("績效清單_全搜_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void performanceList_findAll_ok() throws Exception {
         //本人
         PerformanceResponse selfPerformance1 = new PerformanceResponse(createPerformance(me));
@@ -255,7 +250,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("績效清單_指定用戶_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void performanceList_findByUser_ok() throws Exception {
         //同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testPerformance1", me.getDepartment().getId());
@@ -290,7 +284,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("績效清單_測試分頁_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void performanceList_testPaging_ok() throws Exception {
         //同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testPerformance1", me.getDepartment().getId());
@@ -327,7 +320,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("新增績效_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addPerformance_ok() throws Exception {
         PerformanceRequest performanceRequest = new PerformanceRequest();
         performanceRequest.setEvent("測試績效:" + me.getUsername());
@@ -360,7 +352,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("更新績效_未知ID_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updatePerformance_unknownId_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance not found: id[" + 99 + "]");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERFORMANCE.UPDATE)
@@ -376,7 +367,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("更新績效_只能更改Pending績效_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updatePerformance_canOnlyModifyPerformancesInPending_error() throws Exception {
         PerformanceModel performance = createPerformance(me);
         performance.setStatus(StatusConstant.APPROVED_NO);
@@ -397,7 +387,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("更新績效_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updatePerformance_ok() throws Exception {
         PerformanceModel performance = createPerformance(me);
         PerformanceRequest performanceRequest = new PerformanceRequest();
@@ -428,7 +417,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("刪除績效_未知ID_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void removePerformance_unknownId_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + 99 + "] not found");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.PERFORMANCE.REMOVE)
@@ -440,7 +428,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("刪除績效_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void removePerformance_ok() throws Exception {
         PerformanceModel performance = createPerformance(me);
         Optional<PerformanceModel> byId = performanceRepository.findById(performance.getId());
@@ -462,7 +449,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("審核績效_未知ID_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void acceptPerformance_unknownId_error() throws Exception {
         PerformanceAcceptRequest performanceAcceptRequest = new PerformanceAcceptRequest();
         performanceAcceptRequest.setEventId(99L);
@@ -476,7 +462,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("審核績效_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void acceptPerformance_ok() throws Exception {
         PerformanceModel performance = createPerformance(me);
         Optional<PerformanceModel> byId = performanceRepository.findById(performance.getId());
@@ -501,7 +486,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("統計年度績效_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void calculatePerformance_ok() throws Exception {
         PerformanceModel performance = createPerformance(me);
         performance.setStatus(StatusConstant.APPROVED_NO);
@@ -532,7 +516,6 @@ class PerformanceControllerTest {
 
     @Test
     @DisplayName("統計年度績效_未知用戶_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void calculatePerformance_unknownUser_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERFORMANCE.CALCULATE)

@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,7 +50,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門清單_搜ID_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentList_findById_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
@@ -69,7 +67,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門清單_模糊查詢名稱_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentList_findByNameLike_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
@@ -95,7 +92,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門清單_全搜_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentList_findAll_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
@@ -120,7 +116,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門清單_全搜_分頁1筆_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentList_findAll_PageSize1_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
@@ -138,7 +133,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門清單_全搜_分頁1筆_第二頁_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentList_findAll_PageSize1_Page2_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
@@ -157,7 +151,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門清單_查無資料_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentList_find0Result_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
@@ -173,7 +166,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門員工清單_未知ID_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentStaff_unknownId_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "DepartmentId Not Found.");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.STAFF)
@@ -185,7 +177,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("部門員工清單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void departmentStaff_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.STAFF)
@@ -201,7 +192,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("編輯/新增部門_編輯部門_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void editDepartment_updateDepartment_ok() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.DEPARTMENT.EDIT)
@@ -226,7 +216,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("編輯/新增部門_新增部門_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void editDepartment_addDepartment_ok() throws Exception {
         Optional<DepartmentModel> departmentOptional = departmentRepository.findById(4L);
         Assertions.assertTrue(departmentOptional.isEmpty());
@@ -252,7 +241,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("移除部門_部門使用中無法刪除_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void removeDepartment_departmentInUsed_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.DEPARTMENT_IN_USE);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.DEPARTMENT.REMOVE)
@@ -264,7 +252,6 @@ class DepartmentControllerTest {
 
     @Test
     @DisplayName("移除部門_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void removeDepartment_ok() throws Exception {
         DepartmentModel entity = new DepartmentModel();
         entity.setName("testDelete");

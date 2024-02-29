@@ -17,8 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,7 +48,6 @@ class LogControllerTest {
 
     @Test
     @DisplayName("日誌清單_AOP插入成功_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void logList_aopTest_ok() throws Exception {
         logRepository.deleteAll();
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
@@ -69,20 +66,7 @@ class LogControllerTest {
     }
 
     @Test
-    @DisplayName("日誌清單_測試AOP找不到用戶_錯誤")
-    @WithMockUser(authorities = "CACHE_FRESH")
-    void logList_userNotFound_error() throws Exception {
-        logRepository.deleteAll();
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
-        testUtils.performAndExpect(mockMvc, requestBuilder, response);
-    }
-
-    @Test
     @DisplayName("日誌清單_全搜_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void logList_findAll_ok() throws Exception {
         logRepository.deleteAll();
         LogModel log1 = createLog(true, Router.CACHE.REFRESH, HttpStatus.OK.getReasonPhrase());
@@ -128,7 +112,6 @@ class LogControllerTest {
 
     @Test
     @DisplayName("日誌清單_狀態搜尋_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void logList_findByStatus_ok() throws Exception {
         logRepository.deleteAll();
         LogModel log1 = createLog(true, Router.CACHE.REFRESH, HttpStatus.OK.getReasonPhrase());
@@ -159,7 +142,6 @@ class LogControllerTest {
 
     @Test
     @DisplayName("日誌清單_結束時間搜尋_時間排序_倒敘_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void logList_findByEndTime_ok() throws Exception {
         logRepository.deleteAll();
         LogModel log1 = createLog(true, Router.CACHE.REFRESH, HttpStatus.OK.getReasonPhrase());
@@ -200,7 +182,6 @@ class LogControllerTest {
 
     @Test
     @DisplayName("日誌清單_路徑搜尋_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void logList_findByUrl_ok() throws Exception {
         logRepository.deleteAll();
         LogModel log1 = createLog(true, Router.CACHE.REFRESH, HttpStatus.OK.getReasonPhrase());

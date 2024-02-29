@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -66,7 +65,6 @@ class ProcurementControllerTest {
 
     @Test
     @DisplayName("採購清單_全搜_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void procurementList_findAll_ok() throws Exception {
         ProcurementResponse procurement1 = new ProcurementResponse(createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING));
         ProcurementResponse procurement2 = new ProcurementResponse(createProcurement(2, me, 30000, 3, ProcurementConstant.STATUS_PENDING));
@@ -105,7 +103,6 @@ class ProcurementControllerTest {
 
     @Test
     @DisplayName("採購清單_搜TYPE_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void procurementList_findByType_ok() throws Exception {
         ProcurementResponse procurement1 = new ProcurementResponse(createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING));
         ProcurementResponse procurement2 = new ProcurementResponse(createProcurement(2, me, 30000, 3, ProcurementConstant.STATUS_PENDING));
@@ -134,7 +131,6 @@ class ProcurementControllerTest {
 
     @Test
     @DisplayName("採購清單_搜Status_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void procurementList_findByStatus_ok() throws Exception {
         ProcurementResponse procurement1 = new ProcurementResponse(createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING));
         ProcurementResponse procurement2 = new ProcurementResponse(createProcurement(2, me, 30000, 3, ProcurementConstant.STATUS_APPROVED));
@@ -163,7 +159,6 @@ class ProcurementControllerTest {
 
     @Test
     @DisplayName("新增採購_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addProcurement_ok() throws Exception {
         ProcurementRequest procurementRequest = new ProcurementRequest();
         procurementRequest.setType(1);
@@ -192,7 +187,6 @@ class ProcurementControllerTest {
 
     @Test
     @DisplayName("更新採購_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateProcurement_ok() throws Exception {
         ProcurementModel procurement = createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING);
         ProcurementRequest procurementRequest = new ProcurementRequest();
@@ -220,7 +214,6 @@ class ProcurementControllerTest {
 
     @Test
     @DisplayName("更新採購_未知Id_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateProcurement_unknownId_error() throws Exception {
         ProcurementRequest procurementRequest = new ProcurementRequest();
         procurementRequest.setId(99L);
@@ -234,7 +227,6 @@ class ProcurementControllerTest {
 
     @Test
     @DisplayName("移除採購_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void deleteProcurement_ok() throws Exception {
         ProcurementModel procurement = createProcurement(1, me, 50000, 2, ProcurementConstant.STATUS_PENDING);
         Optional<ProcurementModel> byId = procurementRepository.findById(procurement.getId());

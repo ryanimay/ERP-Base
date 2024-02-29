@@ -24,7 +24,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -62,7 +61,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("排程清單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void quartzJobList_ok() throws Exception {
         QuartzJobResponse quartzJob1 = new QuartzJobResponse(createQuartzJob());
         QuartzJobResponse quartzJob2 = new QuartzJobResponse(createQuartzJob());
@@ -94,7 +92,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("新增排程_找不到對應class_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addQuartzJob_classNotFound_error() throws Exception {
         QuartzJobModel quartzJobModel = new QuartzJobModel();
         quartzJobModel.setName("測試排程");
@@ -112,7 +109,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("新增排程_cron格式問題_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addQuartzJob_unexpectedCron_error() throws Exception {
         QuartzJobModel quartzJobModel = new QuartzJobModel();
         quartzJobModel.setName("測試排程");
@@ -130,7 +126,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("新增排程_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addQuartzJob_ok() throws Exception {
         QuartzJobModel quartzJobModel = new QuartzJobModel();
         quartzJobModel.setName("測試排程");
@@ -173,7 +168,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("更新排程_找不到對應class_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateQuartzJob_classNotFound_error() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         quartzJob.setClassPath("zzz");
@@ -188,7 +182,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("更新排程_cron格式問題_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateQuartzJob_unexpectedCron_error() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         quartzJob.setCron("");
@@ -203,7 +196,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("更新排程_未知Id_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateQuartzJob_unknownId_error() throws Exception {
         QuartzJobRequest request = new QuartzJobRequest();
         request.setId(99L);
@@ -217,7 +209,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("更新排程_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateQuartzJob_ok() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
@@ -255,7 +246,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("排程狀態切換_未知Id_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void toggleQuartzJob_unknownId_error() throws Exception {
         IdRequest request = new IdRequest();
         request.setId(99L);
@@ -269,7 +259,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("排程狀態切換_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void toggleQuartzJob_ok() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
@@ -309,7 +298,6 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("刪除排程_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void deleteQuartzJob_ok() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
@@ -330,14 +318,14 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("單次觸發任務_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void execQuartzJob_ok() throws Exception {
+        scheduler.start();
         QuartzJobModel quartzJob = createQuartzJob();
         quartzJob.setCron("*/3 * * * * ?");
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
         scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
         JobKey jobKey = new JobKey(quartzJob.getName(), quartzJob.getGroupName());
-        scheduler.pauseJob(jobKey);
+//        scheduler.pauseJob(jobKey);
         IdRequest idRequest = new IdRequest();
         idRequest.setId(quartzJob.getId());
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -346,6 +334,8 @@ class QuartzJobControllerTest {
                 .content(ObjectTool.toJson(idRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        scheduler.resumeTrigger(new TriggerKey(quartzJob.getName(), quartzJob.getGroupName()));
+        scheduler.triggerJob(jobKey);
     }
 
     private QuartzJobModel createQuartzJob() {

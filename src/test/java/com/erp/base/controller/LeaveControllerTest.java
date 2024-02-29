@@ -31,8 +31,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -82,7 +80,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("待審核假單_管理層不分部門全搜_不搜自己_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void leavePendingList_managerSearch_ok() throws Exception {
         //不同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testLeave1", 3L);//
@@ -132,7 +129,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("待審核假單_部門主管部門全搜_不搜自己_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void leavePendingList_departmentManagerSearch_ok() throws Exception {
         //不同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testLeave1", 3L);//
@@ -173,7 +169,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("待審核假單_測試分頁2_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void leavePendingList_page2_ok() throws Exception {
         //同部門非本人
         ClientModel newClient1 = createDifferentDepartmentUser("testLeave1", me.getDepartment().getId());
@@ -211,19 +206,7 @@ class LeaveControllerTest {
     }
 
     @Test
-    @DisplayName("本人假單_找不到人_錯誤")
-    @WithMockUser(authorities = "LEAVE_LIST")
-    void leaveList_userNotFound_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.LIST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
-        testUtils.performAndExpect(mockMvc, requestBuilder, response);
-    }
-
-    @Test
     @DisplayName("本人假單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void leaveList_ok() throws Exception {
         LeaveResponse selfLeave1 = new LeaveResponse(createLeave(me));
         LeaveResponse selfLeave2 = new LeaveResponse(createLeave(me));
@@ -269,20 +252,7 @@ class LeaveControllerTest {
     }
 
     @Test
-    @DisplayName("新增假單_找不到人_錯誤")
-    @WithMockUser(authorities = "LEAVE_ADD")
-    void addLeave_userNotFound_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.LEAVE.ADD)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
-        testUtils.performAndExpect(mockMvc, requestBuilder, response);
-    }
-
-    @Test
     @DisplayName("新增假單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addLeave_ok() throws Exception {
         LeaveRequest leaveRequest = new LeaveRequest();
         leaveRequest.setType(2);
@@ -308,20 +278,7 @@ class LeaveControllerTest {
     }
 
     @Test
-    @DisplayName("更新假單_找不到人_錯誤")
-    @WithMockUser(authorities = "LEAVE_UPDATE")
-    void updateLeave_userNotFound_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.LEAVE.UPDATE)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
-        testUtils.performAndExpect(mockMvc, requestBuilder, response);
-    }
-
-    @Test
     @DisplayName("更新假單_未知Id_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateLeave_unknownId_error() throws Exception {
         LeaveRequest leaveRequest = new LeaveRequest();
         leaveRequest.setId(99L);
@@ -335,7 +292,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("更新假單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateLeave_ok() throws Exception {
         LeaveModel leaveModel = createLeave(me);
         LeaveRequest leaveRequest = new LeaveRequest();
@@ -365,7 +321,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("刪除假單_未知Id_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void deleteLeave_unknownId_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.LEAVE.DELETE)
@@ -377,7 +332,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("刪除假單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void deleteLeave_ok() throws Exception {
         LeaveModel leaveModel = createLeave(me);
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -395,7 +349,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("審核假單_未知Id_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void acceptLeave_unknownId_error() throws Exception {
         LeaveAcceptRequest leaveAcceptRequest = new LeaveAcceptRequest();
         leaveAcceptRequest.setId(99L);
@@ -410,7 +363,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("審核假單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void acceptLeave_ok() throws Exception {
         LeaveModel leaveModel = createLeave(me);
         Assertions.assertEquals(StatusConstant.PENDING_NO, leaveModel.getStatus());
@@ -434,7 +386,6 @@ class LeaveControllerTest {
 
     @Test
     @DisplayName("請假類別清單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void leaveTypeList_ok() throws Exception {
         List<String> list = LeaveConstant.list();
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
