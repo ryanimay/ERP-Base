@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -52,7 +51,6 @@ class AttendControllerTest {
 
     @Test
     @DisplayName("簽到_系統異常簽到失敗_失敗")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void signIn_signFailed_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SIGN_FAILED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
@@ -63,7 +61,6 @@ class AttendControllerTest {
     
     @Test
     @DisplayName("簽到_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void signIn_ok() throws Exception {
         AttendModel model = new AttendModel(new ClientModel(1L));
         attendRepository.save(model);
@@ -98,7 +95,6 @@ class AttendControllerTest {
 
     @Test
     @DisplayName("簽退_系統異常簽到失敗_失敗")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void signOut_signFailed_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SIGN_FAILED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
@@ -109,7 +105,6 @@ class AttendControllerTest {
 
     @Test
     @DisplayName("簽退_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void signOut_ok() throws Exception {
         AttendModel model = new AttendModel(new ClientModel(1L));
         attendRepository.save(model);

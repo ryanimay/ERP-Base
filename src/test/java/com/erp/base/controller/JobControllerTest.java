@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -72,7 +71,6 @@ class JobControllerTest {
 
     @Test
     @DisplayName("任務卡清單_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void jobList_ok() throws Exception {
         ClientModel jobClient = clientRepository.save(createClientModel());
         testJobId = jobClient.getId();
@@ -114,7 +112,6 @@ class JobControllerTest {
 
     @Test
     @DisplayName("新增任務卡_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void addJob_ok() throws Exception {
         ClientModel jobClient = clientRepository.save(createClientModel());
         testJobId = jobClient.getId();
@@ -143,7 +140,6 @@ class JobControllerTest {
 
     @Test
     @DisplayName("編輯任務卡_未知ID_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateJob_unknownId_error() throws Exception {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setId(99L);
@@ -159,7 +155,6 @@ class JobControllerTest {
 
     @Test
     @DisplayName("編輯任務卡_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void updateJob_ok() throws Exception {
         JobModel userJob = jobRepository.save(createUserJob(me));
         userJobId = userJob.getId();
@@ -194,7 +189,6 @@ class JobControllerTest {
 
     @Test
     @DisplayName("刪除任務卡_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void deleteJob_ok() throws Exception {
         JobModel userJob = jobRepository.save(createUserJob(me));
         userJobId = userJob.getId();

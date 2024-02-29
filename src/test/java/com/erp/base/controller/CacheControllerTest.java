@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,7 +50,6 @@ class CacheControllerTest {
 
     @Test
     @DisplayName("刷緩存_全刷_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void refreshCache_refreshAll_ok() throws Exception {
         cacheService.refreshAllCache();
         DepartmentModel department = cacheService.getDepartment(5L);
@@ -85,7 +83,6 @@ class CacheControllerTest {
 
     @Test
     @DisplayName("刷緩存_刷新用戶緩存_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void refreshCache_refreshClient_ok() throws Exception {
         cacheService.refreshClient();
         ClientModel client = cacheService.getClient(DEFAULT_USER_NAME);
@@ -104,7 +101,6 @@ class CacheControllerTest {
 
     @Test
     @DisplayName("刷緩存_刷新權限緩存_成功")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void refreshCache_refreshRolePermission_ok() throws Exception {
         cacheService.refreshRolePermission();
         DepartmentModel department = cacheService.getDepartment(4L);
@@ -131,7 +127,6 @@ class CacheControllerTest {
 
     @Test
     @DisplayName("刷緩存_key不存在_錯誤")
-    @WithUserDetails(DEFAULT_USER_NAME)
     void refreshCache_unknownCacheKey_error() throws Exception {
         ResponseEntity<ApiResponse> response = ApiResponse.errorMsgFormat(ApiResponseCode.CACHE_KEY_ERROR, "No cache found for key: testKey");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
