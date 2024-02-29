@@ -45,7 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         noRequiresAuthenticationList.add(Router.CLIENT.REGISTER);
         noRequiresAuthenticationList.add(Router.CLIENT.LOGIN);
         noRequiresAuthenticationList.add(Router.CLIENT.RESET_PASSWORD);
-        noRequiresAuthenticationList.add(Router.ROLE.LIST);
     }
     @Value("${server.servlet.context-path}")
     private String contextPath;
