@@ -35,6 +35,7 @@ public class ClientCache implements ICache{
     @Cacheable(key = CacheConstant.CLIENT.CLIENT + " + #username")
     public ClientModel getClient(String username) {
         ClientModel model = clientService.findByUsername(username);
+        if(model == null) return null;
         Hibernate.initialize(model.getRoles());
         Hibernate.initialize(model.getNotifications());
         return model;

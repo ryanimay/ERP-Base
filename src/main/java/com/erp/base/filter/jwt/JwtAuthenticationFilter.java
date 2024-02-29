@@ -3,9 +3,7 @@ package com.erp.base.filter.jwt;
 import com.erp.base.controller.Router;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
-import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
@@ -24,20 +22,20 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(JwtAuthenticationFilter.class);
-    public static final String PRINCIPAL_CLIENT = "client";
-    public static final String PRINCIPAL_LOCALE = "locale";
     private TokenService tokenService;
     private CacheService cacheService;
     private static final List<String> noRequiresAuthenticationList = new ArrayList<>();
@@ -66,8 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String url = ObjectTool.extractPath(request.getRequestURI()).replace(contextPath, "");
-            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (requiresAuthentication(url)) {
+                String token = request.getHeader(HttpHeaders.AUTHORIZATION);
                 if(token == null) throw new SignatureException("token is empty");
                 authenticationToken(token);
             }
@@ -99,15 +97,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private void authenticationToken(String token) {
         String accessToken = token.replace(TokenService.TOKEN_PREFIX, "");
-        tokenService.parseToken(accessToken);
-    }
-
-    private Collection<? extends GrantedAuthority> getRolePermission(Set<RoleModel> roles) {
-        Set<RolePermissionDto> set = new HashSet<>();
-        for (RoleModel role : roles) {
-            set.addAll(cacheService.getRolePermission(role.getId()));
-        }
-        return set;
+        Map<String, Object> payload = tokenService.parseToken(accessToken);
+        createAuthentication((String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME));
     }
 
     /**
@@ -121,20 +112,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = tokenService.createToken(TokenService.REFRESH_TOKEN, username, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
             response.setHeader(HttpHeaders.AUTHORIZATION, TokenService.TOKEN_PREFIX + accessToken);
             response.setHeader(TokenService.REFRESH_TOKEN, token);
-
-            //刷新Token時進行權限刷新
-            SecurityContext context = SecurityContextHolder.getContext();
-            ClientModel client = cacheService.getClient(username);
-            UserDetailImpl userDetail = new UserDetailImpl(client, cacheService);
-            Collection<? extends GrantedAuthority> rolePermission = getRolePermission(client.getRoles());
-            Map<String, Object> principalMap = userDetail.getDataMap();
-            principalMap.put(PRINCIPAL_CLIENT, client);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principalMap, null, rolePermission);
-            context.setAuthentication(authentication);
+            createAuthentication(username);
         } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
             throw new SignatureException("");
         }
+    }
+
+    private void createAuthentication(String username) {
+        ClientModel client = cacheService.getClient(username);
+        if(client == null) return;
+        UserDetailImpl userDetail = new UserDetailImpl(client, cacheService);
+        Collection<? extends GrantedAuthority> rolePermission = userDetail.getAuthorities();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, rolePermission);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private void exceptionResponse(Exception e, HttpServletResponse response, ApiResponseCode code) throws IOException {

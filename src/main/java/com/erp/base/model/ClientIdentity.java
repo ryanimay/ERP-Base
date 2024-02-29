@@ -1,6 +1,5 @@
 package com.erp.base.model;
 
-import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.ObjectTool;
@@ -11,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
-import java.util.Map;
 
 
 /**
@@ -31,21 +29,20 @@ public class ClientIdentity {
     private static final String EMPTY_USER = "anonymousUser";//SpringSecurity預設未登入使用者字段
 
     public static ClientModel getUser(){
-        return ObjectTool.convert(getPrincipal(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class);
+        UserDetailImpl principal = getPrincipal();
+        return principal == null ? null : principal.getClientModel();
     }
 
     public static Locale getLocale(){
-        Locale locale = (Locale) getPrincipal(JwtAuthenticationFilter.PRINCIPAL_LOCALE);
-        return locale == null ? defaultLocale : locale;
+        UserDetailImpl principal = getPrincipal();
+        return principal == null ? null : principal.getLocale();
     }
 
-    private static Object getPrincipal(String key){
+    private static UserDetailImpl getPrincipal(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null) return null;
         Object principal = authentication.getPrincipal();
         if(EMPTY_USER.equals(principal)) return null;
-        UserDetailImpl userDetails = ObjectTool.convert(principal, UserDetailImpl.class);
-        Map<String, Object> dataMap = userDetails.getDataMap();
-        return dataMap == null ? null : dataMap.get(key);
+        return ObjectTool.convert(principal, UserDetailImpl.class);
     }
 }

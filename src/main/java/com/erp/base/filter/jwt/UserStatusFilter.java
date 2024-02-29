@@ -1,8 +1,8 @@
 package com.erp.base.filter.jwt;
 
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Component
 public class UserStatusFilter extends OncePerRequestFilter {
@@ -48,9 +47,7 @@ public class UserStatusFilter extends OncePerRequestFilter {
 
     private void isUserLockedOrDisabled(HttpServletRequest request, Authentication authentication) {
         UserDetailImpl principal = ObjectTool.convert(authentication.getPrincipal(), UserDetailImpl.class);
-        Map<String, Object> dataMap = principal.getDataMap();
-        if(dataMap == null) return;
-        ClientModel client = ObjectTool.convert(dataMap.get(JwtAuthenticationFilter.PRINCIPAL_CLIENT), ClientModel.class);
+        ClientModel client = principal.getClientModel();
         String requestURL = request.getRequestURL().toString();
         if (client != null && (!(requestURL.contains(CLIENT_LOCK_URL) || requestURL.contains(CLIENT_STATUS_URL)))) checkClient(client);//驗證使用者狀態
     }

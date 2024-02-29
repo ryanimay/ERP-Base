@@ -69,7 +69,7 @@ public class TokenService {
         return new HashMap<>(claims);
     }
 
-    //私鑰解密
+    //私鑰加密
     public String createToken(String type, String username, int expirationTime) {
         //轉毫秒
         long expirationMillis = getExpireMillisecond(expirationTime);
