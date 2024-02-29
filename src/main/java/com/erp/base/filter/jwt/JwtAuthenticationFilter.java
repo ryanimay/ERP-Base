@@ -111,7 +111,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 每次用戶有動作就刷新AccessToken時效，避免用到一半過期要重登
+     * AccessToken過期，驗證refreshToken是否過期，如未過期則一起刷新放行，過期就拋出
      */
     private void refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader(TokenService.REFRESH_TOKEN);
