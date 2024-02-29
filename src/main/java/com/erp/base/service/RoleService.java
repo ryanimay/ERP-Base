@@ -111,6 +111,7 @@ public class RoleService {
     public ResponseEntity<ApiResponse> updateRoleRouter(RoleRouterRequest request) {
         Long id = request.getId();
         RoleModel roleModel = cacheService.getRole().get(id);
+        if(roleModel == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
         Set<RouterModel> set = request.getRouterSet();
         roleModel.setRouters(set);
         roleRepository.save(roleModel);
