@@ -18,10 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -44,7 +41,7 @@ public class DepartmentService {
      * 依照部門設置部門默認權限
      */
     public ClientModel setDepartmentDefaultRole(ClientModel model, Long departmentId) {
-        Set<RoleModel> role = model.getRoles();
+        Set<RoleModel> role = new HashSet<>(model.getRoles());
         //default 1
         if (departmentId == null) {
             role.add(new RoleModel(1L));//默認值visitor
@@ -55,6 +52,7 @@ public class DepartmentService {
             //要新建構role不然相關屬性會在.add時懶加載出錯
             role.add(new RoleModel(roleId));
         }
+        model.setRoles(role);
         return model;
     }
 
