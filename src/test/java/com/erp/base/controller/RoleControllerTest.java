@@ -115,4 +115,35 @@ class RoleControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
+
+    @Test
+    @DisplayName("新增角色_成功")
+    void addRole_ok() throws Exception {
+        RoleRequest roleRequest = new RoleRequest();
+        roleRequest.setName("測試角色新增");
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        List<RoleModel> all = roleRepository.findAll();
+        Optional<RoleModel> first = all.stream().filter(r -> r.getRoleName().equals(roleRequest.getName())).findFirst();
+        Assertions.assertTrue(first.isPresent());
+        RoleModel model = first.get();
+        Assertions.assertEquals(roleRequest.getName(), model.getRoleName());
+    }
+
+    @Test
+    @DisplayName("新增角色_角色名重複_錯誤")
+    void addRole_existsName_error() throws Exception {
+        RoleRequest roleRequest = new RoleRequest();
+        roleRequest.setName("Basic");
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ADD)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
 }
