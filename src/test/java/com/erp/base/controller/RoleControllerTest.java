@@ -3,11 +3,14 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.role.RoleRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.RoleRepository;
+import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(classes = TestRedisConfiguration.class)
 @TestPropertySource(locations = {
@@ -64,5 +68,51 @@ class RoleControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].roleName").value(all.get(2).getRoleName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[3].id").value(all.get(3).getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[3].roleName").value(all.get(3).getRoleName()));
+    }
+
+    @Test
+    @DisplayName("編輯角色_成功")
+    void updateRole_ok() throws Exception {
+        RoleRequest roleRequest = new RoleRequest();
+        roleRequest.setId(3L);
+        roleRequest.setName("測試角色更新");
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ROLE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        Optional<RoleModel> byId = roleRepository.findById(3L);
+        Assertions.assertTrue(byId.isPresent());
+        RoleModel model = byId.get();
+        Assertions.assertEquals(roleRequest.getName(), model.getRoleName());
+    }
+
+    @Test
+    @DisplayName("編輯角色_角色名重複_錯誤")
+    void updateRole_existsName_error() throws Exception {
+        RoleRequest roleRequest = new RoleRequest();
+        roleRequest.setId(3L);
+        roleRequest.setName("Basic");
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ROLE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("編輯角色_未知ID_錯誤")
+    void updateRole_unknownId_error() throws Exception {
+        RoleRequest roleRequest = new RoleRequest();
+        roleRequest.setId(99L);
+        roleRequest.setName("測試角色更新");
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ROLE.UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }
