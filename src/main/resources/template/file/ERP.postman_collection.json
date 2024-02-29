@@ -159,7 +159,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\":\"ryanimay840121\",\r\n    \"email\":\"ryan@esound.com.tw\",\r\n    \"departmentId\":2\r\n}",
+							"raw": "{\r\n    \"id\":\"1\",\r\n    \"email\":\"ryan@esound.com.tw\",\r\n    \"departmentId\":2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -205,7 +205,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\":\"ryanimay840121\",\r\n    \"oldPassword\":\"Aa123123\",\r\n    \"password\":\"Aa123123\"\r\n}",
+							"raw": "{\r\n    \"id\":\"1\",\r\n    \"oldPassword\":\"Aa123123\",\r\n    \"password\":\"Aa123123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3049,7 +3049,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\":9\r\n}",
+							"raw": "{\r\n    \"id\":1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
