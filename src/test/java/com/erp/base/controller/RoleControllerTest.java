@@ -9,8 +9,6 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.RoleRepository;
 import com.erp.base.tool.ObjectTool;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,8 +46,6 @@ class RoleControllerTest {
     private TestUtils testUtils;
     @Autowired
     private RoleRepository roleRepository;
-    @PersistenceContext
-    private EntityManager entityManager;
     private static final String DEFAULT_USER_NAME = "test";
 
     @Test
@@ -190,5 +186,31 @@ class RoleControllerTest {
                 .content(ObjectTool.toJson(roleRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("移除角色_使用中不可移除_錯誤")
+    void removeRole_roleOnUsed_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.ROLE_IN_USE);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.ROLE.REMOVE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", "2")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("移除角色_成功")
+    void removeRole_ok() throws Exception {
+        Optional<RoleModel> byId = roleRepository.findById(3L);
+        Assertions.assertTrue(byId.isPresent());
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.ROLE.REMOVE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", "3")
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        byId = roleRepository.findById(3L);
+        Assertions.assertTrue(byId.isEmpty());
     }
 }
