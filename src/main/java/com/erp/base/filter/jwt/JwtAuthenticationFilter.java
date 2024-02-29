@@ -98,7 +98,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * 驗證AccessToken
      */
     private void authenticationToken(String token) {
-        String accessToken = token.replace("Bearer ", "");
+        String accessToken = token.replace(TokenService.TOKEN_PREFIX, "");
         tokenService.parseToken(accessToken);
     }
 
@@ -119,7 +119,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Map<String, Object> payload = tokenService.parseToken(token);
             String username = (String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME);
             String accessToken = tokenService.createToken(TokenService.REFRESH_TOKEN, username, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
-            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            response.setHeader(HttpHeaders.AUTHORIZATION, TokenService.TOKEN_PREFIX + accessToken);
             response.setHeader(TokenService.REFRESH_TOKEN, token);
 
             //刷新Token時進行權限刷新
