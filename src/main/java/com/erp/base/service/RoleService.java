@@ -79,7 +79,7 @@ public class RoleService {
 
     private ResponseEntity<ApiResponse> checkRoleName(String name, Long id) {
         Optional<RoleModel> roleModel = roleRepository.findByRoleName(name);
-        if (roleModel.isPresent() && roleModel.get().getId() != id)
+        if (roleModel.isPresent() && (id == null || roleModel.get().getId() != id))
             return ApiResponse.error(ApiResponseCode.NAME_ALREADY_EXIST);
         return null;
     }
