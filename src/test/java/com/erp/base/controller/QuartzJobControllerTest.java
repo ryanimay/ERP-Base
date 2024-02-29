@@ -7,7 +7,9 @@ import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.quartzJob.QuartzJobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.QuartzJobResponse;
+import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.QuartzJobModel;
+import com.erp.base.repository.AttendRepository;
 import com.erp.base.repository.QuartzJobRepository;
 import com.erp.base.service.QuartzJobService;
 import com.erp.base.tool.ObjectTool;
@@ -42,7 +44,6 @@ import java.util.Optional;
         "classpath:application-quartz-test.properties"
 })
 @AutoConfigureMockMvc
-@Transactional
 @DirtiesContext
 class QuartzJobControllerTest {
     @Autowired
@@ -57,11 +58,14 @@ class QuartzJobControllerTest {
     private QuartzJobRepository quartzJobRepository;
     @Autowired
     private Scheduler scheduler;
+    @Autowired
+    private AttendRepository attendRepository;
     private static final String DEFAULT_USER_NAME = "test";
 
     @Test
     @DisplayName("排程清單_成功")
     void quartzJobList_ok() throws Exception {
+        quartzJobRepository.deleteAll();
         QuartzJobResponse quartzJob1 = new QuartzJobResponse(createQuartzJob());
         QuartzJobResponse quartzJob2 = new QuartzJobResponse(createQuartzJob());
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -126,7 +130,9 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("新增排程_成功")
+    @Transactional
     void addQuartzJob_ok() throws Exception {
+        quartzJobRepository.deleteAll();
         QuartzJobModel quartzJobModel = new QuartzJobModel();
         quartzJobModel.setName("測試排程");
         quartzJobModel.setGroupName(Scheduler.DEFAULT_GROUP);
@@ -209,6 +215,7 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("更新排程_成功")
+    @Transactional
     void updateQuartzJob_ok() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
@@ -246,6 +253,7 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("排程狀態切換_未知Id_錯誤")
+    @Transactional
     void toggleQuartzJob_unknownId_error() throws Exception {
         IdRequest request = new IdRequest();
         request.setId(99L);
@@ -259,6 +267,7 @@ class QuartzJobControllerTest {
 
     @Test
     @DisplayName("排程狀態切換_成功")
+    @Transactional
     void toggleQuartzJob_ok() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
@@ -317,15 +326,19 @@ class QuartzJobControllerTest {
     }
 
     @Test
-    @DisplayName("單次觸發任務_成功")
+    @DisplayName("單次觸發任務_測試每日重置_成功")
     void execQuartzJob_ok() throws Exception {
-        scheduler.start();
-        QuartzJobModel quartzJob = createQuartzJob();
-        quartzJob.setCron("*/3 * * * * ?");
+        List<AttendModel> all = attendRepository.findAll();
+        Assertions.assertTrue(all.isEmpty());
+        QuartzJobModel quartzJob = new QuartzJobModel();
+        quartzJob.setName("測試排程");
+        quartzJob.setGroupName(Scheduler.DEFAULT_GROUP);
+        quartzJob.setCron("* * * */30 * ?");
+        quartzJob.setInfo("測試排程內容");
+        quartzJob.setClassPath("com.erp.base.config.quartz.job.AttendJob");
+        quartzJobRepository.save(quartzJob);
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
         scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
-        JobKey jobKey = new JobKey(quartzJob.getName(), quartzJob.getGroupName());
-//        scheduler.pauseJob(jobKey);
         IdRequest idRequest = new IdRequest();
         idRequest.setId(quartzJob.getId());
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -334,8 +347,9 @@ class QuartzJobControllerTest {
                 .content(ObjectTool.toJson(idRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
-        scheduler.resumeTrigger(new TriggerKey(quartzJob.getName(), quartzJob.getGroupName()));
-        scheduler.triggerJob(jobKey);
+        Thread.sleep(1500);
+        all = attendRepository.findAll();
+        Assertions.assertEquals(1, all.size());
     }
 
     private QuartzJobModel createQuartzJob() {
