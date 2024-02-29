@@ -100,6 +100,7 @@ public class RoleService {
     public ResponseEntity<ApiResponse> updateRolePermission(RolePermissionRequest request) {
         Long id = request.getId();
         RoleModel roleModel = cacheService.getRole().get(id);
+        if(roleModel == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
         Set<PermissionModel> permissionSet = request.getPermissionSet();
         roleModel.setPermissions(permissionSet);
         roleRepository.save(roleModel);
