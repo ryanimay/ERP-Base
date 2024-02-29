@@ -71,7 +71,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
 
     private boolean isValidAuthToken(String authToken) {
         if (authToken == null) return false;
-        authToken = authToken.replace("Bearer ", "");
+        authToken = authToken.replace(TokenService.TOKEN_PREFIX, "");
         try {
             tokenService.parseToken(authToken);
         } catch (Exception e) {

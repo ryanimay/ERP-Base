@@ -34,6 +34,7 @@ public class TokenService {
     public static final String REFRESH_TOKEN = "X-Refresh-Token";
     private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr(秒為單位)
     public static final String TOKEN_PROPERTIES_USERNAME = "username";
+    public static final String TOKEN_PREFIX = "Bearer ";
 
     @Autowired
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
@@ -56,7 +57,7 @@ public class TokenService {
         String accessToken = createToken(ACCESS_TOKEN, userDetails.getUsername(), ACCESS_TOKEN_EXPIRE_TIME);
         String refreshToken = createToken(REFRESH_TOKEN, userDetails.getUsername(), REFRESH_TOKEN_EXPIRE_TIME);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + accessToken);
         httpHeaders.add(REFRESH_TOKEN, refreshToken);
         return httpHeaders;
     }

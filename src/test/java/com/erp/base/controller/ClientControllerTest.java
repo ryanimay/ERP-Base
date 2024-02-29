@@ -261,7 +261,7 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
                 .andExpect(MockMvcResultMatchers.header().exists(TokenService.REFRESH_TOKEN))
                 .andDo(result -> {
-                    String token = Objects.requireNonNull(result.getResponse().getHeader(HttpHeaders.AUTHORIZATION)).replace("Bearer ", "");
+                    String token = Objects.requireNonNull(result.getResponse().getHeader(HttpHeaders.AUTHORIZATION)).replace(TokenService.TOKEN_PREFIX, "");
                     String refreshToken = result.getResponse().getHeader(TokenService.REFRESH_TOKEN);
                     Assertions.assertEquals("testRegister", tokenService.parseToken(token).get(TokenService.TOKEN_PROPERTIES_USERNAME));
                     Assertions.assertEquals("testRegister", tokenService.parseToken(refreshToken).get(TokenService.TOKEN_PROPERTIES_USERNAME));
