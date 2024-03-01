@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,7 +31,12 @@ public class SalaryService {
     private SalaryRepository salaryRepository;
     private MessageService messageService;
     private NotificationService notificationService;
+    private ClientService clientService;
 
+    @Autowired
+    public void setClientService(ClientService clientService) {
+        this.clientService = clientService;
+    }
     @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
@@ -51,16 +58,30 @@ public class SalaryService {
     }
 
     public ResponseEntity<ApiResponse> editRoot(SalaryRequest request) {
-        SalaryModel salaryModel = request.toModel();
-        salaryRepository.save(salaryModel);
-        sendMessage(request.getUserId());
+        Long userId = request.getUserId();
+        String userName = Optional.ofNullable(userId)
+                .map(clientService::findNameByUserId)
+                .orElse(null);
+        if(userName == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        //找該用戶的薪資設定是否存在，存在就編輯，不存在就新增
+        SalaryModel userSalaryModel = Optional.ofNullable(salaryRepository.findByUserIdAndRoot(userId, true))
+                .orElseGet(request::toModel);
+        Optional.ofNullable(request.getBaseSalary()).ifPresent(userSalaryModel::setBaseSalary);
+        Optional.ofNullable(request.getMealAllowance()).ifPresent(userSalaryModel::setMealAllowance);
+        Optional.ofNullable(request.getBonus()).ifPresent(userSalaryModel::setBonus);
+        Optional.ofNullable(request.getLaborInsurance()).ifPresent(userSalaryModel::setLaborInsurance);
+        Optional.ofNullable(request.getNationalHealthInsurance()).ifPresent(userSalaryModel::setNationalHealthInsurance);
+
+        userSalaryModel.setRoot(true);
+        salaryRepository.save(userSalaryModel);
+        sendMessage(userId);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     private void sendMessage(Long userId) {
         ClientModel user = ClientIdentity.getUser();
         NotificationModel notification = notificationService.createNotification(NotificationEnum.EDIT_SALARY_ROOT);
-        MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(userId), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+        MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), Long.toString(userId), WebsocketConstant.TOPIC.NOTIFICATION, notification);
         messageService.sendTo(messageModel);
     }
 

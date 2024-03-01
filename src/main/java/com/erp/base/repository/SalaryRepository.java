@@ -16,4 +16,6 @@ public interface SalaryRepository extends JpaRepository<SalaryModel, Long>, JpaS
     List<SalaryModel> findByRoot();
 
     SalaryModel findByIdAndRootIsFalse(long id);
+
+    SalaryModel findByUserIdAndRoot(long user_id, boolean root);
 }
