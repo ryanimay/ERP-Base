@@ -1,4 +1,4 @@
-package com.erp.base.config;
+package com.erp.base.testConfig;
 
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.security.TokenService;

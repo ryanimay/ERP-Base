@@ -1,7 +1,7 @@
 package com.erp.base.controller;
 
-import com.erp.base.config.TestUtils;
-import com.erp.base.config.redis.TestRedisConfiguration;
+import com.erp.base.testConfig.TestUtils;
+import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.ClientModel;

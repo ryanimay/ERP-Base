@@ -1,4 +1,4 @@
-package com.erp.base.config.redis;
+package com.erp.base.testConfig.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.erp.base.config.redis;
+package com.erp.base.testConfig.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

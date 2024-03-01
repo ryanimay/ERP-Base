@@ -1,4 +1,4 @@
-package com.erp.base.config.redis;
+package com.erp.base.testConfig.redis;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
