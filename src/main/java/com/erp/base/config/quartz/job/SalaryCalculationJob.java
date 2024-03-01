@@ -1,5 +1,6 @@
 package com.erp.base.config.quartz.job;
 
+import com.erp.base.model.dto.response.SalaryResponse;
 import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.model.mail.FileModel;
 import com.erp.base.model.mail.SalaryMailModel;
@@ -48,13 +49,14 @@ public class SalaryCalculationJob implements Job {
         List<SalaryModel> models = salaryService.execCalculate();
         for(SalaryModel model : models){
             String email = model.getUser().getEmail();
+            SalaryResponse salaryResponse = new SalaryResponse(model);
             org.thymeleaf.context.Context context = mailService.createContext(model.getUser().getUsername(),  model.getTime(), "$" + model.grandTotal());
             try {
-                String fileName = "薪資單_" + model.getUser().getUsername() + ".xlsx";
+                String fileName = "薪資單_" + salaryResponse.getUser().getUsername() + ".xlsx";
                 String classPath = "/template/excel/salary.xlsx";
                 Map<String, Object> dataMap = new HashMap<>();
-                dataMap.put("data", model);
-                dataMap.put("user", model.getUser());
+                dataMap.put("data", salaryResponse);
+                dataMap.put("user", salaryResponse.getUser());
                 dataMap.put("const", constVal);
                 //創建excel物件
                 FileModel file = new FileModel(fileName, classPath, dataMap);

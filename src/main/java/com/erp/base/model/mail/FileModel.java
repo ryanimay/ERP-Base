@@ -25,12 +25,17 @@ public class FileModel {
     public FileModel(String fileName, String classPath, Map<String, Object> formatData) throws IOException {
         Resource resource = new ClassPathResource(classPath);
         InputStream inputStream = resource.getInputStream();
-        Context context = new Context();
-        formatData.keySet().forEach(key -> context.putVar(key, formatData.get(key)));
+        Context context = new Context(formatData);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        JxlsHelper.getInstance().processTemplate(inputStream, outputStream, context);
+        JxlsHelper.getInstance().setEvaluateFormulas(true).processTemplate(inputStream, outputStream, context);
 
         this.fileName = fileName;
         this.dataSource = new ByteArrayDataSource(outputStream.toByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+        //本地下載測試
+//        new File("C:/Users/user/Downloads" + File.separator + fileName).getParentFile().mkdirs();
+//        try (FileOutputStream fos = new FileOutputStream("C:/Users/user/Downloads" + File.separator + fileName)) {
+//            outputStream.writeTo(fos);
+//        }
     }
 }

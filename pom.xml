@@ -120,6 +120,21 @@
             <artifactId>jxls</artifactId>
             <version>2.14.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-poi</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-jexcel</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.15.1</version>
+        </dependency>
         <!--測試用DB-->
         <dependency>
             <groupId>com.h2database</groupId>
