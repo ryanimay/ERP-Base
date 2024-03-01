@@ -34,6 +34,7 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -137,8 +138,7 @@ public class ClientService {
                 allClient = clientRepository.findByUsernameContaining(param.getName(), param.getPage());
             }
         }
-        assert allClient != null;
-        return new PageResponse<>(allClient, ClientResponseModel.class);
+        return new PageResponse<>(Objects.requireNonNull(allClient), ClientResponseModel.class);
     }
 
     public ClientModel findByUsername(String username) {
