@@ -163,6 +163,55 @@ class SalaryControllerTest {
         salaryRepository.deleteById(salary.getId());
     }
 
+    @Test
+    @DisplayName("個人薪資單列表_成功")
+    void getSalaries_ok() throws Exception {
+        SalaryModel salary0 = createSalary(true);
+        SalaryModel salary1 = createSalary(false);
+        SalaryModel salary2 = createSalary(false);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.GET)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(salary1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].user.id").value(salary1.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].user.username").value(salary1.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].time").value(salary1.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].baseSalary").value(ObjectTool.formatBigDecimal(salary1.getBaseSalary())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].mealAllowance").value(ObjectTool.formatBigDecimal(salary1.getMealAllowance())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].bonus").value(ObjectTool.formatBigDecimal(salary1.getBonus())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].laborInsurance").value(ObjectTool.formatBigDecimal(salary1.getLaborInsurance())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].nationalHealthInsurance").value(ObjectTool.formatBigDecimal(salary1.getNationalHealthInsurance())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].reduceTotal").value(ObjectTool.formatBigDecimal(salary1.getReduceTotal())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].grandTotal").value(
+                        ObjectTool.formatBigDecimal(salary1.getBaseSalary()
+                                .add(salary1.getMealAllowance())
+                                .add(salary1.getBonus())
+                                .subtract(salary1.getReduceTotal()))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].root").value(salary1.isRoot()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value(salary2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].user.id").value(salary2.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].user.username").value(salary2.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].time").value(salary2.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].baseSalary").value(ObjectTool.formatBigDecimal(salary2.getBaseSalary())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].mealAllowance").value(ObjectTool.formatBigDecimal(salary2.getMealAllowance())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].bonus").value(ObjectTool.formatBigDecimal(salary2.getBonus())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].laborInsurance").value(ObjectTool.formatBigDecimal(salary2.getLaborInsurance())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].nationalHealthInsurance").value(ObjectTool.formatBigDecimal(salary2.getNationalHealthInsurance())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].reduceTotal").value(ObjectTool.formatBigDecimal(salary2.getReduceTotal())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].grandTotal").value(
+                        ObjectTool.formatBigDecimal(salary2.getBaseSalary()
+                                .add(salary2.getMealAllowance())
+                                .add(salary2.getBonus())
+                                .subtract(salary2.getReduceTotal()))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].root").value(salary2.isRoot()));
+        salaryRepository.deleteById(salary0.getId());
+        salaryRepository.deleteById(salary1.getId());
+        salaryRepository.deleteById(salary2.getId());
+    }
+
     private SalaryModel createSalary(boolean root){
         SalaryModel salaryModel = new SalaryModel();
         salaryModel.setUser(me);
