@@ -95,8 +95,9 @@ public class SalaryService {
         return ApiResponse.success(ApiResponseCode.SUCCESS, salaryResponses);
     }
 
-    public ResponseEntity<ApiResponse> info(long id) {
-        SalaryModel salaryModel = salaryRepository.findByIdAndRootIsFalse(id);
+    public ResponseEntity<ApiResponse> info(Long id) {
+        SalaryModel salaryModel = Optional.ofNullable(id).map(salaryRepository::findByIdAndRootIsFalse).orElse(null);
+        if(salaryModel == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id[" + id + "] Not Found");
         return ApiResponse.success(ApiResponseCode.SUCCESS, new SalaryResponse(salaryModel));
     }
 

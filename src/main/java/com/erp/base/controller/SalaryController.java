@@ -46,7 +46,7 @@ public class SalaryController {
     //個人薪資單詳細
     @GetMapping(Router.SALARY.INFO)
     @Operation(summary = "個人薪資單詳細")
-    public ResponseEntity<ApiResponse> info(@Parameter(description = "用戶ID") long id){
+    public ResponseEntity<ApiResponse> info(@Parameter(description = "用戶ID") Long id){
         return salaryService.info(id);
     }
 }
