@@ -3,6 +3,7 @@ package com.erp.base.controller;
 import com.erp.base.config.TestUtils;
 import com.erp.base.config.redis.TestRedisConfiguration;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.dto.request.salary.SalaryRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.SalaryResponse;
 import com.erp.base.model.entity.ClientModel;
@@ -10,6 +11,8 @@ import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.repository.SalaryRepository;
+import com.erp.base.tool.ObjectTool;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,6 +84,83 @@ class SalaryControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].root").value(salaryResponse1.isRoot()));
         salaryRepository.deleteById(salaryResponse1.getId());
         salaryRepository.deleteById(salary2.getId());
+    }
+
+    @Test
+    @DisplayName("新增薪資設定_未填用戶_錯誤")
+    void editRoot_noUser_error() throws Exception {
+        SalaryRequest request = new SalaryRequest();
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("新增薪資設定_不存在用戶_錯誤")
+    void editRoot_userNotFound_error() throws Exception {
+        SalaryRequest request = new SalaryRequest();
+        request.setUserId(99L);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("新增薪資設定_成功")
+    void editRoot_addSalaryRoot_ok() throws Exception {
+        SalaryModel byUserIdAndRoot = salaryRepository.findByUserIdAndRoot(me.getId(), true);
+        Assertions.assertNull(byUserIdAndRoot);
+        SalaryRequest request = new SalaryRequest();
+        request.setUserId(me.getId());
+        request.setBaseSalary(new BigDecimal(50000));
+        request.setMealAllowance(new BigDecimal(2400));
+        request.setBonus(new BigDecimal(1000));
+        request.setLaborInsurance(new BigDecimal(1000));
+        request.setNationalHealthInsurance(new BigDecimal(1000));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        byUserIdAndRoot = salaryRepository.findByUserIdAndRoot(me.getId(), true);
+        Assertions.assertNotNull(byUserIdAndRoot);
+        Assertions.assertEquals(request.getUserId(), byUserIdAndRoot.getUser().getId());
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(request.getBaseSalary()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getBaseSalary()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(request.getMealAllowance()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getMealAllowance()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(request.getBonus()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getBonus()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(request.getLaborInsurance()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getLaborInsurance()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(request.getNationalHealthInsurance()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getNationalHealthInsurance()));
+        salaryRepository.deleteById(byUserIdAndRoot.getId());
+    }
+
+    @Test
+    @DisplayName("編輯薪資設定_成功")
+    void editRoot_editExistsSalaryRoot_ok() throws Exception {
+        SalaryModel salary = createSalary(true);
+        SalaryRequest request = new SalaryRequest();
+        request.setUserId(salary.getUser().getId());
+        request.setBaseSalary(new BigDecimal(70000));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        SalaryModel byUserIdAndRoot = salaryRepository.findByUserIdAndRoot(salary.getUser().getId(), true);
+        Assertions.assertNotNull(byUserIdAndRoot);
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(request.getBaseSalary()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getBaseSalary()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(salary.getMealAllowance()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getMealAllowance()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(salary.getBonus()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getBonus()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(salary.getLaborInsurance()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getLaborInsurance()));
+        Assertions.assertEquals(ObjectTool.formatBigDecimal(salary.getNationalHealthInsurance()), ObjectTool.formatBigDecimal(byUserIdAndRoot.getNationalHealthInsurance()));
+        salaryRepository.deleteById(salary.getId());
     }
 
     private SalaryModel createSalary(boolean root){
