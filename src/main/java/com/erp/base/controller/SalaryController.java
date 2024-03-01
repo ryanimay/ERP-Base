@@ -31,7 +31,7 @@ public class SalaryController {
     //編輯或新增Root
     @Loggable
     @PostMapping(Router.SALARY.EDIT_ROOT)
-    @Operation(summary = "編輯薪資設定")
+    @Operation(summary = "新增/編輯薪資設定")
     public ResponseEntity<ApiResponse> editRoot(@RequestBody SalaryRequest request){
         return salaryService.editRoot(request);
     }
