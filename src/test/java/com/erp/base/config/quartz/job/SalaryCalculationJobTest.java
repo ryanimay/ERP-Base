@@ -36,17 +36,19 @@ class SalaryCalculationJobTest {
     @DisplayName("排程任務:月結薪資單_成功")
     void execute() throws MessagingException {
         List<SalaryModel> list = new ArrayList<>();
-        list.add(createSalary(1, 50000));
-        list.add(createSalary(2, 40000));
-        list.add(createSalary(3, 30000));
+        list.add(createSalary(1, "user1", 50000));
+        list.add(createSalary(2, "user2", 40000));
+        list.add(createSalary(3, "user3", 30000));
         Mockito.when(salaryService.execCalculate()).thenReturn(list);
         SalaryCalculationJob.execute(jobExecutionContext);
         Mockito.verify(mailService, Mockito.times(3)).sendMail(Mockito.any(), Mockito.eq(salaryMailModel), Mockito.any(), Mockito.any());
     }
 
-    private SalaryModel createSalary(int uid, int base){
+    private SalaryModel createSalary(int uid, String userName, int base){
         SalaryModel salaryModel = new SalaryModel();
-        salaryModel.setUser(new ClientModel(uid));
+        ClientModel user = new ClientModel(uid);
+        user.setUsername(userName);
+        salaryModel.setUser(user);
         salaryModel.setBaseSalary(new BigDecimal(base));
         return salaryModel;
     }
