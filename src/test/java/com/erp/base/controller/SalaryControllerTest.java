@@ -212,6 +212,54 @@ class SalaryControllerTest {
         salaryRepository.deleteById(salary2.getId());
     }
 
+    @Test
+    @DisplayName("薪資明細_未知Id_錯誤")
+    void salaryInfo_unknownId_error() throws Exception {
+        String id = "99";
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id[" + id + "] Not Found");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.INFO)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", id)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("薪資明細_未填Id_錯誤")
+    void salaryInfo_noId_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id[" + null + "] Not Found");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.INFO)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+    }
+
+    @Test
+    @DisplayName("薪資明細_成功")
+    void salaryInfo_ok() throws Exception {
+        SalaryResponse salaryResponse = new SalaryResponse(createSalary(false));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, salaryResponse);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.INFO)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("id", String.valueOf(salaryResponse.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(salaryResponse.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(salaryResponse.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(salaryResponse.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.time").value(salaryResponse.getTime().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.baseSalary").value(salaryResponse.getBaseSalary()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.mealAllowance").value(salaryResponse.getMealAllowance()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.bonus").value(salaryResponse.getBonus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.laborInsurance").value(salaryResponse.getLaborInsurance()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.nationalHealthInsurance").value(salaryResponse.getNationalHealthInsurance()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.reduceTotal").value(salaryResponse.getReduceTotal()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.grandTotal").value(salaryResponse.getGrandTotal()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.root").value(salaryResponse.isRoot()));
+        salaryRepository.deleteById(salaryResponse.getId());
+    }
+
     private SalaryModel createSalary(boolean root){
         SalaryModel salaryModel = new SalaryModel();
         salaryModel.setUser(me);
