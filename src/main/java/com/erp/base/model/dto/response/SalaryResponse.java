@@ -4,13 +4,11 @@ import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.tool.ObjectTool;
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
 public class SalaryResponse {
     private Long id;
     private ClientNameObject user;
-    private LocalDate time;
+    private String time;
     //本薪
     private String baseSalary;
     //餐費
@@ -31,7 +29,7 @@ public class SalaryResponse {
     public SalaryResponse(SalaryModel model) {
         this.id = model.getId();
         this.user = new ClientNameObject(model.getUser());
-        this.time = model.getTime();
+        this.time = model.getTime().toString();
         this.baseSalary = ObjectTool.formatBigDecimal(model.getBaseSalary());
         this.mealAllowance = ObjectTool.formatBigDecimal(model.getMealAllowance());
         this.bonus = ObjectTool.formatBigDecimal(model.getBonus());
