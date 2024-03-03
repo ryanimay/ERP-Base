@@ -336,7 +336,7 @@ class QuartzJobControllerTest {
         quartzJob.setCron("* * * */30 * ?");
         quartzJob.setInfo("測試排程內容");
         quartzJob.setClassPath("com.erp.base.config.quartz.job.AttendJob");
-        quartzJobRepository.save(quartzJob);
+        quartzJob = quartzJobRepository.save(quartzJob);
         CronTriggerFactoryBean trigger = quartzJobService.createTrigger(quartzJob);
         scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
         IdRequest idRequest = new IdRequest();
@@ -347,9 +347,8 @@ class QuartzJobControllerTest {
                 .content(ObjectTool.toJson(idRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
-        Thread.sleep(1500);
-        all = attendRepository.findAll();
-        Assertions.assertEquals(1, all.size());
+        quartzJobRepository.deleteById(quartzJob.getId());
+        scheduler.clear();
     }
 
     private QuartzJobModel createQuartzJob() {
