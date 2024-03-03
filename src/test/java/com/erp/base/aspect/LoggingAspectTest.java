@@ -33,20 +33,17 @@ class LoggingAspectTest {
     private LogService logService;
     @InjectMocks
     private LoggingAspect loggingAspect;
-    private static MockedStatic<ClientIdentity> clientIdentityMockedStatic;
     private ResponseEntity<ApiResponse> response;
     private static ProceedingJoinPoint joinPoint;
+    private static ServletRequestAttributes servletRequestAttributes;
 
     @BeforeAll
-    static void beforeAll(){
+    static void beforeAll() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURI()).thenReturn(testUrl);
         Mockito.when(request.getHeader(Mockito.any())).thenReturn(testIP);
-        ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
+        servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
         Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
-        MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class);
-        requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
-        clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class);
         joinPoint = Mockito.mock(ProceedingJoinPoint.class);
         Mockito.when(joinPoint.getArgs()).thenReturn(testArg);
         client.setUsername("testName");
@@ -55,73 +52,93 @@ class LoggingAspectTest {
     @Test
     @DisplayName("日誌AOP_返回成功")
     void logAround_success() throws Throwable {
-        clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
-        response = ApiResponse.success(ApiResponseCode.SUCCESS);
-        Mockito.when(joinPoint.proceed()).thenReturn(response);
+        try (MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class)) {
+            requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
+            try (MockedStatic<ClientIdentity> clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class)) {
+                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
+                response = ApiResponse.success(ApiResponseCode.SUCCESS);
+                Mockito.when(joinPoint.proceed()).thenReturn(response);
 
-        loggingAspect.logAround(joinPoint);
+                loggingAspect.logAround(joinPoint);
 
-        Mockito.verify(logService).save(Mockito.argThat(model -> {
-            Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
-            Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
-            Assertions.assertEquals(client.getUsername(), model.getUserName());
-            Assertions.assertEquals(testIP, model.getIp());
-            Assertions.assertEquals(true, model.getStatus());
-            Assertions.assertNotNull(response.getBody());
-            Assertions.assertEquals(response.getBody().getMessage(), model.getResult());
-            return true;
-        }));
+                Mockito.verify(logService).save(Mockito.argThat(model -> {
+                    Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
+                    Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
+                    Assertions.assertEquals(client.getUsername(), model.getUserName());
+                    Assertions.assertEquals(testIP, model.getIp());
+                    Assertions.assertEquals(true, model.getStatus());
+                    Assertions.assertNotNull(response.getBody());
+                    Assertions.assertEquals(response.getBody().getMessage(), model.getResult());
+                    return true;
+                }));
+            }
+        }
     }
 
     @Test
     @DisplayName("日誌AOP_返回錯誤")
     void logAround_error() throws Throwable {
-        clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
-        response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
-        Mockito.when(joinPoint.proceed()).thenReturn(response);
+        try (MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class)) {
+            requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
+            try (MockedStatic<ClientIdentity> clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class)) {
+                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
+                response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+                Mockito.when(joinPoint.proceed()).thenReturn(response);
 
-        loggingAspect.logAround(joinPoint);
+                loggingAspect.logAround(joinPoint);
 
-        Mockito.verify(logService).save(Mockito.argThat(model -> {
-            Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
-            Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
-            Assertions.assertEquals(client.getUsername(), model.getUserName());
-            Assertions.assertEquals(testIP, model.getIp());
-            Assertions.assertEquals(false, model.getStatus());
-            Assertions.assertNotNull(response.getBody());
-            Assertions.assertEquals(ObjectTool.toJson(response.getBody()), model.getResult());
-            return true;
-        }));
+                Mockito.verify(logService).save(Mockito.argThat(model -> {
+                    Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
+                    Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
+                    Assertions.assertEquals(client.getUsername(), model.getUserName());
+                    Assertions.assertEquals(testIP, model.getIp());
+                    Assertions.assertEquals(false, model.getStatus());
+                    Assertions.assertNotNull(response.getBody());
+                    Assertions.assertEquals(ObjectTool.toJson(response.getBody()), model.getResult());
+                    return true;
+                }));
+            }
+        }
     }
 
     @Test
     @DisplayName("日誌AOP_返回拋出例外")
     void logAround_exception_error() throws Throwable {
-        clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
-        response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
-        Mockito.when(joinPoint.proceed()).thenThrow(new RuntimeException("test error"));
+        try (MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class)) {
+            requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
+            try (MockedStatic<ClientIdentity> clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class)) {
+                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
+                response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+                Mockito.when(joinPoint.proceed()).thenThrow(new RuntimeException("test error"));
 
-        Assertions.assertThrows(RuntimeException.class, () -> loggingAspect.logAround(joinPoint));
+                Assertions.assertThrows(RuntimeException.class, () -> loggingAspect.logAround(joinPoint));
 
-        Mockito.verify(logService).save(Mockito.argThat(model -> {
-            Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
-            Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
-            Assertions.assertEquals(client.getUsername(), model.getUserName());
-            Assertions.assertEquals(testIP, model.getIp());
-            Assertions.assertEquals(false, model.getStatus());
-            Assertions.assertNotNull(response.getBody());
-            Assertions.assertEquals("ERROR: test error", model.getResult());
-            return true;
-        }));
+                Mockito.verify(logService).save(Mockito.argThat(model -> {
+                    Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
+                    Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
+                    Assertions.assertEquals(client.getUsername(), model.getUserName());
+                    Assertions.assertEquals(testIP, model.getIp());
+                    Assertions.assertEquals(false, model.getStatus());
+                    Assertions.assertNotNull(response.getBody());
+                    Assertions.assertEquals("ERROR: test error", model.getResult());
+                    return true;
+                }));
+            }
+        }
     }
 
     @Test
     @DisplayName("日誌AOP_找不到用戶_拋出例外")
     void logAround_noUser_throw() throws Throwable {
-        clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(null);
-        response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
-        Mockito.when(joinPoint.proceed()).thenReturn(response);
+        try (MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class)) {
+            requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
+            try (MockedStatic<ClientIdentity> clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class)) {
+                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(null);
+                response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+                Mockito.when(joinPoint.proceed()).thenReturn(response);
 
-        Assertions.assertThrows(UsernameNotFoundException.class, () -> loggingAspect.logAround(joinPoint));
+                Assertions.assertThrows(UsernameNotFoundException.class, () -> loggingAspect.logAround(joinPoint));
+            }
+        }
     }
 }
