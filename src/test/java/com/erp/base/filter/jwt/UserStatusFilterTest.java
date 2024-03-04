@@ -1,5 +1,6 @@
 package com.erp.base.filter.jwt;
 
+import com.erp.base.controller.Router;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.ClientModel;
@@ -21,6 +22,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 
@@ -31,15 +33,32 @@ class UserStatusFilterTest {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
     private FilterChain filterChain;
+    private static final String contextPath = "/erp_base";
 
 
     @BeforeEach
     void setUp() {
+        SecurityContextHolder.clearContext();
         userStatusFilter = new UserStatusFilter();
+        ReflectionTestUtils.setField(userStatusFilter, "contextPath", contextPath);
         MockitoAnnotations.openMocks(this);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         filterChain = Mockito.mock(FilterChain.class);
+        request.setRequestURI("http://localhost:8080" + contextPath + Router.CLIENT.GET_CLIENT);
+    }
+
+    @Test
+    @DisplayName("用戶狀態驗證_url錯誤_錯誤")
+    void testDenyPermission_urlError_error() throws ServletException, IOException {
+        request.setRequestURI("// // /");
+        userStatusFilter.doFilterInternal(request, response, filterChain);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
+        Assertions.assertEquals("application/json; charset=utf-8", response.getContentType());
+
+        ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
+        String expectedErrorMessage = ObjectTool.toJson(expectedApiResponse);
+        Assertions.assertEquals(expectedErrorMessage, response.getContentAsString());
     }
 
     @Test
@@ -83,6 +102,17 @@ class UserStatusFilterTest {
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
         Assertions.assertEquals("application/json; charset=utf-8", response.getContentType());
         ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.CLIENT_DISABLED);
+        String expectedErrorMessage = ObjectTool.toJson(expectedApiResponse);
+        Assertions.assertEquals(expectedErrorMessage, response.getContentAsString());
+    }
+
+    @Test
+    @DisplayName("用戶狀態驗證_未經驗證_失敗")
+    void userStatus_authenticationNull_error() throws ServletException, IOException {
+        userStatusFilter.doFilterInternal(request, response, filterChain);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
+        Assertions.assertEquals("application/json; charset=utf-8", response.getContentType());
+        ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
         String expectedErrorMessage = ObjectTool.toJson(expectedApiResponse);
         Assertions.assertEquals(expectedErrorMessage, response.getContentAsString());
     }
