@@ -9,6 +9,7 @@ import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -74,6 +76,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 exceptionResponse(e1, response, ApiResponseCode.INVALID_SIGNATURE);
                 return;
             }
+        } catch (AccessDeniedException | MalformedJwtException e) {
+            exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
+            return;
         } catch (URISyntaxException e) {
             LOG.error("request path: [{0}] trans error", request.getRequestURI());
             exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
