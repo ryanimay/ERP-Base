@@ -35,7 +35,7 @@ public class ClientIdentity {
 
     public static Locale getLocale(){
         UserDetailImpl principal = getPrincipal();
-        return principal == null ? null : principal.getLocale();
+        return principal == null ? defaultLocale : principal.getLocale();
     }
 
     private static UserDetailImpl getPrincipal(){
