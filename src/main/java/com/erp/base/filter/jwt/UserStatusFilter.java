@@ -2,7 +2,6 @@ package com.erp.base.filter.jwt;
 
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
@@ -47,17 +46,16 @@ public class UserStatusFilter extends OncePerRequestFilter {
 
     private void isUserLockedOrDisabled(HttpServletRequest request, Authentication authentication) {
         UserDetailImpl principal = ObjectTool.convert(authentication.getPrincipal(), UserDetailImpl.class);
-        ClientModel client = principal.getClientModel();
         String requestURL = request.getRequestURL().toString();
-        if (client != null && (!(requestURL.contains(CLIENT_LOCK_URL) || requestURL.contains(CLIENT_STATUS_URL)))) checkClient(client);//驗證使用者狀態
+        if (!(requestURL.contains(CLIENT_LOCK_URL) || requestURL.contains(CLIENT_STATUS_URL))) checkClient(principal);//驗證使用者狀態
     }
 
     /**
      * 每次呼叫接口驗證使用者狀態
      */
-    private void checkClient(ClientModel client) {
-        if (client.isLock()) throw new LockedException("User Locked");
-        if (!client.isActive()) throw new DisabledException("User Disabled");
+    private void checkClient(UserDetailImpl userDetail) {
+        if (!userDetail.isAccountNonLocked()) throw new LockedException("User Locked");
+        if (!userDetail.isEnabled()) throw new DisabledException("User Disabled");
     }
 
     private void exceptionResponse(Exception e, HttpServletResponse response, ApiResponseCode code) throws IOException {
