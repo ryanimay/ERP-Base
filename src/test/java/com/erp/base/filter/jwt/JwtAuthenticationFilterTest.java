@@ -7,6 +7,7 @@ import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.ObjectTool;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Assertions;
@@ -73,11 +74,24 @@ class JwtAuthenticationFilterTest {
 
     @Test
     @DisplayName("JWT驗證_沒token_錯誤")
-    void testDenyPermission_noToken_pass() throws ServletException, IOException {
+    void testDenyPermission_noToken_error() throws ServletException, IOException {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
         Assertions.assertEquals("application/json; charset=utf-8", response.getContentType());
         ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.INVALID_SIGNATURE);
+        String expectedErrorMessage = ObjectTool.toJson(expectedApiResponse);
+        Assertions.assertEquals(expectedErrorMessage, response.getContentAsString());
+    }
+
+    @Test
+    @DisplayName("JWT驗證_token格式問題_錯誤")
+    void testDenyPermission_malformedToken_error() throws ServletException, IOException {
+        request.addHeader(HttpHeaders.AUTHORIZATION, "testToken");
+        Mockito.doThrow(new MalformedJwtException("")).when(tokenService).parseToken(Mockito.any());
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
+        Assertions.assertEquals("application/json; charset=utf-8", response.getContentType());
+        ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
         String expectedErrorMessage = ObjectTool.toJson(expectedApiResponse);
         Assertions.assertEquals(expectedErrorMessage, response.getContentAsString());
     }
@@ -98,7 +112,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     @DisplayName("JWT驗證_url錯誤_錯誤")
-    void testDenyPermission_urlError_pass() throws ServletException, IOException {
+    void testDenyPermission_urlError_error() throws ServletException, IOException {
         request.setRequestURI("// // /");
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
