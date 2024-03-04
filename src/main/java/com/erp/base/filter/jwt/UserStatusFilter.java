@@ -37,39 +37,29 @@ public class UserStatusFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String url;
         try {
-            System.out.println(1);
             url = ObjectTool.extractPath(request.getRequestURI()).replace(contextPath, "");
-            System.out.println(2);
         } catch (URISyntaxException e) {
             LOG.error("request path: [{0}] trans error", request.getRequestURI());
             exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
-            System.out.println(3);
             return;
         }
         //不包含在公開API才需要驗證
         if(!SecurityConfig.noRequiresAuthenticationSet.contains(url)){
-            System.out.println(4);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated()) {
-            System.out.println(5);
                 try {
                     isUserLockedOrDisabled(url, authentication);
-            System.out.println(6);
                 } catch (LockedException e) {
                     exceptionResponse(e, response, ApiResponseCode.CLIENT_LOCKED);
-            System.out.println(7);
                     return;
                 } catch (DisabledException e) {
                     exceptionResponse(e, response, ApiResponseCode.CLIENT_DISABLED);
-            System.out.println(8);
                     return;
                 }
             }else {
                 exceptionResponse(new AccessDeniedException("authentication null"), response, ApiResponseCode.ACCESS_DENIED);
-            System.out.println(9);
                 return;
             }
-            System.out.println(10);
         }
         filterChain.doFilter(request, response);
     }
