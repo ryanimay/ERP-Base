@@ -7,8 +7,8 @@ import com.erp.base.filter.jwt.UserStatusFilter;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.service.PermissionService;
-import com.erp.base.tool.ObjectTool;
 import com.erp.base.tool.LogFactory;
+import com.erp.base.tool.ObjectTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -34,6 +36,8 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class SecurityConfig {
     LogFactory LOG = new LogFactory(SecurityConfig.class);
     private final PermissionService permissionService;
+    //不須驗證權限的公開url
+    public static Set<String> noRequiresAuthenticationSet = new HashSet<>();
     @Autowired
     public SecurityConfig(PermissionService permissionService) {
         this.permissionService = permissionService;
@@ -92,6 +96,7 @@ public class SecurityConfig {
                 String url = permission.getUrl();
                 if("*".equals(authority)){
                     request.requestMatchers(url).permitAll();//公開api
+                    noRequiresAuthenticationSet.add(url);
                 }else{
                     request.requestMatchers(antMatcher(url)).hasAuthority(authority);
                 }
