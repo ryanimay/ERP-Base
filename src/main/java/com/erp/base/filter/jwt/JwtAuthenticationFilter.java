@@ -1,6 +1,6 @@
 package com.erp.base.filter.jwt;
 
-import com.erp.base.controller.Router;
+import com.erp.base.config.security.SecurityConfig;
 import com.erp.base.enums.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.entity.ClientModel;
@@ -28,9 +28,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -38,14 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(JwtAuthenticationFilter.class);
     private TokenService tokenService;
     private CacheService cacheService;
-    private static final List<String> noRequiresAuthenticationList = new ArrayList<>();
-    //不須驗證JWT的url
-    static {
-        noRequiresAuthenticationList.add(Router.CLIENT.OP_VALID);
-        noRequiresAuthenticationList.add(Router.CLIENT.REGISTER);
-        noRequiresAuthenticationList.add(Router.CLIENT.LOGIN);
-        noRequiresAuthenticationList.add(Router.CLIENT.RESET_PASSWORD);
-    }
     @Value("${server.servlet.context-path}")
     private String contextPath;
     @Autowired
@@ -88,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean requiresAuthentication(String url) {
-        return !noRequiresAuthenticationList.contains(url);
+        return !SecurityConfig.noRequiresAuthenticationSet.contains(url);
     }
 
     /**
