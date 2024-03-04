@@ -1,11 +1,10 @@
 package com.erp.base.exception;
 
-import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.ClientIdentity;
 import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.tool.LogFactory;
 import io.jsonwebtoken.security.SignatureException;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -60,12 +59,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> signatureExceptionHandler(Exception e){
         LOG.error(e.getMessage());
         return ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
-    }
-
-    @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ApiResponse> messagingExceptionHandler(Exception e){
-        LOG.error(e.getMessage());
-        return ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
