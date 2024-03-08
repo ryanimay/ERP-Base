@@ -65,6 +65,7 @@ public class ObjectTool {
     }
 
     public static String extractPath(String requestUrl) throws URISyntaxException {
+        if(requestUrl == null || requestUrl.isEmpty()) return null;
         URI uri = new URI(requestUrl);
         return uri.getPath().replace(contextPath, "");
     }
