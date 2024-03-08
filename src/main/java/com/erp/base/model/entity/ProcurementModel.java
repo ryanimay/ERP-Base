@@ -1,6 +1,6 @@
 package com.erp.base.model.entity;
 
-import com.erp.base.enums.ProcurementConstant;
+import com.erp.base.model.constant.ProcurementConstant;
 import com.erp.base.tool.DateTool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

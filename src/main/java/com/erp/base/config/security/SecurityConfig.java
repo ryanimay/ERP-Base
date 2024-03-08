@@ -1,6 +1,6 @@
 package com.erp.base.config.security;
 
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.filter.jwt.DenyPermissionFilter;
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.filter.jwt.UserStatusFilter;

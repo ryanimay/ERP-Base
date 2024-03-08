@@ -1,4 +1,4 @@
-package com.erp.base.enums.cache;
+package com.erp.base.model.constant.cache;
 /**
  * cache組的相關設定
  * */

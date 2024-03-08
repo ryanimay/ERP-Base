@@ -1,6 +1,6 @@
 package com.erp.base.service;
 
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;

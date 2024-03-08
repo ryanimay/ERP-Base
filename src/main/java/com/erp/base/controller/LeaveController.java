@@ -1,8 +1,8 @@
 package com.erp.base.controller;
 
 import com.erp.base.aspect.Loggable;
-import com.erp.base.enums.LeaveConstant;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.LeaveConstant;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.leave.LeaveAcceptRequest;
 import com.erp.base.model.dto.request.leave.LeaveRequest;

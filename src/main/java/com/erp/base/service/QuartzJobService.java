@@ -1,6 +1,6 @@
 package com.erp.base.service;
 
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.quartzJob.QuartzJobRequest;
 import com.erp.base.model.dto.response.ApiResponse;

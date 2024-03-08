@@ -1,4 +1,4 @@
-package com.erp.base.enums.response;
+package com.erp.base.model.constant.response;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

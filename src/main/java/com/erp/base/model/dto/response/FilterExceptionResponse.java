@@ -1,7 +1,7 @@
 package com.erp.base.model.dto.response;
 
 import com.erp.base.tool.ObjectTool;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 

@@ -1,7 +1,7 @@
 package com.erp.base.model.dto.response;
 
 import com.erp.base.model.ClientIdentity;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

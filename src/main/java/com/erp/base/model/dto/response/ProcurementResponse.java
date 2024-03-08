@@ -1,6 +1,6 @@
 package com.erp.base.model.dto.response;
 
-import com.erp.base.enums.ProcurementConstant;
+import com.erp.base.model.constant.ProcurementConstant;
 import com.erp.base.model.entity.ProcurementModel;
 import com.erp.base.tool.DateTool;
 import lombok.Data;

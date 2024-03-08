@@ -1,7 +1,7 @@
 package com.erp.base.service;
 
-import com.erp.base.enums.RoleConstant;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.RoleConstant;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.department.DepartmentRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientNameRoleObject;

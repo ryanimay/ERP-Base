@@ -1,4 +1,4 @@
-package com.erp.base.enums;
+package com.erp.base.model.constant;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,7 +2,7 @@ package com.erp.base.controller;
 
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.quartzJob.QuartzJobRequest;
 import com.erp.base.model.dto.response.ApiResponse;

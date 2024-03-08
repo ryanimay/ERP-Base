@@ -2,7 +2,7 @@ package com.erp.base.exception;
 
 import com.erp.base.controller.JobController;
 import com.erp.base.controller.Router;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;

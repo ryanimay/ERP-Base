@@ -1,6 +1,6 @@
 package com.erp.base.service;
 
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.procurement.ProcurementRequest;
 import com.erp.base.model.dto.response.ApiResponse;

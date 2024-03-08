@@ -1,6 +1,6 @@
 package com.erp.base.config.redis;
 
-import com.erp.base.enums.cache.CacheEnum;
+import com.erp.base.model.constant.cache.CacheEnum;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

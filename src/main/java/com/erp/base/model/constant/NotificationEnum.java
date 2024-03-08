@@ -1,4 +1,4 @@
-package com.erp.base.enums;
+package com.erp.base.model.constant;
 
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.tool.BeanProviderTool;

@@ -1,6 +1,6 @@
 package com.erp.base.service.cache;
 
-import com.erp.base.enums.cache.CacheConstant;
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;

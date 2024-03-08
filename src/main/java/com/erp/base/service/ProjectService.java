@@ -1,7 +1,7 @@
 package com.erp.base.service;
 
-import com.erp.base.enums.StatusConstant;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.StatusConstant;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;

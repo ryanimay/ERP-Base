@@ -1,9 +1,9 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
-import com.erp.base.enums.NotificationEnum;
-import com.erp.base.enums.RoleConstant;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.NotificationEnum;
+import com.erp.base.model.constant.RoleConstant;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.client.*;

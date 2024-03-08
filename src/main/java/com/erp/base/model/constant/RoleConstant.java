@@ -1,4 +1,4 @@
-package com.erp.base.enums;
+package com.erp.base.model.constant;
 
 public interface RoleConstant {
     int LEVEL_0 = 0;//基本部門

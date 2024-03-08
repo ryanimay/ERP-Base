@@ -1,7 +1,7 @@
 package com.erp.base.model.dto.response;
 
-import com.erp.base.enums.LeaveConstant;
-import com.erp.base.enums.StatusConstant;
+import com.erp.base.model.constant.LeaveConstant;
+import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LeaveModel;
 import com.erp.base.tool.DateTool;
