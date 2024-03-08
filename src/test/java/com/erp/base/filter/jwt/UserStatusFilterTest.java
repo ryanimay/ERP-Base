@@ -22,7 +22,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 
@@ -33,19 +32,17 @@ class UserStatusFilterTest {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
     private FilterChain filterChain;
-    private static final String contextPath = "/erp_base";
 
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
         userStatusFilter = new UserStatusFilter();
-        ReflectionTestUtils.setField(userStatusFilter, "contextPath", contextPath);
         MockitoAnnotations.openMocks(this);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         filterChain = Mockito.mock(FilterChain.class);
-        request.setRequestURI("http://localhost:8080" + contextPath + Router.CLIENT.GET_CLIENT);
+        request.setRequestURI("http://localhost:8080/erp_base" + Router.CLIENT.GET_CLIENT);
     }
 
     @Test

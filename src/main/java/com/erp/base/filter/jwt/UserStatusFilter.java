@@ -10,7 +10,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
@@ -27,8 +26,6 @@ public class UserStatusFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(UserStatusFilter.class);
     public static final String CLIENT_LOCK_URL = "/client/clientLock";
     public static final String CLIENT_STATUS_URL = "/client/clientStatus";
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
 
     /**
      * 針對已登入用戶後續存取api做狀態驗證和例外處理
@@ -37,7 +34,7 @@ public class UserStatusFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String url;
         try {
-            url = ObjectTool.extractPath(request.getRequestURI()).replace(contextPath, "");
+            url = ObjectTool.extractPath(request.getRequestURI());
         } catch (URISyntaxException e) {
             LOG.error("request path: [{0}] trans error", request.getRequestURI());
             exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);

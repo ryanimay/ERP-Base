@@ -21,7 +21,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,7 +43,6 @@ class JwtAuthenticationFilterTest {
     @BeforeEach
     void setUp() {
         jwtAuthenticationFilter = new JwtAuthenticationFilter();
-        ReflectionTestUtils.setField(jwtAuthenticationFilter, "contextPath", contextPath);
         MockitoAnnotations.openMocks(this);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();

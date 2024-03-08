@@ -16,7 +16,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,8 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(JwtAuthenticationFilter.class);
     private TokenService tokenService;
     private CacheService cacheService;
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
     @Autowired
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -52,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String url = ObjectTool.extractPath(request.getRequestURI()).replace(contextPath, "");
+            String url = ObjectTool.extractPath(request.getRequestURI());
             if (requiresAuthentication(url)) {
                 String token = request.getHeader(HttpHeaders.AUTHORIZATION);
                 if(token == null) throw new SignatureException("token is empty");
