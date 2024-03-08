@@ -1,7 +1,7 @@
 package com.erp.base.filter.jwt;
 
 import com.erp.base.config.security.SecurityConfig;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.CacheService;

@@ -2,9 +2,9 @@ package com.erp.base.controller;
 
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
-import com.erp.base.enums.LeaveConstant;
-import com.erp.base.enums.StatusConstant;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.LeaveConstant;
+import com.erp.base.model.constant.StatusConstant;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.leave.LeaveAcceptRequest;
 import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;

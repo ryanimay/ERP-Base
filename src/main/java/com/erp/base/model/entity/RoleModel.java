@@ -1,6 +1,6 @@
 package com.erp.base.model.entity;
 
-import com.erp.base.enums.RoleConstant;
+import com.erp.base.model.constant.RoleConstant;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

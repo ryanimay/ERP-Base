@@ -1,4 +1,4 @@
-package com.erp.base.init;
+package com.erp.base.config.init;
 
 import com.erp.base.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;

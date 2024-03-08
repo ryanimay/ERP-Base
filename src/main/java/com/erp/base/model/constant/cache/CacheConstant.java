@@ -1,4 +1,4 @@
-package com.erp.base.enums.cache;
+package com.erp.base.model.constant.cache;
 /**
  * CacheName常量
  * name不用加「'」

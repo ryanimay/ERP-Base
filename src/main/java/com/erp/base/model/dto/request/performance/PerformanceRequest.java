@@ -1,6 +1,6 @@
 package com.erp.base.model.dto.request.performance;
 
-import com.erp.base.enums.StatusConstant;
+import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;

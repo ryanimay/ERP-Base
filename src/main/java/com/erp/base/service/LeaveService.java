@@ -1,10 +1,10 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
-import com.erp.base.enums.NotificationEnum;
-import com.erp.base.enums.RoleConstant;
-import com.erp.base.enums.StatusConstant;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.NotificationEnum;
+import com.erp.base.model.constant.RoleConstant;
+import com.erp.base.model.constant.StatusConstant;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -102,7 +103,7 @@ public class LeaveService {
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
             ClientModel user = ClientIdentity.getUser();
-            MessageModel messageModel = new MessageModel(user.getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
@@ -111,7 +112,7 @@ public class LeaveService {
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
         ClientModel user = ClientIdentity.getUser();
-        boolean isManager = user.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
+        boolean isManager = Objects.requireNonNull(user).getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門
         if(isManager){

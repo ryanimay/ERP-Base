@@ -2,8 +2,8 @@ package com.erp.base.controller;
 
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
-import com.erp.base.enums.StatusConstant;
-import com.erp.base.enums.response.ApiResponseCode;
+import com.erp.base.model.constant.StatusConstant;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.JobResponse;

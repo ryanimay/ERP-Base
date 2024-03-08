@@ -1,6 +1,6 @@
 package com.erp.base.service;
 
-import com.erp.base.enums.NotificationEnum;
+import com.erp.base.model.constant.NotificationEnum;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.ClientModel;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Set;
 /**
  * 系統通知服務
@@ -43,7 +44,7 @@ public class NotificationService {
                 .router(notificationEnum.getRouterName())
                 .status(false)
                 .global(notificationEnum.getGlobal())
-                .createBy(user.getId())
+                .createBy(Objects.requireNonNull(user).getId())
                 .build();
         save(build);
         return build;
