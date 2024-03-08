@@ -1,7 +1,8 @@
 package com.erp.base.aspect;
 
-import com.erp.base.model.constant.response.ApiResponseCode;
+import com.erp.base.controller.Router;
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.LogService;
@@ -62,7 +63,7 @@ class LoggingAspectTest {
                 loggingAspect.logAround(joinPoint);
 
                 Mockito.verify(logService).save(Mockito.argThat(model -> {
-                    Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
+                    Assertions.assertEquals(Router.CLIENT.OP_VALID, model.getUrl());
                     Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
                     Assertions.assertEquals(client.getUsername(), model.getUserName());
                     Assertions.assertEquals(testIP, model.getIp());
@@ -88,7 +89,7 @@ class LoggingAspectTest {
                 loggingAspect.logAround(joinPoint);
 
                 Mockito.verify(logService).save(Mockito.argThat(model -> {
-                    Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
+                    Assertions.assertEquals(Router.CLIENT.OP_VALID, model.getUrl());
                     Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
                     Assertions.assertEquals(client.getUsername(), model.getUserName());
                     Assertions.assertEquals(testIP, model.getIp());
@@ -114,7 +115,7 @@ class LoggingAspectTest {
                 Assertions.assertThrows(RuntimeException.class, () -> loggingAspect.logAround(joinPoint));
 
                 Mockito.verify(logService).save(Mockito.argThat(model -> {
-                    Assertions.assertEquals("/erp_base/client/opValid", model.getUrl());
+                    Assertions.assertEquals(Router.CLIENT.OP_VALID, model.getUrl());
                     Assertions.assertEquals(ObjectTool.toJson(testArg), model.getParams());
                     Assertions.assertEquals(client.getUsername(), model.getUserName());
                     Assertions.assertEquals(testIP, model.getIp());

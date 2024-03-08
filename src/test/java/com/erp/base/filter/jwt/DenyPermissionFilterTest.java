@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 
@@ -36,14 +35,12 @@ class DenyPermissionFilterTest {
 
     @BeforeEach
     void setUp() {
-        String contextPath = "/erp_base";
         denyPermissionFilter = new DenyPermissionFilter();
-        ReflectionTestUtils.setField(denyPermissionFilter, "contextPath", contextPath);
         MockitoAnnotations.openMocks(this);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         filterChain = Mockito.mock(FilterChain.class);
-        request.setRequestURI("http://localhost:8080" + contextPath + Router.CLIENT.OP_VALID);
+        request.setRequestURI("http://localhost:8080/erp_base" + Router.CLIENT.OP_VALID);
     }
 
     @Test
