@@ -12,7 +12,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +20,6 @@ import java.util.List;
  */
 @Service
 @CacheConfig(cacheNames = CacheConstant.CLIENT.NAME_CLIENT)
-@Transactional
 public class ClientCache implements ICache{
     LogFactory LOG = new LogFactory(ClientCache.class);
     private ClientService clientService;
