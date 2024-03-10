@@ -10,15 +10,14 @@ import com.erp.base.service.DepartmentService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
 import com.erp.base.service.RouterService;
-import com.erp.base.tool.ObjectTool;
 import com.erp.base.tool.LogFactory;
+import com.erp.base.tool.ObjectTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(cacheNames = CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION)
-@Transactional
 public class RolePermissionCache implements ICache{
     LogFactory LOG = new LogFactory(RolePermissionCache.class);
     private RoleService roleService;
