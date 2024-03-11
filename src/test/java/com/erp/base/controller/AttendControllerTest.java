@@ -9,6 +9,8 @@ import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.repository.ClientRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,8 @@ class AttendControllerTest {
     @Autowired
     private ClientRepository clientRepository;
     private static final String DEFAULT_USER_NAME = "test";
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Test
     @DisplayName("簽到_系統異常簽到失敗_失敗")
@@ -86,6 +90,8 @@ class AttendControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.department.name").value(clientResponseModel.getDepartment().getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(clientResponseModel.isActive()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(clientResponseModel.isLock()));
+        entityManager.flush();//同一事務內先同步資料
+        entityManager.clear();//清除事務緩存
         Optional<AttendModel> attendOptional = attendRepository.findById(model.getId());
         Assertions.assertTrue(attendOptional.isPresent());
         AttendModel attendModel = attendOptional.get();
@@ -125,11 +131,13 @@ class AttendControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.createTime").value(clientResponseModel.getCreateTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.createBy").value(clientResponseModel.getCreateBy()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.mustUpdatePassword").value(clientResponseModel.isMustUpdatePassword()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.attendStatus").value(3))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.attendStatus").value(clientResponseModel.getAttendStatus()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.department.id").value(clientResponseModel.getDepartment().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.department.name").value(clientResponseModel.getDepartment().getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(clientResponseModel.isActive()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(clientResponseModel.isLock()));
+        entityManager.flush();//同一事務內先同步資料
+        entityManager.clear();//清除事務緩存
         Optional<AttendModel> attendOptional = attendRepository.findById(model.getId());
         Assertions.assertTrue(attendOptional.isPresent());
         AttendModel attendModel = attendOptional.get();
