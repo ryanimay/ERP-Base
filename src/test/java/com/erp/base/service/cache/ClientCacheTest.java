@@ -1,41 +1,45 @@
 package com.erp.base.service.cache;
 
-import com.erp.base.model.constant.cache.CacheConstant;
+import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
+import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
-@ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = ClientCacheTest.Config.class)
+import java.util.ArrayList;
+import java.util.List;
+
+@SpringBootTest(classes = TestRedisConfiguration.class)
+@TestPropertySource(locations = {
+        "classpath:application-redis-test.properties",
+        "classpath:application-quartz-test.properties"
+})
+@AutoConfigureMockMvc
+@Transactional
+@DirtiesContext
 class ClientCacheTest {
-    @TestConfiguration
-    @EnableCaching
-    static class Config {
-        @Bean
-        public CacheManager cacheManager() {
-            return new ConcurrentMapCacheManager(CacheConstant.CLIENT.NAME_CLIENT);
-        }
-    }
-
-    private final ClientCache clientCache = new ClientCache();
+    @MockBean
+    public ClientService clientService;
     @Autowired
-    private CacheManager cacheManager;
-    @Mock
-    private ClientService clientService;
+    private ClientCache clientCache;
+
+    @BeforeEach
+    void setUp() {
+            clientCache.setClientService(clientService);
+    }
     private static final String key = "test";
     private static final ClientModel client = new ClientModel();
+
     static {
         client.setId(1);
         client.setUsername(key);
@@ -44,27 +48,63 @@ class ClientCacheTest {
         client.setCreateBy(0);
     }
 
-        @BeforeEach
-        void setUp() {
-            clientCache.setClientService(clientService);
-        }
-
-        @Test
+    @Test
     void getClient_unknownUser() {
+        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(null);
         ClientModel unknown = clientCache.getClient("unknown");
         Assertions.assertNull(unknown);
     }
 
     @Test
     void getClient_ok() {
-//        Assertions.assertNull(cacheManager.getCache(CacheConstant.CLIENT.NAME_CLIENT).get(CacheConstant.CLIENT.CLIENT.replace("'", "") + key));
-//        Mockito.when(clientService.findByUsername(Mockito.eq("test"))).thenReturn(client);
-//        ClientModel result1 = clientCache.getClient("test");
-//        ClientModel result2 = clientCache.getClient("test");
-//
-//        Assertions.assertEquals(client, result1);
-//        Assertions.assertEquals(client, result2);
-//
-//        Mockito.verify(clientService, Mockito.times(1)).findByUsername(Mockito.eq("test"));
+        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(client);
+
+        ClientModel result1 = clientCache.getClient(key);
+        ClientModel result2 = clientCache.getClient(key);
+
+        Assertions.assertEquals(client, result1);
+        Assertions.assertEquals(client, result2);
+
+        Mockito.verify(clientService, Mockito.times(1)).findByUsername(Mockito.eq(key));
+        Mockito.verifyNoMoreInteractions(clientService);
+    }
+
+    @Test
+    void refreshClient_ok() {
+        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(client);
+        clientCache.refreshClient(key);
+        clientCache.getClient(key);
+        clientCache.refreshClient(key);
+        clientCache.getClient(key);
+        Mockito.verify(clientService, Mockito.times(2)).findByUsername(Mockito.eq(key));
+        Mockito.verifyNoMoreInteractions(clientService);
+    }
+
+    @Test
+    void refreshAll_ok() {
+        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(client);
+        clientCache.refreshAll();
+        clientCache.getClient(key);
+        clientCache.getClient(key + 1);
+        clientCache.refreshAll();
+        clientCache.getClient(key);
+        clientCache.getClient(key + 1);
+        Mockito.verify(clientService, Mockito.times(2)).findByUsername(Mockito.eq(key));
+        Mockito.verify(clientService, Mockito.times(2)).findByUsername(Mockito.eq(key + 1));
+        Mockito.verifyNoMoreInteractions(clientService);
+    }
+
+    @Test
+    void getClientNameList_ok() {
+        List<ClientNameObject> list = new ArrayList<>();
+        list.add(new ClientNameObject(client));
+        Mockito.when(clientService.getClientNameList()).thenReturn(list);
+        clientCache.refreshAll();
+        List<ClientNameObject> clientNameList = clientCache.getClientNameList();
+        List<ClientNameObject> clientNameList1 = clientCache.getClientNameList();
+        Assertions.assertEquals(list, clientNameList);
+        Assertions.assertEquals(list, clientNameList1);
+        Mockito.verify(clientService, Mockito.times(1)).getClientNameList();
+        Mockito.verifyNoMoreInteractions(clientService);
     }
 }
