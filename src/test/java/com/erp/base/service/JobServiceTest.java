@@ -82,6 +82,7 @@ class JobServiceTest {
         map.put(StatusConstant.get(j3.getStatus()), List.of(new JobResponse(j3)));
         map.put(StatusConstant.get(j4.getStatus()), List.of(new JobResponse(j4)));
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS, map), all);
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -99,6 +100,7 @@ class JobServiceTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResponseEntity<ApiResponse> response = jobService.add(new JobRequest());
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), response);
+        SecurityContextHolder.clearContext();
     }
 
     @Test
