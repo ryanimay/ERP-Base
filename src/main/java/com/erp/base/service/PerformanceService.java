@@ -84,6 +84,9 @@ public class PerformanceService {
 
     public ResponseEntity<ApiResponse> save(PerformanceRequest request) {
         ClientModel user = ClientIdentity.getUser();
+        if (user == null) {
+            return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
+        }
         Optional<PerformanceModel> byId = performanceRepository.findById(request.getId());
         if (byId.isPresent()) {
             PerformanceModel model = byId.get();
