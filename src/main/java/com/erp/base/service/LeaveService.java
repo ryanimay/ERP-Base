@@ -112,7 +112,8 @@ public class LeaveService {
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
         ClientModel user = ClientIdentity.getUser();
-        boolean isManager = Objects.requireNonNull(user).getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
+        boolean isManager = user.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門
         if(isManager){
