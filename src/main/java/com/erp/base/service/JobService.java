@@ -31,6 +31,7 @@ public class JobService {
 
     public ResponseEntity<ApiResponse> findAll() {
         ClientModel user = ClientIdentity.getUser();
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         List<JobModel> all = jobRepository.findByUserOrTracking(user);
 
         Map<String, List<JobResponse>> map = all.stream()
@@ -43,6 +44,7 @@ public class JobService {
 
     public ResponseEntity<ApiResponse> add(JobRequest request) {
         ClientModel user = ClientIdentity.getUser();
+        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         JobModel jobModel = request.toModel();
         if (jobModel.getUser() == null) jobModel.setUser(user);
         jobModel.setCreateBy(user);
