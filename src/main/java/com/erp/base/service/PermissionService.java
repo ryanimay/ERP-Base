@@ -41,15 +41,9 @@ public class PermissionService {
     }
 
     public ResponseEntity<ApiResponse> getRolePermission(long roleId) {
-        ResponseEntity<ApiResponse> response;
-        try {
-            Set<RolePermissionDto> rolePermission = cacheService.getRolePermission(roleId);
-            List<Long> rolePermissionList = rolePermission.stream().map(RolePermissionDto::getId).toList();
-            response = ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionList);
-        } catch (NullPointerException e) {
-            response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Unknown roleId: [" + roleId + "]");
-        }
-        return response;
+        Set<RolePermissionDto> rolePermission = cacheService.getRolePermission(roleId);
+        List<Long> rolePermissionList = rolePermission.stream().map(RolePermissionDto::getId).toList();
+        return ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionList);
     }
 
     public ResponseEntity<ApiResponse> getPermissionList() {
