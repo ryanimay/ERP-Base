@@ -29,6 +29,6 @@ public class ProcurementResponse {
         this.createTime = DateTool.format(model.getCreateTime());
         this.createBy = new ClientNameObject(model.getCreateBy());
         this.status = ProcurementConstant.get(model.getStatus());
-        this.total = price.multiply(BigDecimal.valueOf(count));
+        this.total = price == null ? BigDecimal.valueOf(0) : price.multiply(BigDecimal.valueOf(count));
     }
 }
