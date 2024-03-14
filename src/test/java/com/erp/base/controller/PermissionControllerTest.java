@@ -1,13 +1,13 @@
 package com.erp.base.controller;
 
-import com.erp.base.testConfig.TestUtils;
-import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.permission.BanRequest;
 import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.repository.PermissionRepository;
+import com.erp.base.testConfig.TestUtils;
+import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -123,7 +123,7 @@ class PermissionControllerTest {
     @Test
     @DisplayName("角色權限_未知角色_成功")
     void rolePermission_unknownRole_ok() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Unknown roleId: [" + 99 + "]");
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.ROLE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("roleId", "99")
