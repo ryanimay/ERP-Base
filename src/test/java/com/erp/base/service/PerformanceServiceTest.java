@@ -1,15 +1,17 @@
 package com.erp.base.service;
 
 
+import com.erp.base.model.constant.RoleConstant;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
+import com.erp.base.model.dto.request.PageRequestParam;
+import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
-import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.dto.response.PageResponse;
-import com.erp.base.model.dto.response.PerformanceResponse;
+import com.erp.base.model.dto.response.*;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PerformanceModel;
+import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.PerformanceRepository;
 import com.erp.base.service.security.UserDetailImpl;
 import org.junit.jupiter.api.Assertions;
@@ -30,25 +32,25 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 class PerformanceServiceTest {
     @Mock
     private PerformanceRepository performanceRepository;
-    @Mock
-    private MessageService messageService;
-    @Mock
-    private NotificationService notificationService;
-    @Mock
-    private ClientService clientService;
     @InjectMocks
     private PerformanceService performanceService;
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
+        performanceService.setMessageService(Mockito.mock(MessageService.class));
+        performanceService.setNotificationService(Mockito.mock(NotificationService.class));
+        performanceService.setClientService(Mockito.mock(ClientService.class));
     }
 
     @Test
@@ -161,5 +163,100 @@ class PerformanceServiceTest {
         Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
         ResponseEntity<ApiResponse> remove = performanceService.remove(1L);
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), remove);
+    }
+
+    @Test
+    @DisplayName("審核績效_未知ID_錯誤")
+    void accept_unknownId_error() {
+        ClientModel clientModel = new ClientModel(1);
+        clientModel.setDepartment(new DepartmentModel(1L));
+        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(2);
+        PerformanceAcceptRequest request = new PerformanceAcceptRequest();
+        request.setEventId(1L);
+        ResponseEntity<ApiResponse> remove = performanceService.accept(request);
+        Assertions.assertEquals(ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + request.getEventId() + "] not found"), remove);
+    }
+
+    @Test
+    @DisplayName("審核績效_無用戶_錯誤")
+    void accept_identityError_error() {
+        PerformanceAcceptRequest request = new PerformanceAcceptRequest();
+        request.setEventId(1L);
+        ResponseEntity<ApiResponse> remove = performanceService.accept(request);
+        Assertions.assertEquals(ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found"), remove);
+    }
+
+    @Test
+    @DisplayName("審核績效_成功")
+    void accept_ok() {
+        ClientModel clientModel = new ClientModel(1);
+        clientModel.setDepartment(new DepartmentModel(1L));
+        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
+        PerformanceAcceptRequest request = new PerformanceAcceptRequest();
+        request.setEventId(1L);
+        request.setEventUserId(1L);
+        ResponseEntity<ApiResponse> remove = performanceService.accept(request);
+        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), remove);
+    }
+
+    @Test
+    @DisplayName("待核績效清單_用戶驗證_錯誤")
+    void pendingList_identityError_error() {
+        ResponseEntity<ApiResponse> pendingList = performanceService.pendingList(new PageRequestParam());
+        Assertions.assertEquals(ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found"), pendingList);
+    }
+
+    @Test
+    @DisplayName("待核績效清單_管理層權搜_成功")
+    void pendingList_ok() {
+        ClientModel clientModel = new ClientModel(1);
+        HashSet<RoleModel> roles = new HashSet<>();
+        RoleModel role = new RoleModel(1L);
+        role.setLevel(RoleConstant.LEVEL_3);
+        roles.add(role);
+        clientModel.setUsername("test");
+        clientModel.setRoles(roles);
+        clientModel.setDepartment(new DepartmentModel(1L));
+        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        ArrayList<PerformanceModel> performanceModels = new ArrayList<>();
+        PerformanceModel performanceModel = new PerformanceModel();
+        performanceModel.setId(1L);
+        performanceModel.setUser(clientModel);
+        performanceModel.setCreateBy(clientModel);
+        performanceModel.setEvent("test");
+        performanceModel.setStatus(StatusConstant.PENDING_NO);
+        performanceModels.add(performanceModel);
+        Page<PerformanceModel> page = new PageImpl<>(performanceModels);
+        Mockito.when(performanceRepository.findAllByStatus(Mockito.anyInt(), Mockito.anyLong(), Mockito.any())).thenReturn(page);
+        ResponseEntity<ApiResponse> remove = performanceService.pendingList(new PageRequestParam());
+        Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, PerformanceResponse.class)), remove);
+    }
+
+    @Test
+    @DisplayName("結算績效_成功")
+    void calculate_ok() {
+        Set<Object[]> set = new HashSet<>();
+        ClientModel model = new ClientModel(1);
+        model.setUsername("test");
+        Object[] obj = {model, new BigDecimal(1000), new BigDecimal("0.5"), 2024, 1L};
+        set.add(obj);
+        Mockito.when(performanceRepository.calculateByCreateYear(Mockito.anyLong(), Mockito.anyInt())).thenReturn(set);
+        ResponseEntity<ApiResponse> calculate = performanceService.calculate(1L);
+        PerformanceCalculateResponse performanceCalculateResponse = new PerformanceCalculateResponse();
+        ClientModel user = (ClientModel) obj[0];
+        performanceCalculateResponse.setUser(new ClientNameObject(user));
+        performanceCalculateResponse.setFixedBonus((BigDecimal) obj[1]);
+        performanceCalculateResponse.setPerformanceRatio((BigDecimal) obj[2]);
+        performanceCalculateResponse.setSettleYear(String.valueOf(obj[3]));
+        performanceCalculateResponse.setCount((Long) obj[4]);
+        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS, performanceCalculateResponse), calculate);
     }
 }
