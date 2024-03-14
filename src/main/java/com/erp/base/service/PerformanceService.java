@@ -1,12 +1,12 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
+import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.MessageModel;
 import com.erp.base.model.constant.NotificationEnum;
 import com.erp.base.model.constant.RoleConstant;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
-import com.erp.base.model.ClientIdentity;
-import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -110,11 +109,14 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> accept(PerformanceAcceptRequest request) {
+        ClientModel user = ClientIdentity.getUser();
+        if (user == null) {
+            return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
+        }
         int i = performanceRepository.updateStatus(request.getEventId(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         if (i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_PERFORMANCE);
-            ClientModel user = ClientIdentity.getUser();
-            MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            MessageModel messageModel = new MessageModel(user.getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
@@ -123,7 +125,10 @@ public class PerformanceService {
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam request) {
         ClientModel user = ClientIdentity.getUser();
-        boolean isManager = Objects.requireNonNull(user).getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
+        if (user == null) {
+            return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
+        }
+        boolean isManager = user.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<PerformanceModel> list;
         //管理權限全搜不分部門
         if (isManager) {
