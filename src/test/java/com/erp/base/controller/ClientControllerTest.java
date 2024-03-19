@@ -235,13 +235,54 @@ class ClientControllerTest {
     }
 
     @Test
-    @DisplayName("測試登入_成功")
-    void login_ok() throws Exception {
+    @DisplayName("測試登入_不記住我_成功")
+    void login_notRememberMe_ok() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson));
         ClientModel model = repository.findByUsername("testRegister");
         ResponseEntity<ApiResponse> response = ApiResponse.success(new ClientResponseModel(model));
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGIN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testJson);
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.username").value("testRegister"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId[0]").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.email").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.lastLoginTime").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createTime").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createBy").value("System"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.mustUpdatePassword").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.attendStatus").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.department").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(false))
+                .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
+                .andExpect(MockMvcResultMatchers.header().doesNotExist(TokenService.REFRESH_TOKEN))
+                .andDo(result -> {
+                    String token = Objects.requireNonNull(result.getResponse().getHeader(HttpHeaders.AUTHORIZATION)).replace(TokenService.TOKEN_PREFIX, "");
+                    Assertions.assertEquals("testRegister", tokenService.parseToken(token).get(TokenService.TOKEN_PROPERTIES_USERNAME));
+                });
+        repository.deleteById(model.getId());
+    }
+
+    @Test
+    @DisplayName("測試登入_記住我_成功")
+    void login_rememberMe_ok() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testJson));
+        ClientModel model = repository.findByUsername("testRegister");
+        ResponseEntity<ApiResponse> response = ApiResponse.success(new ClientResponseModel(model));
+        String testJson = """
+            {
+            "username": "testRegister",
+            "password": "testRegister",
+            "rememberMe": "true",
+            "createBy": 0
+            }
+            """;
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGIN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);

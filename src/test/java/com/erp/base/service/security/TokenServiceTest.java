@@ -42,10 +42,24 @@ class TokenServiceTest {
     }
 
     @Test
-    void createToken_ok() {
+    void createToken_notRememberMe_ok() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("test");
         loginRequest.setPassword("test");
+        loginRequest.setRememberMe(false);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new UserDetailImpl(new ClientModel(1), cacheService), null);
+        Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenReturn(authentication);
+        HttpHeaders header = tokenService.createToken(loginRequest);
+        Assertions.assertNotNull(header.get(HttpHeaders.AUTHORIZATION));
+        Assertions.assertNull(header.get(TokenService.REFRESH_TOKEN));
+    }
+
+    @Test
+    void createToken_rememberMe_ok() {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("test");
+        loginRequest.setPassword("test");
+        loginRequest.setRememberMe(true);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new UserDetailImpl(new ClientModel(1), cacheService), null);
         Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenReturn(authentication);
         HttpHeaders header = tokenService.createToken(loginRequest);

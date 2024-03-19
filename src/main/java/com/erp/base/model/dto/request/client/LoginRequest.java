@@ -17,4 +17,5 @@ public class LoginRequest {
     @NotBlank(message = "client.passwordNotEmpty")
     @Schema(description = "用戶密碼")
     private String password;
+    private Boolean rememberMe;
 }
