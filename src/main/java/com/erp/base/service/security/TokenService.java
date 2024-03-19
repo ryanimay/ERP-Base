@@ -47,6 +47,7 @@ public class TokenService {
     }
 
     public HttpHeaders createToken(LoginRequest request){
+        Boolean rememberMe = request.getRememberMe();
         // 封裝帳密
         Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
         // security執行帳密認證
@@ -54,11 +55,14 @@ public class TokenService {
         // 認證成功後取得結果
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         // 產token
-        String accessToken = createToken(ACCESS_TOKEN, userDetails.getUsername(), ACCESS_TOKEN_EXPIRE_TIME);
-        String refreshToken = createToken(REFRESH_TOKEN, userDetails.getUsername(), REFRESH_TOKEN_EXPIRE_TIME);
         HttpHeaders httpHeaders = new HttpHeaders();
+        String accessToken = createToken(ACCESS_TOKEN, userDetails.getUsername(), ACCESS_TOKEN_EXPIRE_TIME);
         httpHeaders.add(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + accessToken);
-        httpHeaders.add(REFRESH_TOKEN, refreshToken);
+        //rememberMe才發refreshToken
+        if(rememberMe != null && rememberMe) {
+            String refreshToken = createToken(REFRESH_TOKEN, userDetails.getUsername(), REFRESH_TOKEN_EXPIRE_TIME);
+            httpHeaders.add(REFRESH_TOKEN, refreshToken);
+        }
         return httpHeaders;
     }
 
