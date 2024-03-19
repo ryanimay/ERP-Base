@@ -59,7 +59,7 @@ public class TokenService {
         String accessToken = createToken(ACCESS_TOKEN, userDetails.getUsername(), ACCESS_TOKEN_EXPIRE_TIME);
         httpHeaders.add(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + accessToken);
         //rememberMe才發refreshToken
-        if(rememberMe != null && rememberMe) {
+        if(Boolean.TRUE.equals(rememberMe)) {
             String refreshToken = createToken(REFRESH_TOKEN, userDetails.getUsername(), REFRESH_TOKEN_EXPIRE_TIME);
             httpHeaders.add(REFRESH_TOKEN, refreshToken);
         }
