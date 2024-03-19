@@ -43,3 +43,35 @@ i18n僅保留中/英
 2.緩存寫unitTest?主要是只想針對緩存做測試，不想為了cache test完整啟動springboot上下文、    
 3.配置類寫測試的必要性?  
 )
+
+***
+## 2024.3.19
+後端部分API大致完成  
+總結對SpringSecurity+JWT的實現以及理解  
+先實現<font color="#f00">UserDetails</font>，用於驗證該用戶狀態及權限  
+先實現<font color="#f00">UserDetailsService</font>，用於登入驗證時使用userName找到該用戶，返回UserDetails實現類  
+把先前實現的UserDetailsService類注入<font color="#f00">AuthenticationProvider</font>(DaoAuthenticationProvider)  
+<font color="#f00">SecurityFilterChain</font>設置.addFilterBefore(<font color="#f00">JwtFilter</font>, UsernamePasswordAuthenticationFilter.class)
+之後登入就會先進行JWT驗證才會走到security的權限驗證  
+這邊的API權限設置也都是用動態加仔的方式設置在SecurityFilterChain  
+後續流程:  
+用戶註冊時，密碼經由指定的<font color="#f00">PasswordEncoder</font>(像這邊是使用BCryptPasswordEncoder)  
+加密後存入資料庫  
+後續用戶發起登入請求，把帳密放進UsernamePasswordAuthenticationToken  
+進行.authenticate(會使用先前實現的UserDetailsService類進行驗證)  
+驗證帳號密碼是否通過和驗證該用戶相關狀態  
+如果通過就產出並核發JWT返回，並且因為SecurityContext只保留再請求的生命週期間  
+之後登入成功後的每個請求流程都是:  
+Filter先驗證AccessToken是否過期，  
+如果過期就再驗證RefreshToken是否過期和是否在黑名單內  
+如果通過驗證則把AccessToken和RefreshToken都刷新，並且把舊Token加入Redis黑名單  
+如果RefreshToken也過期，就直接拋出，返回Unauthorized  
+驗證過程中只要是過期以外的錯誤都是直接返回403  
+並且只要沒有拋出(JWT驗證通過)  
+就必須透過JWT內儲存的用戶資訊產出Authentication以利該請求進行後續權限驗證  
+(目前是只存用戶名稱，想秉持用戶驗證和權限驗證的獨立性但不確定優劣)  
+然後因為是每次用戶請求都會產生新的Authentication，所以權限是即時更新的
+但缺點就是每次請求都要查詢當下權限，目前是只想到利用緩存優化
+另外  
+這邊JWT設計是用非對稱式加密  
+公鑰給前端，前後都需要驗證JWT時效和簽名  
