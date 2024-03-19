@@ -22,4 +22,8 @@ public interface CacheConstant {
         String PERMISSION_STATUS = "'permissionStatus_'";
         String DEPARTMENT = "'department_'";
     }
+
+    interface TOKEN_BLACK_LIST{
+        String TOKEN_BLACK_LIST = "tokenBlackList";
+    }
 }

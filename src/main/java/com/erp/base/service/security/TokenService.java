@@ -32,7 +32,7 @@ public class TokenService {
     public static final String ACCESS_TOKEN = "X-Access-Token";
     public static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新(秒為單位)
     public static final String REFRESH_TOKEN = "X-Refresh-Token";
-    private static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr(秒為單位)
+    public static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr(秒為單位)
     public static final String TOKEN_PROPERTIES_USERNAME = "username";
     public static final String TOKEN_PREFIX = "Bearer ";
 

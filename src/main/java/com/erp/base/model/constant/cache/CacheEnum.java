@@ -4,7 +4,8 @@ package com.erp.base.model.constant.cache;
  * */
 public enum CacheEnum {
     CLIENT(CacheConstant.CLIENT.NAME_CLIENT, 30),
-    ROLE_PERMISSION(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION, 60)
+    ROLE_PERMISSION(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION, 60),
+    TOKEN_BLACK_LIST(CacheConstant.TOKEN_BLACK_LIST.TOKEN_BLACK_LIST, 60 * 6)
     ;
 
     private final String enumName;
