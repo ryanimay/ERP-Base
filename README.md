@@ -60,10 +60,13 @@ i18n僅保留中/英
 後續用戶發起登入請求，把帳密放進UsernamePasswordAuthenticationToken  
 進行.authenticate(會使用先前實現的UserDetailsService類進行驗證)  
 驗證帳號密碼是否通過和驗證該用戶相關狀態  
-如果通過就產出並核發JWT返回，並且因為SecurityContext只保留再請求的生命週期間  
+如果通過就產出並核發JWT返回  
+(如果有勾選rememberMe才會返回refreshToken，否則就是單依靠accessToken做後續操作)  
+並且因為SecurityContext只保留再請求的生命週期間  
 之後登入成功後的每個請求流程都是:  
 Filter先驗證AccessToken是否過期，  
 如果過期就再驗證RefreshToken是否過期和是否在黑名單內  
+(如果登入沒有勾選rememberMe，這邊就會直接拋出要求重登)  
 如果通過驗證則把AccessToken和RefreshToken都刷新，並且把舊Token加入Redis黑名單  
 如果RefreshToken也過期，就直接拋出，返回Unauthorized  
 驗證過程中只要是過期以外的錯誤都是直接返回403  
