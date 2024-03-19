@@ -9,6 +9,7 @@ import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -52,18 +53,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String url = ObjectTool.extractPath(request.getRequestURI());
             if (requiresAuthentication(url)) {
                 String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-                if(token == null) throw new SignatureException("token is empty");
+                if(token == null) throw new AccessDeniedException("token is empty");
                 authenticationToken(token);
             }
-        } catch (SignatureException e) {
+        } catch (ExpiredJwtException e) {
             try{
-                LOG.info("AccessToken inValid, refresh");
+                LOG.info("AccessToken inValid, refresh: " + e.getMessage());
                 refreshToken(request, response);
-            }catch (SignatureException e1){
+            }catch (SignatureException | ExpiredJwtException e1){
                 exceptionResponse(e1, response, ApiResponseCode.INVALID_SIGNATURE);
                 return;
             }
-        } catch (AccessDeniedException | MalformedJwtException e) {
+        } catch (SignatureException | AccessDeniedException | MalformedJwtException e) {
             exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
             return;
         } catch (URISyntaxException e) {
@@ -89,15 +90,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * AccessToken過期，驗證refreshToken是否過期，如未過期則一起刷新放行，過期就拋出
+     * 舊Token加黑名單
      */
     private void refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader(TokenService.REFRESH_TOKEN);
-        if (token != null) {
+        //不在黑名單才可刷新
+        if (token != null && !cacheService.existsTokenBlackList(token)) {
             Map<String, Object> payload = tokenService.parseToken(token);
             String username = (String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME);
-            String accessToken = tokenService.createToken(TokenService.REFRESH_TOKEN, username, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
+            String accessToken = tokenService.createToken(TokenService.ACCESS_TOKEN, username, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
             response.setHeader(HttpHeaders.AUTHORIZATION, TokenService.TOKEN_PREFIX + accessToken);
-            response.setHeader(TokenService.REFRESH_TOKEN, token);
+            String refreshToken = tokenService.createToken(TokenService.REFRESH_TOKEN, username, TokenService.REFRESH_TOKEN_EXPIRE_TIME);
+            response.setHeader(TokenService.REFRESH_TOKEN, refreshToken);
+            cacheService.addTokenBlackList(token);
             createAuthentication(username);
         } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");

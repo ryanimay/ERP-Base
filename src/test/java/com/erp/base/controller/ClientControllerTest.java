@@ -379,7 +379,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("測試API權限_無JWT_錯誤")
     void testApiPermission_noJwt_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);

@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
@@ -92,7 +93,7 @@ class CacheControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("cacheKey", "CLIENT")
+                .param("cacheKey", CacheConstant.CLIENT.NAME_CLIENT)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         ClientModel newClient = cacheService.getClient(DEFAULT_USER_NAME);
@@ -113,7 +114,7 @@ class CacheControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("cacheKey", "ROLE_PERMISSION")
+                .param("cacheKey", CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         department = cacheService.getDepartment(4L);

@@ -1,11 +1,13 @@
 package com.erp.base.service;
 
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.*;
 import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.cache.ICache;
 import com.erp.base.service.cache.RolePermissionCache;
+import com.erp.base.service.cache.TokenBlackList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,22 +25,24 @@ import java.util.Set;
 public class CacheService {
     private final ClientCache clientCache;
     private final RolePermissionCache rolePermissionCache;
+    private final TokenBlackList tokenBlackList;
     private final Map<String, ICache> cacheMap = new HashMap<>();
 
     @Autowired
-    public CacheService(ClientCache clientCache, RolePermissionCache rolePermissionCache) {
+    public CacheService(ClientCache clientCache, RolePermissionCache rolePermissionCache, TokenBlackList tokenBlackList) {
         this.clientCache = clientCache;
         this.rolePermissionCache = rolePermissionCache;
-        cacheMap.put("CLIENT", clientCache);
-        cacheMap.put("ROLE_PERMISSION", rolePermissionCache);
+        this.tokenBlackList = tokenBlackList;
+        cacheMap.put(CacheConstant.CLIENT.NAME_CLIENT, clientCache);
+        cacheMap.put(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION, rolePermissionCache);
+        cacheMap.put(CacheConstant.TOKEN_BLACK_LIST.TOKEN_BLACK_LIST, tokenBlackList);
     }
 
     /**
      * 全刷
      */
     public void refreshAllCache() {
-        refreshClient();
-        refreshRolePermission();
+        cacheMap.values().forEach(ICache::refreshAll);
     }
 
     public void refreshClient(){
@@ -97,5 +101,13 @@ public class CacheService {
         ICache cache = cacheMap.get(cacheKey);
         if(cache == null) throw new IllegalArgumentException("No cache found for key: " + cacheKey);
         cache.refreshAll();
+    }
+
+    public void addTokenBlackList(String token) {
+        tokenBlackList.add(token);
+    }
+
+    public boolean existsTokenBlackList(String token) {
+        return tokenBlackList.exists(token);
     }
 }

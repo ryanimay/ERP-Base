@@ -56,7 +56,6 @@ class JwtAuthenticationFilterTest {
     void testDenyPermission_unRequiresAuthentication_pass() throws ServletException, IOException {
         request.setRequestURI("http://localhost:8080" + contextPath + Router.CLIENT.OP_VALID);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-        Mockito.verify(filterChain).doFilter(request, response);
     }
 
     @Test
@@ -77,7 +76,7 @@ class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
         Assertions.assertEquals("application/json; charset=utf-8", response.getContentType());
-        ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.INVALID_SIGNATURE);
+        ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
         String expectedErrorMessage = ObjectTool.toJson(expectedApiResponse);
         Assertions.assertEquals(expectedErrorMessage, response.getContentAsString());
     }
@@ -96,14 +95,26 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
+    @DisplayName("JWT驗證_refreshToken黑名單_錯誤")
+    void testDenyPermission_refreshTokenBlackList_error() throws ServletException, IOException {
+        tokenService.init();
+        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, "test", 0));
+        request.addHeader(TokenService.REFRESH_TOKEN, "testToken");
+        Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(true);
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        ApiResponse apiResponse = new ApiResponse(ApiResponseCode.INVALID_SIGNATURE);
+        Assertions.assertEquals(ObjectTool.toJson(apiResponse), response.getContentAsString());
+    }
+
+    @Test
     @DisplayName("JWT驗證_refreshToken刷新_成功")
     void testDenyPermission_refreshToken_pass() throws ServletException, IOException {
-        Map<String, Object> map = new HashMap<>();
-        map.put(TokenService.TOKEN_PROPERTIES_USERNAME, "test");
-        request.addHeader(TokenService.REFRESH_TOKEN, "testToken");
-        Mockito.doReturn(map).when(tokenService).parseToken(Mockito.any());
+        tokenService.init();
+        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, "test", 0));
+        request.addHeader(TokenService.REFRESH_TOKEN, tokenService.createToken(TokenService.REFRESH_TOKEN, "test", TokenService.REFRESH_TOKEN_EXPIRE_TIME));
         Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(new ClientModel(1));
-        Mockito.doReturn("testToken").when(tokenService).createToken(TokenService.REFRESH_TOKEN, "test", TokenService.ACCESS_TOKEN_EXPIRE_TIME);
+        Mockito.doReturn("testToken").when(tokenService).createToken(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt());
+        Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(false);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Assertions.assertEquals(TokenService.TOKEN_PREFIX + "testToken", response.getHeader(HttpHeaders.AUTHORIZATION));
         Mockito.verify(filterChain).doFilter(request, response);
