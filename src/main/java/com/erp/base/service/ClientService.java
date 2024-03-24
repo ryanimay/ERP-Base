@@ -148,7 +148,7 @@ public class ClientService {
         String username = resetRequest.getUsername();
         String password = RESET_PREFIX + encodeTool.randomPassword(18);
 
-        int result = updatePassword(passwordEncode(password), true, username, resetRequest.getEmail());
+        int result = updatePassword(passwordEncode(password), true, username, resetRequest.getEmail(), null);
 
         if (result == 1) {
             //更新成功才發送郵件
@@ -165,7 +165,7 @@ public class ClientService {
         if (client == null || checkIdentity(client.getId(), request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
         String username = client.getUsername();
         if (checkNotEqualsOldPassword(client.getId(), request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
-        int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail());
+        int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail(), client.getId());
         //如果不為1代表更改有問題，拋出並回滾
         if (result != 1) throw new IncorrectResultSizeDataAccessException(1, result);
         cacheService.refreshClient(username);
@@ -177,8 +177,7 @@ public class ClientService {
      */
     private boolean checkNotEqualsOldPassword(long id, String oldPassword) {
         Optional<ClientModel> optionalModel = clientRepository.findById(id);
-        if(optionalModel.isEmpty()) return true;
-        return !encodeTool.match(oldPassword, optionalModel.get().getPassword());
+        return optionalModel.map(clientModel -> !encodeTool.match(oldPassword, clientModel.getPassword())).orElse(true);
     }
 
     /**
@@ -188,8 +187,8 @@ public class ClientService {
         return uid != request.getId();
     }
 
-    private int updatePassword(String password, boolean status, String username, String email) {
-        return clientRepository.updatePasswordByUsernameAndEmail(password, status, username, email);
+    private int updatePassword(String password, boolean status, String username, String email, Long id) {
+        return clientRepository.updatePasswordByUsernameAndEmailAndId(password, status, username, email, id);
     }
 
     private String passwordEncode(String password) {
