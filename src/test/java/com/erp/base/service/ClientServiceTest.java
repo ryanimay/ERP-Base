@@ -140,7 +140,7 @@ class ClientServiceTest {
     void resetPassword_ok() throws MessagingException {
         Mockito.when(clientRepository.existsByUsernameAndEmail(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(encodeTool.randomPassword(Mockito.anyInt())).thenReturn(new EncodeTool().randomPassword(18));
-        Mockito.when(clientRepository.updatePasswordByUsernameAndEmail(Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(clientRepository.updatePasswordByUsernameAndEmailAndId(Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
         ResponseEntity<ApiResponse> response = clientService.resetPassword(new ResetPasswordRequest());
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS), response);
     }
@@ -184,7 +184,7 @@ class ClientServiceTest {
     void updatePassword_ok() {
         Mockito.when(clientRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new ClientModel(1L)));
         Mockito.when(encodeTool.match(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(clientRepository.updatePasswordByUsernameAndEmail(Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(clientRepository.updatePasswordByUsernameAndEmailAndId(Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
         UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
