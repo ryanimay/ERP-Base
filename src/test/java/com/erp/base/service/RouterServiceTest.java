@@ -100,8 +100,12 @@ class RouterServiceTest {
         rolePermission.add(r3);
         rolePermission.add(r4);
         Mockito.when(cacheService.getRoleRouter(Mockito.anyLong())).thenReturn(rolePermission);
-        ResponseEntity<ApiResponse> response = routerService.getRoleRouter(1L);
-        List<Long> rolePermissionList = new ArrayList<>();
+        List<Long> list = new ArrayList<>();
+        list.add(1L);
+        list.add(2L);
+        list.add(3L);
+        ResponseEntity<ApiResponse> response = routerService.getRoleRouter(list);
+        Set<Long> rolePermissionList = new HashSet<>();
         rolePermissionList.add(r1.getId());
         rolePermissionList.add(r2.getId());
         rolePermissionList.add(r3.getId());

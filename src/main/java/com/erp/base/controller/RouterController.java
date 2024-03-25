@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Tag(name = "RouterController", description = "頁面權限相關API")
 public class RouterController {
@@ -34,7 +36,7 @@ public class RouterController {
 
     @GetMapping(Router.ROUTER.ROLE)
     @Operation(summary = "角色頁面權限")
-    public ResponseEntity<ApiResponse> roleRouter(@Parameter(description = "角色ID") long roleId){
-        return routerService.getRoleRouter(roleId);
+    public ResponseEntity<ApiResponse> roleRouter(@Parameter(description = "角色ID") List<Long> roleIds){
+        return routerService.getRoleRouter(roleIds);
     }
 }

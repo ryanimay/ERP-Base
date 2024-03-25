@@ -58,9 +58,12 @@ public class RouterService {
     }
 
     //返回routerIds
-    public ResponseEntity<ApiResponse> getRoleRouter(long roleId) {
-        Set<RouterModel> rolePermission = cacheService.getRoleRouter(roleId);
-        List<Long> rolePermissionList = rolePermission.stream().map(RouterModel::getId).sorted().toList();
-        return ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionList);
+    public ResponseEntity<ApiResponse> getRoleRouter(List<Long> roleIds) {
+        Set<Long> rolePermissionSet = new HashSet<>();
+        for(long id : roleIds){
+            Set<RouterModel> rolePermission = cacheService.getRoleRouter(id);
+            rolePermission.forEach(m -> rolePermissionSet.add(m.getId()));
+        }
+        return ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionSet);
     }
 }
