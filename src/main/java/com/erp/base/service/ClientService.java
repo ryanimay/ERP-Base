@@ -50,8 +50,9 @@ public class ClientService {
     private NotificationService notificationService;
     private DepartmentService departmentService;
     private static final String RESET_PREFIX = "##";
+
     @Autowired
-    public void setDepartmentService(DepartmentService departmentService){
+    public void setDepartmentService(DepartmentService departmentService) {
         this.departmentService = departmentService;
     }
 
@@ -162,9 +163,11 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) throws IncorrectResultSizeDataAccessException {
         ClientModel client = ClientIdentity.getUser();
-        if (client == null || checkIdentity(client.getId(), request)) return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
+        if (client == null || checkIdentity(client.getId(), request))
+            return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
         String username = client.getUsername();
-        if (checkNotEqualsOldPassword(client.getId(), request.getOldPassword())) return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
+        if (checkNotEqualsOldPassword(client.getId(), request.getOldPassword()))
+            return ApiResponse.error(ApiResponseCode.INVALID_LOGIN);
         int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail(), client.getId());
         //如果不為1代表更改有問題，拋出並回滾
         if (result != 1) throw new IncorrectResultSizeDataAccessException(1, result);
@@ -230,8 +233,8 @@ public class ClientService {
         ClientModel client = clientOptional.get();
         if (request.getUsername() != null) client.setUsername(request.getUsername());
         if (request.getEmail() != null) client.setEmail(request.getEmail());
-        client.setRoles(getRoles(request.getRoles()));
-        departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
+        if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
+        if (request.getRoles() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
         ClientModel save = clientRepository.save(client);
         cacheService.refreshClient(client.getUsername());
         //非本人就發送通知
@@ -249,7 +252,7 @@ public class ClientService {
     }
 
     private Set<RoleModel> getRoles(List<Long> roles) {
-        if(roles == null) return Set.of();
+        if (roles == null) return Set.of();
         return roles.stream().map(RoleModel::new).collect(Collectors.toSet());
     }
 
@@ -298,7 +301,7 @@ public class ClientService {
 
     public ClientModel updateClientAttendStatus(ClientModel model, int status) {
         int resultCount = clientRepository.updateClientAttendStatus(model.getId(), status);
-        if(resultCount == 1) cacheService.refreshClient(model.getUsername());
+        if (resultCount == 1) cacheService.refreshClient(model.getUsername());
         return cacheService.getClient(model.getUsername());
     }
 
