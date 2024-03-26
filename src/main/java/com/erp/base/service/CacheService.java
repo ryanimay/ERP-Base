@@ -2,6 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.ClientNameObject;
+import com.erp.base.model.dto.response.RouterResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.*;
 import com.erp.base.service.cache.ClientCache;
@@ -85,7 +86,7 @@ public class CacheService {
         return rolePermissionCache.getRouters();
     }
 
-    public Set<RouterModel> getRoleRouter(long roleId) {
+    public Set<RouterResponse> getRoleRouter(long roleId) {
         return rolePermissionCache.getRoleRouter(roleId);
     }
 

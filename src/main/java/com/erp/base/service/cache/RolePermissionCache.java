@@ -1,6 +1,7 @@
 package com.erp.base.service.cache;
 
 import com.erp.base.model.constant.cache.CacheConstant;
+import com.erp.base.model.dto.response.RouterResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PermissionModel;
@@ -92,9 +93,10 @@ public class RolePermissionCache implements ICache{
 
     //角色可訪問路由
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROLE_ROUTER + " + #id")
-    public Set<RouterModel> getRoleRouter(long id) {
+    public Set<RouterResponse> getRoleRouter(long id) {
         RoleModel role = roleService.findById(id);
-        return role.getRouters();
+        Set<RouterModel> routers = role.getRouters();
+        return routers.stream().map(RouterResponse::new).collect(Collectors.toSet());
     }
 
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSION_STATUS + " + #path")
