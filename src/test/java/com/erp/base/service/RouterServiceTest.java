@@ -94,11 +94,11 @@ class RouterServiceTest {
     @Test
     @DisplayName("角色路由清單_成功")
     void getRoleRouter_ok() {
-        Set<RouterModel> rolePermission = new HashSet<>();
-        rolePermission.add(r1);
-        rolePermission.add(r2);
-        rolePermission.add(r3);
-        rolePermission.add(r4);
+        Set<RouterResponse> rolePermission = new HashSet<>();
+        rolePermission.add(new RouterResponse(r1));
+        rolePermission.add(new RouterResponse(r2));
+        rolePermission.add(new RouterResponse(r3));
+        rolePermission.add(new RouterResponse(r4));
         Mockito.when(cacheService.getRoleRouter(Mockito.anyLong())).thenReturn(rolePermission);
         List<Long> list = new ArrayList<>();
         list.add(1L);

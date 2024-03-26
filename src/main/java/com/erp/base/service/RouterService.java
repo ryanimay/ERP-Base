@@ -61,7 +61,7 @@ public class RouterService {
     public ResponseEntity<ApiResponse> getRoleRouter(List<Long> roleIds) {
         Set<Long> rolePermissionSet = new HashSet<>();
         for(long id : roleIds){
-            Set<RouterModel> rolePermission = cacheService.getRoleRouter(id);
+            Set<RouterResponse> rolePermission = cacheService.getRoleRouter(id);
             rolePermission.forEach(m -> rolePermissionSet.add(m.getId()));
         }
         return ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionSet);
