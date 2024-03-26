@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class RouterController {
 
     @GetMapping(Router.ROUTER.ROLE)
     @Operation(summary = "角色頁面權限")
-    public ResponseEntity<ApiResponse> roleRouter(@Parameter(description = "角色ID") List<Long> roleIds){
+    public ResponseEntity<ApiResponse> roleRouter(@Parameter(description = "角色ID") @RequestParam List<Long> roleIds){
         return routerService.getRoleRouter(roleIds);
     }
 }
