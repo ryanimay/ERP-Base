@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -64,16 +66,24 @@ class RouterServiceTest {
     }
 
     @Test
-    @DisplayName("路由配置清單_成功")
+    @DisplayName("路由配置清單_驗證成功_成功")
     void configList_ok() {
+        ReflectionTestUtils.setField(routerService, "securityPassword", "12345");
         Mockito.when(cacheService.getRouters()).thenReturn(routerModels);
-        ResponseEntity<ApiResponse> response = routerService.configList();
+        ResponseEntity<ApiResponse> response = routerService.configList("12345");
         List<RouterConfigResponse> routerConfigResponses = new ArrayList<>();
         routerConfigResponses.add(new RouterConfigResponse(r1));
         routerConfigResponses.add(new RouterConfigResponse(r2));
         routerConfigResponses.add(new RouterConfigResponse(r3));
         routerConfigResponses.add(new RouterConfigResponse(r4));
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS, routerConfigResponses), response);
+    }
+
+    @Test
+    @DisplayName("路由配置清單_驗證失敗_錯誤")
+    void configList_keyError_error() {
+        ReflectionTestUtils.setField(routerService, "securityPassword", "qweqwe");
+        Assertions.assertThrows(AccessDeniedException.class, () -> routerService.configList("12345"));
     }
 
     @Test

@@ -25,8 +25,8 @@ public class RouterController {
 
     @GetMapping(Router.ROUTER.CONFIG_LIST)
     @Operation(summary = "設置用頁面權限清單")
-    public ResponseEntity<ApiResponse> configList() {
-        return routerService.configList();
+    public ResponseEntity<ApiResponse> configList(@Parameter(description = "安全密碼") String key) {
+        return routerService.configList(key);
     }
 
     @GetMapping(Router.ROUTER.LIST)
