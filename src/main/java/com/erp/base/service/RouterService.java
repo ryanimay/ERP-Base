@@ -7,7 +7,9 @@ import com.erp.base.model.dto.response.RouterResponse;
 import com.erp.base.model.entity.RouterModel;
 import com.erp.base.repository.RouterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,8 @@ import java.util.*;
 @Service
 @Transactional
 public class RouterService {
+    @Value("${security.password}")
+    private String securityPassword;
     private RouterRepository routerRepository;
     private CacheService cacheService;
 
@@ -33,7 +37,8 @@ public class RouterService {
         return routerRepository.findAll();
     }
 
-    public ResponseEntity<ApiResponse> configList() {
+    public ResponseEntity<ApiResponse> configList(String key) {
+        if(!securityPassword.equals(key)) throw new AccessDeniedException("key error");
         List<RouterModel> routers = cacheService.getRouters();
         List<RouterConfigResponse> routerConfigResponses =
                 routers
