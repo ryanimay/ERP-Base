@@ -7,7 +7,7 @@ import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.DepartmentService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
-import com.erp.base.service.RouterService;
+import com.erp.base.service.MenuService;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class RolePermissionCacheTest {
     @MockBean
     private PermissionService permissionService;
     @MockBean
-    private RouterService routerService;
+    private MenuService menuService;
     @MockBean
     private DepartmentService departmentService;
     @Autowired

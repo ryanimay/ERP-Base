@@ -2,9 +2,12 @@ package com.erp.base.service;
 
 import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.ClientNameObject;
-import com.erp.base.model.dto.response.RouterResponse;
+import com.erp.base.model.dto.response.MenuResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
-import com.erp.base.model.entity.*;
+import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.DepartmentModel;
+import com.erp.base.model.entity.PermissionModel;
+import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.cache.ICache;
 import com.erp.base.service.cache.RolePermissionCache;
@@ -46,11 +49,11 @@ public class CacheService {
         cacheMap.values().forEach(ICache::refreshAll);
     }
 
-    public void refreshClient(){
+    public void refreshClient() {
         clientCache.refreshAll();
     }
 
-    public void refreshRolePermission(){
+    public void refreshRolePermission() {
         rolePermissionCache.refreshAll();
     }
 
@@ -82,14 +85,6 @@ public class CacheService {
         return rolePermissionCache.getPermissionMap();
     }
 
-    public List<RouterModel> getRouters() {
-        return rolePermissionCache.getRouters();
-    }
-
-    public Set<RouterResponse> getRoleRouter(long roleId) {
-        return rolePermissionCache.getRoleRouter(roleId);
-    }
-
     public Boolean permissionStatus(String requestedUrl) {
         return rolePermissionCache.permissionStatus(requestedUrl);
     }
@@ -100,7 +95,7 @@ public class CacheService {
 
     public void refreshCache(String cacheKey) {
         ICache cache = cacheMap.get(cacheKey);
-        if(cache == null) throw new IllegalArgumentException("No cache found for key: " + cacheKey);
+        if (cache == null) throw new IllegalArgumentException("No cache found for key: " + cacheKey);
         cache.refreshAll();
     }
 
@@ -110,5 +105,9 @@ public class CacheService {
 
     public boolean existsTokenBlackList(String token) {
         return tokenBlackList.exists(token);
+    }
+
+    public List<MenuResponse> findMenuTree() {
+        return rolePermissionCache.findMenuTree();
     }
 }

@@ -1,16 +1,15 @@
 package com.erp.base.service.cache;
 
 import com.erp.base.model.constant.cache.CacheConstant;
-import com.erp.base.model.dto.response.RouterResponse;
+import com.erp.base.model.dto.response.MenuResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
-import com.erp.base.model.entity.RouterModel;
 import com.erp.base.service.DepartmentService;
+import com.erp.base.service.MenuService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
-import com.erp.base.service.RouterService;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +27,21 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(cacheNames = CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION)
-public class RolePermissionCache implements ICache{
+public class RolePermissionCache implements ICache {
     LogFactory LOG = new LogFactory(RolePermissionCache.class);
     private RoleService roleService;
     private PermissionService permissionService;
-    private RouterService routerService;
     private DepartmentService departmentService;
+    private MenuService menuService;
+
+    @Autowired
+    public void setMenuService(@Lazy MenuService menuService) {
+        this.menuService = menuService;
+    }
 
     @Autowired
     public void setDepartmentService(@Lazy DepartmentService departmentService) {
         this.departmentService = departmentService;
-    }
-
-    @Autowired
-    public void setRouterService(@Lazy RouterService routerService) {
-        this.routerService = routerService;
     }
 
     @Autowired
@@ -91,14 +90,6 @@ public class RolePermissionCache implements ICache{
         return role.getRolePermissionsDto();
     }
 
-    //角色可訪問路由
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROLE_ROUTER + " + #id")
-    public Set<RouterResponse> getRoleRouter(long id) {
-        RoleModel role = roleService.findById(id);
-        Set<RouterModel> routers = role.getRouters();
-        return routers.stream().map(RouterResponse::new).collect(Collectors.toSet());
-    }
-
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSION_STATUS + " + #path")
     public Boolean permissionStatus(String path) {
         return permissionService.checkPermissionIfDeny(path);
@@ -109,13 +100,13 @@ public class RolePermissionCache implements ICache{
         LOG.info("refresh all rolePermission cache");
     }
 
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROUTERS)
-    public List<RouterModel> getRouters() {
-        return routerService.findAll();
-    }
-
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.DEPARTMENT + " + #id")
     public DepartmentModel getDepartment(Long id) {
         return departmentService.findById(id);
+    }
+
+    @Cacheable(key = CacheConstant.ROLE_PERMISSION.MENU_TREE)
+    public List<MenuResponse> findMenuTree() {
+        return menuService.findAllTree();
     }
 }

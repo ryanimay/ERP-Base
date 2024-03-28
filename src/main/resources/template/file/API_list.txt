@@ -18,7 +18,7 @@
 專案管理project
 採購(新增、編輯、狀態)Procurement
 報表excel=====================================
-前端路由(router)和權限相關聯，用作前端設置
+前端菜單(menu)和權限相關聯，用作前端顯示
 排程任務(quartzJob)
 -----
 用戶註冊(/register)只由有權限者協助添加
@@ -40,12 +40,13 @@ role:
 (/add)新增角色，預設是沒permission
 (/remove)移除角色
 (/rolePermission)更新角色權限
-(/roleRouter)更新角色可訪問路由
+(/roleMenu)更新角色可訪問菜單
 permission:
 (/list)後端功能權限清單，簡單分類，不分層
 (/role)針對role拿permissionIdList
 (/ban)禁用
-Router:
+Menu:
+
 (/configList)前端路由配置列表，刪去分層
 (/list)展示清單，有整理分層
 (/role)針對role拿routerIdList

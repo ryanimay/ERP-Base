@@ -5,7 +5,6 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
              ('*', '用戶:註冊接口', '/client/register', 'true'),
              ('*', '用戶:登入接口', '/client/login', 'true'),
              ('*', '用戶:重置密碼', '/client/resetPassword', 'true'),
-             ('*', '路由:設定結構清單', '/router/configList', 'true'),
              ('CLIENT_LIST', '用戶:用戶列表', '/client/list', 'true'),
              ('CLIENT_GETCLIENT', '用戶:單一用戶', '/client/getClient', 'true'),
              ('CLIENT_UPDATE', '用戶:更新用戶', '/client/update', 'true'),
@@ -23,8 +22,8 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
              ('PERMISSION_LIST', '權限:權限清單', '/permission/list', 'true'),
              ('PERMISSION_BAN', '權限:關閉權限', '/permission/ban', 'true'),
              ('PERMISSION_SECURITYCONFIRM', '權限:權限安全認證', '/permission/securityConfirm', 'true'),
-             ('ROUTER_LIST', '路由:路由清單', '/router/list', 'true'),
-             ('ROUTER_ROLE', '路由:路由對應角色', '/router/role', 'true'),
+             ('MENU_ALL', '菜單:全部菜單', '/menu/all', 'true'),
+             ('MENU_PMENU', '菜單:用戶菜單', '/menu/pMenu', 'true'),
              ('SALARY_ROOTS', '薪資:薪資設定清單', '/salary/roots', 'true'),
              ('SALARY_EDITROOT', '薪資:編輯薪資根', '/salary/editRoot', 'true'),
              ('SALARY_GET', '薪資:用戶薪資清單', '/salary/get', 'true'),
@@ -145,3 +144,86 @@ INSERT INTO client_roles(client_id, role_id)
 SELECT client_id, role_id
 FROM (VALUES (1, 2)) AS source(client_id, role_id)
 WHERE NOT EXISTS(SELECT 1 FROM client_roles WHERE source.client_id = client_roles.client_id AND source.role_id = client_roles.role_id);
+
+-- 預設菜單
+INSERT INTO menu (name, path, icon, level, order_num, status, parent_id)
+SELECT name, path, icon, level, order_num, status, parent_id
+FROM (VALUES
+          ('用戶管理', null, 'User', 0, 1, true, null),
+          ('權限管理', null, 'Key', 0, 2, true, null),
+          ('薪資管理', null, 'Wallet', 0, 3, true, null),
+          ('績效管理', null, 'Trophy', 0, 4, true, null),
+          ('休假管理', null, 'Calendar', 0, 5, true, null),
+          ('專案管理', null, 'Briefcase', 0, 6, true, null),
+          ('採購管理', null, 'ShoppingCart', 0, 7, true, null),
+          ('任務管理', null, 'EditPen', 0, 8, true, null),
+          ('排程管理', null, 'Clock', 0, 9, true, null)
+     ) AS source (name, path, icon, level, order_num, status, parent_id)
+WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
+
+INSERT INTO menu (name, path, icon, level, order_num, status, parent_id)
+SELECT name, path, icon, level, order_num, status, parent_id
+FROM (VALUES
+          ('用戶清單', 'client', 'List', 1, 1, true,
+           (SELECT id FROM menu WHERE name = '用戶管理')
+          ),
+          ('test', 'client', 'List', 1, 2, true,
+           (SELECT id FROM menu WHERE name = '權限管理')
+          ),
+          ('test', 'client', 'List', 1, 3, true,
+           (SELECT id FROM menu WHERE name = '薪資管理')
+          ),
+          ('test', 'client', 'List', 1, 4, true,
+           (SELECT id FROM menu WHERE name = '績效管理')
+          ),
+          ('test', 'client', 'List', 1, 5, true,
+           (SELECT id FROM menu WHERE name = '休假管理')
+          ),
+          ('test', 'client', 'List', 1, 6, true,
+           (SELECT id FROM menu WHERE name = '專案管理')
+          ),
+          ('test', 'client', 'List', 1, 7, true,
+           (SELECT id FROM menu WHERE name = '採購管理')
+          ),
+          ('test', 'client', 'List', 1, 8, true,
+           (SELECT id FROM menu WHERE name = '任務管理')
+          ),
+          ('test', 'client', 'List', 1, 9, true,
+           (SELECT id FROM menu WHERE name = '排程管理')
+          )
+     ) AS source (name, path, icon, level, order_num, status, parent_id)
+WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
+
+-- 預設role菜單
+INSERT INTO menu_role (role_id, menu_id)
+SELECT (SELECT id FROM role WHERE role_name = 'Basic') AS role_id,
+       menu.id                                    AS menu_id
+FROM menu
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM menu_role
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Basic')
+          AND menu_id = menu.id
+    );
+
+INSERT INTO menu_role (role_id, menu_id)
+SELECT (SELECT id FROM role WHERE role_name = 'Manager') AS role_id,
+       menu.id                                    AS menu_id
+FROM menu
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM menu_role
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Manager')
+          AND menu_id = menu.id
+    );
+
+INSERT INTO menu_role (role_id, menu_id)
+SELECT (SELECT id FROM role WHERE role_name = 'Senior') AS role_id,
+       menu.id                                    AS menu_id
+FROM menu
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM menu_role
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Senior')
+          AND menu_id = menu.id
+    );

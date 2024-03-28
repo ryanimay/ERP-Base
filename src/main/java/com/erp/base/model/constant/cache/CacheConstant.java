@@ -15,12 +15,11 @@ public interface CacheConstant {
         String NAME_ROLE_PERMISSION = "rolePermission";
         String ROLES = "'roles'";
         String PERMISSIONS = "'permissions'";
-        String ROUTERS = "'routers'";
         String PERMISSIONS_MAP = "'permissionMap'";
         String ROLE_PERMISSION = "'rolePermission_'";
-        String ROLE_ROUTER = "'roleRouter_'";
         String PERMISSION_STATUS = "'permissionStatus_'";
         String DEPARTMENT = "'department_'";
+        String MENU_TREE = "'menuTree'";
     }
 
     interface TOKEN_BLACK_LIST{

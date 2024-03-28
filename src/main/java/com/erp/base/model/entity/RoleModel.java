@@ -4,9 +4,7 @@ import com.erp.base.model.constant.RoleConstant;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serial;
 import java.util.HashSet;
@@ -14,7 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "role")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoleModel implements IBaseModel {
@@ -39,7 +38,7 @@ public class RoleModel implements IBaseModel {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private Set<RouterModel> routers = new HashSet<>();
+    private Set<MenuModel> menus = new HashSet<>();
 
     public RoleModel(String roleName) {
         this.roleName = roleName;

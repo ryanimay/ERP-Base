@@ -5,7 +5,7 @@ import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
-import com.erp.base.model.dto.request.role.RoleRouterRequest;
+import com.erp.base.model.dto.request.role.RoleMenuRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.RoleRepository;
@@ -129,7 +129,7 @@ class RoleServiceTest {
     @DisplayName("編輯角色前端路由權限_未知ID_錯誤")
     void updateRoleRouter_unknownId_error() {
         Mockito.when(cacheService.getRole()).thenReturn(new HashMap<>());
-        ResponseEntity<ApiResponse> response = roleService.updateRoleRouter(new RoleRouterRequest());
+        ResponseEntity<ApiResponse> response = roleService.updateRoleMenu(new RoleMenuRequest());
         Assertions.assertEquals(ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR), response);
     }
 
@@ -139,14 +139,14 @@ class RoleServiceTest {
         HashMap<Long, RoleModel> map = new HashMap<>();
         map.put(1L, new RoleModel(1));
         Mockito.when(cacheService.getRole()).thenReturn(map);
-        RoleRouterRequest request = new RoleRouterRequest();
-        ArrayList<Long> routerIds = new ArrayList<>();
-        routerIds.add(1L);
-        routerIds.add(2L);
-        routerIds.add(3L);
-        request.setRouterIds(routerIds);
+        RoleMenuRequest request = new RoleMenuRequest();
+        ArrayList<Long> menuIds = new ArrayList<>();
+        menuIds.add(1L);
+        menuIds.add(2L);
+        menuIds.add(3L);
+        request.setMenuIds(menuIds);
         request.setId(1L);
-        ResponseEntity<ApiResponse> response = roleService.updateRoleRouter(request);
+        ResponseEntity<ApiResponse> response = roleService.updateRoleMenu(request);
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), response);
     }
 }

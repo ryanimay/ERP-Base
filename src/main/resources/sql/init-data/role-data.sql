@@ -41,3 +41,37 @@ WHERE NOT EXISTS(
         WHERE role_id = (SELECT id FROM role WHERE role_name = 'Senior')
           AND permission_id = permission.id
     );
+
+-- 預設role菜單
+INSERT INTO menu_role (role_id, menu_id)
+SELECT (SELECT id FROM role WHERE role_name = 'Basic') AS role_id,
+       menu.id                                    AS menu_id
+FROM menu
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM menu_role
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Basic')
+          AND menu_id = menu.id
+    );
+
+INSERT INTO menu_role (role_id, menu_id)
+SELECT (SELECT id FROM role WHERE role_name = 'Manager') AS role_id,
+       menu.id                                    AS menu_id
+FROM menu
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM menu_role
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Manager')
+          AND menu_id = menu.id
+    );
+
+INSERT INTO menu_role (role_id, menu_id)
+SELECT (SELECT id FROM role WHERE role_name = 'Senior') AS role_id,
+       menu.id                                    AS menu_id
+FROM menu
+WHERE NOT EXISTS(
+        SELECT 1
+        FROM menu_role
+        WHERE role_id = (SELECT id FROM role WHERE role_name = 'Senior')
+          AND menu_id = menu.id
+    );
