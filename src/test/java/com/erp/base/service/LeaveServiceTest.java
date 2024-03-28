@@ -10,6 +10,7 @@ import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.LeaveResponse;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.LeaveModel;
@@ -64,7 +65,7 @@ class LeaveServiceTest {
     @Test
     @DisplayName("假單_成功")
     void list_ok() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         List<LeaveModel> leaveModels = new ArrayList<>();
@@ -92,7 +93,7 @@ class LeaveServiceTest {
     void add_ok() {
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         LeaveModel lm = new LeaveModel();
@@ -118,7 +119,7 @@ class LeaveServiceTest {
         Mockito.when(leaveRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResponseEntity<ApiResponse> add = leaveService.update(new LeaveRequest());
@@ -137,7 +138,7 @@ class LeaveServiceTest {
         Mockito.when(leaveRepository.save(Mockito.any())).thenReturn(lm);
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResponseEntity<ApiResponse> add = leaveService.update(new LeaveRequest());
@@ -173,7 +174,7 @@ class LeaveServiceTest {
     @Test
     @DisplayName("審核假單_成功")
     void accept_ok() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(leaveRepository.updateLeaveStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
@@ -200,7 +201,7 @@ class LeaveServiceTest {
         roleModel.setLevel(RoleConstant.LEVEL_3);
         roles.add(roleModel);
         clientModel.setRoles(roles);
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ArrayList<LeaveModel> leaveModels = new ArrayList<>();
@@ -225,7 +226,7 @@ class LeaveServiceTest {
         roleModel.setLevel(RoleConstant.LEVEL_1);
         roles.add(roleModel);
         clientModel.setRoles(roles);
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ArrayList<LeaveModel> leaveModels = new ArrayList<>();

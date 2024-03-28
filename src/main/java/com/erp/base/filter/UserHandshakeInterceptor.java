@@ -3,8 +3,9 @@ package com.erp.base.filter;
 import com.erp.base.config.websocket.WebsocketConstant;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.ClientModel;
+import com.erp.base.service.CacheService;
 import com.erp.base.service.MessageService;
 import com.erp.base.service.NotificationService;
 import com.erp.base.service.security.TokenService;
@@ -27,7 +28,11 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
     private TokenService tokenService;
     private MessageService messageService;
     private NotificationService notificationService;
-
+    private CacheService cacheService;
+    @Autowired
+    public void setCacheService(CacheService cacheService){
+        this.cacheService = cacheService;
+    }
     @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
@@ -54,11 +59,12 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
 
     //連結完先找歷史通知
     private void sendNotification() {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user != null){
             String userId = Long.toString(user.getId());
             Set<NotificationModel> notifications = notificationService.findGlobal();//全域通知
-            notifications.addAll(user.getNotifications());//個人通知
+            Set<NotificationModel> userNotification = cacheService.getClient(user.getUsername()).getNotifications();
+            notifications.addAll(userNotification);//個人通知
             //整理排序
             List<NotificationModel> notificationList = notifications.stream()
                     .sorted(Comparator

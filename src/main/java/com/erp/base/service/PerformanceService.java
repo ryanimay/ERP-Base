@@ -11,6 +11,7 @@ import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.*;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.PerformanceModel;
@@ -32,7 +33,11 @@ public class PerformanceService {
     private MessageService messageService;
     private NotificationService notificationService;
     private ClientService clientService;
-
+    private CacheService cacheService;
+    @Autowired
+    public void setCacheService(CacheService cacheService){
+        this.cacheService = cacheService;
+    }
     @Autowired
     public void setClientService(ClientService clientService) {
         this.clientService = clientService;
@@ -59,20 +64,20 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> add(PerformanceRequest request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if (user == null) {
             return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
         PerformanceModel entity = request.toModel();
         Long userId = request.getUserId();
-        entity.setUser(userId == null ? user : new ClientModel(userId));
-        entity.setCreateBy(user);
+        entity.setUser(userId == null ? new ClientModel(user.getId()) : new ClientModel(userId));
+        entity.setCreateBy(new ClientModel(user.getId()));
         performanceRepository.save(entity);
         sendMessageToManger(user);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
-    private void sendMessageToManger(ClientModel user) {
+    private void sendMessageToManger(ClientIdentityDto user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE, user.getUsername());
         Set<Long> byHasAcceptPermission = clientService.queryReviewer(user.getDepartment().getId());
         byHasAcceptPermission.forEach(id -> {
@@ -82,7 +87,7 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> save(PerformanceRequest request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if (user == null) {
             return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
@@ -92,7 +97,7 @@ public class PerformanceService {
             if(model.getStatus() != StatusConstant.PENDING_NO) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Can only modify performances in 'Pending' status.");
             if (request.getEvent() != null) model.setEvent(request.getEvent());
             Long userId = request.getUserId();
-            model.setUser(userId == null ? user : new ClientModel(userId));
+            model.setUser(userId == null ? new ClientModel(user.getId()) : new ClientModel(userId));
             if (request.getFixedBonus() != null) model.setFixedBonus(request.getFixedBonus());
             if (request.getPerformanceRatio() != null) model.setPerformanceRatio(request.getPerformanceRatio());
             if (request.getEventTime() != null) model.setEventTime(request.getEventTime());
@@ -109,7 +114,7 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> accept(PerformanceAcceptRequest request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if (user == null) {
             return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
@@ -124,11 +129,12 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if (user == null) {
             return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
-        boolean isManager = user.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
+        ClientModel client = cacheService.getClient(user.getUsername());
+        boolean isManager = client.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<PerformanceModel> list;
         //管理權限全搜不分部門
         if (isManager) {

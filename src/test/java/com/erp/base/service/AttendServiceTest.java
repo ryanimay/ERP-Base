@@ -3,6 +3,7 @@ package com.erp.base.service;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.service.security.UserDetailImpl;
@@ -47,7 +48,7 @@ class AttendServiceTest {
     void signIn_ok() {
         Mockito.when(attendRepository.signIn(Mockito.anyLong(), Mockito.any(), Mockito.any())).thenReturn(1);
         Mockito.when(clientService.updateClientAttendStatus(Mockito.any(), Mockito.anyInt())).thenReturn(clientModel);
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResponseEntity<ApiResponse> response = attendService.signIn();
@@ -58,7 +59,7 @@ class AttendServiceTest {
     @Test
     @DisplayName("簽到_未知錯誤")
     void signIn_IncorrectResultSizeDataAccessException() {
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Assertions.assertThrows(IncorrectResultSizeDataAccessException.class, () ->  attendService.signIn());
@@ -78,7 +79,7 @@ class AttendServiceTest {
     void signOut_ok() {
         Mockito.when(attendRepository.signOut(Mockito.anyLong(), Mockito.any(), Mockito.any())).thenReturn(1);
         Mockito.when(clientService.updateClientAttendStatus(Mockito.any(), Mockito.anyInt())).thenReturn(clientModel);
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResponseEntity<ApiResponse> response = attendService.signOut();
@@ -89,7 +90,7 @@ class AttendServiceTest {
     @Test
     @DisplayName("簽退_未知錯誤")
     void signOut_IncorrectResultSizeDataAccessException() {
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Assertions.assertThrows(IncorrectResultSizeDataAccessException.class, () ->  attendService.signOut());

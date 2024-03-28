@@ -1,5 +1,6 @@
 package com.erp.base.service.security;
 
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.RoleModel;
@@ -21,11 +22,11 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserDetailImpl implements UserDetails {
     private Locale locale;
-    private ClientModel clientModel;
+    private ClientIdentityDto clientModel;
     @JsonIgnore
     private CacheService cacheService;
 
-    public UserDetailImpl(ClientModel clientModel, CacheService cacheService) {
+    public UserDetailImpl(ClientIdentityDto clientModel, CacheService cacheService) {
         this.cacheService = cacheService;
         this.clientModel = clientModel;
     }
@@ -63,7 +64,7 @@ public class UserDetailImpl implements UserDetails {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRolePermission(clientModel.getRoles());
+        return getRolePermission();
     }
 
     @Override
@@ -72,9 +73,10 @@ public class UserDetailImpl implements UserDetails {
         return true;
     }
 
-    private Collection<? extends GrantedAuthority> getRolePermission(Set<RoleModel> roles) {
+    private Collection<? extends GrantedAuthority> getRolePermission() {
+        ClientModel client = cacheService.getClient(clientModel.getUsername());
         Set<RolePermissionDto> set = new HashSet<>();
-        for (RoleModel role : roles) {
+        for (RoleModel role : client.getRoles()) {
             set.addAll(cacheService.getRolePermission(role.getId()));
         }
         return set;

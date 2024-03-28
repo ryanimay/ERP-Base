@@ -4,6 +4,7 @@ import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
@@ -41,7 +42,7 @@ public class AttendService {
     }
 
     private ResponseEntity<ApiResponse> sign(int type){
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LocalDate nowDate = LocalDate.now();
         LocalDateTime nowTime = DateTool.now();

@@ -3,6 +3,7 @@ package com.erp.base.filter.jwt;
 import com.erp.base.controller.Router;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.ObjectTool;
@@ -59,7 +60,7 @@ class UserStatusFilterTest {
     @DisplayName("用戶狀態驗證_成功")
     void userStatus_ok() throws ServletException, IOException {
         UserDetailImpl userDetail = new UserDetailImpl();
-        userDetail.setClientModel(new ClientModel());
+        userDetail.setClientModel(new ClientIdentityDto(new ClientModel()));
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         userStatusFilter.doFilterInternal(request, response, filterChain);
@@ -72,7 +73,7 @@ class UserStatusFilterTest {
         UserDetailImpl userDetail = new UserDetailImpl();
         ClientModel clientModel = new ClientModel();
         clientModel.setLock(true);
-        userDetail.setClientModel(clientModel);
+        userDetail.setClientModel(new ClientIdentityDto(clientModel));
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         userStatusFilter.doFilterInternal(request, response, filterChain);
@@ -89,7 +90,7 @@ class UserStatusFilterTest {
         UserDetailImpl userDetail = new UserDetailImpl();
         ClientModel clientModel = new ClientModel();
         clientModel.setActive(false);
-        userDetail.setClientModel(clientModel);
+        userDetail.setClientModel(new ClientIdentityDto(clientModel));
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         userStatusFilter.doFilterInternal(request, response, filterChain);

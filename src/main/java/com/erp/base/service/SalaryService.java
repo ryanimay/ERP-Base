@@ -1,15 +1,15 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
-import com.erp.base.model.constant.NotificationEnum;
-import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
+import com.erp.base.model.constant.NotificationEnum;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.salary.SalaryRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.response.SalaryResponse;
-import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.repository.SalaryRepository;
@@ -79,14 +79,14 @@ public class SalaryService {
     }
 
     private void sendMessage(Long userId) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         NotificationModel notification = notificationService.createNotification(NotificationEnum.EDIT_SALARY_ROOT);
         MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), Long.toString(userId), WebsocketConstant.TOPIC.NOTIFICATION, notification);
         messageService.sendTo(messageModel);
     }
 
     public ResponseEntity<ApiResponse> get() {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if (user == null) {
             return ApiResponse.success(ApiResponseCode.USER_NOT_FOUND);
         }

@@ -1,6 +1,7 @@
 package com.erp.base.service.security;
 
 import com.erp.base.model.dto.request.client.LoginRequest;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.CacheService;
 import org.junit.jupiter.api.Assertions;
@@ -47,7 +48,7 @@ class TokenServiceTest {
         loginRequest.setUsername("test");
         loginRequest.setPassword("test");
         loginRequest.setRememberMe(false);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new UserDetailImpl(new ClientModel(1), cacheService), null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), cacheService), null);
         Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenReturn(authentication);
         HttpHeaders header = tokenService.createToken(loginRequest);
         Assertions.assertNotNull(header.get(HttpHeaders.AUTHORIZATION));
@@ -60,7 +61,7 @@ class TokenServiceTest {
         loginRequest.setUsername("test");
         loginRequest.setPassword("test");
         loginRequest.setRememberMe(true);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new UserDetailImpl(new ClientModel(1), cacheService), null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), cacheService), null);
         Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenReturn(authentication);
         HttpHeaders header = tokenService.createToken(loginRequest);
         Assertions.assertNotNull(header.get(HttpHeaders.AUTHORIZATION));

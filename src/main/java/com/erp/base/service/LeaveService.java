@@ -1,18 +1,19 @@
 package com.erp.base.service;
 
 import com.erp.base.config.websocket.WebsocketConstant;
+import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.MessageModel;
 import com.erp.base.model.constant.NotificationEnum;
 import com.erp.base.model.constant.RoleConstant;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
-import com.erp.base.model.ClientIdentity;
-import com.erp.base.model.MessageModel;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.leave.LeaveAcceptRequest;
 import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.LeaveResponse;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.LeaveModel;
 import com.erp.base.model.entity.NotificationModel;
@@ -34,6 +35,11 @@ public class LeaveService {
     private MessageService messageService;
     private NotificationService notificationService;
     private ClientService clientService;
+    private CacheService cacheService;
+    @Autowired
+    public void setCacheService(CacheService cacheService){
+        this.cacheService = cacheService;
+    }
     @Autowired
     public void setClientService(ClientService clientService){
         this.clientService = clientService;
@@ -52,22 +58,22 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> list(PageRequestParam page) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         Page<LeaveModel> leaves = leaveRepository.findAllByUser(user.getId(), page.getPage());
         return ApiResponse.success(new PageResponse<>(leaves, LeaveResponse.class));
     }
 
     public ResponseEntity<ApiResponse> add(LeaveRequest request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LeaveModel entity = request.toModel();
-        LeaveModel saved = updateOrSave(entity, user);
+        LeaveModel saved = updateOrSave(entity, new ClientModel(user.getId()));
         sendMessageToManager(user);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new LeaveResponse(saved));
     }
 
-    private void sendMessageToManager(ClientModel user) {
+    private void sendMessageToManager(ClientIdentityDto user) {
         NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_LEAVE, user.getUsername());
         Set<Long> byHasAcceptPermission = clientService.queryReviewer(user.getDepartment().getId());
         byHasAcceptPermission.forEach(id -> {
@@ -77,7 +83,7 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> update(LeaveRequest request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         Optional<LeaveModel> byId = leaveRepository.findById(request.getId());
         if(byId.isPresent()){
@@ -86,7 +92,7 @@ public class LeaveService {
             if(request.getStartTime() != null) leaveModel.setStartTime(request.getStartTime());
             if(request.getEndTime() != null) leaveModel.setEndTime(request.getEndTime());
             if(request.getInfo() != null) leaveModel.setInfo(request.getInfo());
-            LeaveModel saved = updateOrSave(leaveModel, user);
+            LeaveModel saved = updateOrSave(leaveModel, new ClientModel(user.getId()));
             return ApiResponse.success(ApiResponseCode.SUCCESS, new LeaveResponse(saved));
         }
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
@@ -102,7 +108,7 @@ public class LeaveService {
         int i = leaveRepository.updateLeaveStatus(request.getId(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         if(i == 1) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
-            ClientModel user = ClientIdentity.getUser();
+            ClientIdentityDto user = ClientIdentity.getUser();
             MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -111,9 +117,10 @@ public class LeaveService {
     }
 
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        boolean isManager = user.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
+        ClientModel client = cacheService.getClient(user.getUsername());
+        boolean isManager = client.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門
         if(isManager){

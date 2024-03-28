@@ -11,6 +11,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
@@ -162,7 +163,7 @@ public class ClientService {
     }
 
     public ResponseEntity<ApiResponse> updatePassword(UpdatePasswordRequest request) throws IncorrectResultSizeDataAccessException {
-        ClientModel client = ClientIdentity.getUser();
+        ClientIdentityDto client = ClientIdentity.getUser();
         if (client == null || checkIdentity(client.getId(), request))
             return ApiResponse.error(ApiResponseCode.IDENTITY_ERROR);
         String username = client.getUsername();
@@ -243,7 +244,7 @@ public class ClientService {
     }
 
     private void checkUserOrSendMessage(ClientModel client) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if (user != null && user.getId() != client.getId()) {
             NotificationModel notification = notificationService.createNotification(NotificationEnum.UPDATE_USER, user.getUsername());
             MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(client.getId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
@@ -299,7 +300,7 @@ public class ClientService {
         return clientRepository.findUsernameById(id);
     }
 
-    public ClientModel updateClientAttendStatus(ClientModel model, int status) {
+    public ClientModel updateClientAttendStatus(ClientIdentityDto model, int status) {
         int resultCount = clientRepository.updateClientAttendStatus(model.getId(), status);
         if (resultCount == 1) cacheService.refreshClient(model.getUsername());
         return cacheService.getClient(model.getUsername());

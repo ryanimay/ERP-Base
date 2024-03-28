@@ -3,6 +3,7 @@ package com.erp.base.filter.jwt;
 import com.erp.base.config.security.SecurityConfig;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
@@ -113,7 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void createAuthentication(String username) {
         ClientModel client = cacheService.getClient(username);
         if(client == null) return;
-        UserDetailImpl userDetail = new UserDetailImpl(client, cacheService);
+        UserDetailImpl userDetail = new UserDetailImpl(new ClientIdentityDto(client), cacheService);
         Collection<? extends GrantedAuthority> rolePermission = userDetail.getAuthorities();
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);

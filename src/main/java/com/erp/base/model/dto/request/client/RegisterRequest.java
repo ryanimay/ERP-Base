@@ -12,6 +12,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Objects;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +31,7 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
         ClientModel model = new ClientModel();
         model.setUsername(username);
         model.setPassword(username);
-        model.setCreateBy(createBy == null ? ClientIdentity.getUser().getId() : createBy);
+        model.setCreateBy(createBy == null ? Objects.requireNonNull(ClientIdentity.getUser()).getId() : createBy);
         model.setMustUpdatePassword(true);
         return model;
     }
