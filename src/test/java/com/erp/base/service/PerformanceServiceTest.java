@@ -8,6 +8,7 @@ import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.dto.request.performance.PerformanceAcceptRequest;
 import com.erp.base.model.dto.request.performance.PerformanceRequest;
 import com.erp.base.model.dto.response.*;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PerformanceModel;
@@ -84,7 +85,7 @@ class PerformanceServiceTest {
     void add_ok() {
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResponseEntity<ApiResponse> add = performanceService.add(new PerformanceRequest());
@@ -103,7 +104,7 @@ class PerformanceServiceTest {
     void save_unknownId_error() {
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(performanceRepository.findById(Mockito.any())).thenReturn(Optional.empty());
@@ -118,7 +119,7 @@ class PerformanceServiceTest {
     void save_statusCantEdit_error() {
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         PerformanceModel performanceModel = new PerformanceModel();
@@ -136,7 +137,7 @@ class PerformanceServiceTest {
     void save_ok() {
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         PerformanceModel performanceModel = new PerformanceModel();
@@ -170,7 +171,7 @@ class PerformanceServiceTest {
     void accept_unknownId_error() {
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(2);
@@ -194,7 +195,7 @@ class PerformanceServiceTest {
     void accept_ok() {
         ClientModel clientModel = new ClientModel(1);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
@@ -223,7 +224,7 @@ class PerformanceServiceTest {
         clientModel.setUsername("test");
         clientModel.setRoles(roles);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ArrayList<PerformanceModel> performanceModels = new ArrayList<>();

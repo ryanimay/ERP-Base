@@ -7,6 +7,7 @@ import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.response.ProjectResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.repository.ProjectRepository;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -34,9 +36,9 @@ public class ProjectService {
     }
 
     public ResponseEntity<ApiResponse> add(ProjectRequest request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         ProjectModel projectModel = request.toModel();
-        projectModel.setCreateBy(user);
+        projectModel.setCreateBy(new ClientModel(Objects.requireNonNull(user).getId()));
         projectRepository.save(projectModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }

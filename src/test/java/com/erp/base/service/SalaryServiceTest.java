@@ -6,6 +6,7 @@ import com.erp.base.model.dto.request.salary.SalaryRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.response.SalaryResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.repository.SalaryRepository;
@@ -75,7 +76,7 @@ class SalaryServiceTest {
     @Test
     @DisplayName("新增薪資設定_成功")
     void editRoot_add_ok() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(clientService.findNameByUserId(Mockito.anyLong())).thenReturn("test");
@@ -89,7 +90,7 @@ class SalaryServiceTest {
     @Test
     @DisplayName("編輯薪資設定_成功")
     void editRoot_update_ok() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(clientService.findNameByUserId(Mockito.anyLong())).thenReturn("test");
@@ -110,7 +111,7 @@ class SalaryServiceTest {
     @Test
     @DisplayName("用戶薪資單_成功")
     void get_ok() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ArrayList<SalaryModel> salaryModels = new ArrayList<>();

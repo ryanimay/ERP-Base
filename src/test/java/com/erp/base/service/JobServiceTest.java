@@ -6,6 +6,7 @@ import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.JobResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.JobModel;
 import com.erp.base.repository.JobRepository;
@@ -71,7 +72,7 @@ class JobServiceTest {
     @Test
     @DisplayName("任務卡清單_成功")
     void findAll_ok() {
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(jobRepository.findByUserOrTracking(Mockito.any())).thenReturn(list);
@@ -95,7 +96,7 @@ class JobServiceTest {
     @Test
     @DisplayName("新增任務卡_成功")
     void add_ok() {
-        UserDetailImpl principal = new UserDetailImpl(clientModel, null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResponseEntity<ApiResponse> response = jobService.add(new JobRequest());

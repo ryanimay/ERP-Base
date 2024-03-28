@@ -6,6 +6,7 @@ import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
@@ -155,7 +156,7 @@ class ClientServiceTest {
     @Test
     @DisplayName("更新密碼_非本人不可更新_錯誤")
     void updatePassword_identityError_error() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UpdatePasswordRequest request = new UpdatePasswordRequest();
@@ -169,7 +170,7 @@ class ClientServiceTest {
     @DisplayName("更新密碼_舊密碼驗證錯誤_錯誤")
     void updatePassword_invalidOldPassword_error() {
         Mockito.when(clientRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UpdatePasswordRequest request = new UpdatePasswordRequest();
@@ -185,7 +186,7 @@ class ClientServiceTest {
         Mockito.when(clientRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new ClientModel(1L)));
         Mockito.when(encodeTool.match(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(clientRepository.updatePasswordByUsernameAndEmailAndId(Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
-        UserDetailImpl principal = new UserDetailImpl(new ClientModel(1), null);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UpdatePasswordRequest request = new UpdatePasswordRequest();

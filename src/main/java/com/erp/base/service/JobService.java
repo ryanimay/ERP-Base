@@ -1,11 +1,12 @@
 package com.erp.base.service;
 
+import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
-import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.JobResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.JobModel;
 import com.erp.base.repository.JobRepository;
@@ -23,31 +24,36 @@ import java.util.stream.Collectors;
 @Transactional
 public class JobService {
     private JobRepository jobRepository;
-
+    private CacheService cacheService;
+    @Autowired
+    public void setCacheService(CacheService cacheService){
+        this.cacheService = cacheService;
+    }
     @Autowired
     public void setJobRepository(JobRepository jobRepository) {
         this.jobRepository = jobRepository;
     }
 
     public ResponseEntity<ApiResponse> findAll() {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        List<JobModel> all = jobRepository.findByUserOrTracking(user);
+        ClientModel client = cacheService.getClient(user.getUsername());
+        List<JobModel> all = jobRepository.findByUserOrTracking(client);
 
         Map<String, List<JobResponse>> map = all.stream()
                 .collect(Collectors.groupingBy(
-                        model -> model.getUser().equals(user) ? StatusConstant.get(model.getStatus()) : "tracking",
+                        model -> model.getUser().equals(client) ? StatusConstant.get(model.getStatus()) : "tracking",
                         Collectors.mapping(JobResponse::new, Collectors.toList())
                 ));
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
     }
 
     public ResponseEntity<ApiResponse> add(JobRequest request) {
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         JobModel jobModel = request.toModel();
-        if (jobModel.getUser() == null) jobModel.setUser(user);
-        jobModel.setCreateBy(user);
+        if (jobModel.getUser() == null) jobModel.setUser(new ClientModel(user.getId()));
+        jobModel.setCreateBy(new ClientModel(user.getId()));
         jobRepository.save(jobModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }

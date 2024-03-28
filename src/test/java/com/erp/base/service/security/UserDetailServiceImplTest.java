@@ -1,5 +1,6 @@
 package com.erp.base.service.security;
 
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
 import org.junit.jupiter.api.Assertions;
@@ -31,7 +32,7 @@ class UserDetailServiceImplTest {
         ClientModel t = new ClientModel(1);
         t.setUsername("test");
         Mockito.when(clientService.findByUsername(Mockito.any())).thenReturn(t);
-        Mockito.when(userDetailFactory.build(Mockito.any())).thenReturn(new UserDetailImpl(t, null));
-        Assertions.assertEquals(new UserDetailImpl(t, null).getUsername(), userDetailService.loadUserByUsername("").getUsername());
+        Mockito.when(userDetailFactory.build(Mockito.any())).thenReturn(new UserDetailImpl(new ClientIdentityDto(t), null));
+        Assertions.assertEquals(new UserDetailImpl(new ClientIdentityDto(t), null).getUsername(), userDetailService.loadUserByUsername("").getUsername());
     }
 }

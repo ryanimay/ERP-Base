@@ -2,7 +2,7 @@ package com.erp.base.aspect;
 
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.LogModel;
 import com.erp.base.service.LogService;
 import com.erp.base.tool.ObjectTool;
@@ -36,7 +36,7 @@ public class LoggingAspect {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         model.setUrl(getRequestUrl(request));
         model.setParams(getRequestArgs(joinPoint));
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) throw new UsernameNotFoundException("LoggingAspect:USER_NOT_FOUND");
         model.setUserName(user.getUsername());
         model.setIp(getClientIp(request));

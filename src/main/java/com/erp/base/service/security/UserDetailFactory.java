@@ -1,5 +1,6 @@
 package com.erp.base.service.security;
 
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,6 @@ public class UserDetailFactory {
     }
 
     public UserDetailImpl build(ClientModel client) {
-        return new UserDetailImpl(client, cacheService);
+        return new UserDetailImpl(new ClientIdentityDto(client), cacheService);
     }
 }

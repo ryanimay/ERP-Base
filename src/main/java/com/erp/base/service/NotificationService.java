@@ -1,9 +1,9 @@
 package com.erp.base.service;
 
-import com.erp.base.model.constant.NotificationEnum;
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.constant.NotificationEnum;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class NotificationService {
      * @return i18n翻譯完的通知
      */
     public NotificationModel createNotification(NotificationEnum notificationEnum, Object...params){
-        ClientModel user = ClientIdentity.getUser();
+        ClientIdentityDto user = ClientIdentity.getUser();
         NotificationModel build = NotificationModel.builder()
                 .info(notificationEnum.getInfo(params))
                 .router(notificationEnum.getRouterName())

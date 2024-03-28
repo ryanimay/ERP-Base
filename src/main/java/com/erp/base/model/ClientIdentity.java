@@ -1,6 +1,6 @@
 package com.erp.base.model;
 
-import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.ObjectTool;
 import jakarta.annotation.PostConstruct;
@@ -28,7 +28,8 @@ public class ClientIdentity {
     }
     private static final String EMPTY_USER = "anonymousUser";//SpringSecurity預設未登入使用者字段
 
-    public static ClientModel getUser(){
+    //用dto來做常態性的用戶身分，不然懶加載"極度"難搞
+    public static ClientIdentityDto getUser(){
         UserDetailImpl principal = getPrincipal();
         return principal == null ? null : principal.getClientModel();
     }

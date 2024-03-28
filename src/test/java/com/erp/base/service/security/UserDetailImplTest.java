@@ -1,5 +1,6 @@
 package com.erp.base.service.security;
 
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.PermissionModel;
@@ -29,7 +30,7 @@ class UserDetailImplTest {
         clientModel.setActive(true);
         clientModel.setLock(false);
         clientModel.setRoles(set);
-        userDetail = new UserDetailImpl(clientModel, cacheService);
+        userDetail = new UserDetailImpl(new ClientIdentityDto(clientModel), cacheService);
     }
 
     @Test

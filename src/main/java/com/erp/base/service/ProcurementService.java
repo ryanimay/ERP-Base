@@ -6,6 +6,7 @@ import com.erp.base.model.dto.request.procurement.ProcurementRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.response.ProcurementResponse;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.ProcurementModel;
 import com.erp.base.repository.ProcurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -33,7 +35,7 @@ public class ProcurementService {
 
     public ResponseEntity<ApiResponse> add(ProcurementRequest request) {
         ProcurementModel procurementModel = request.toModel();
-        procurementModel.setCreateBy(ClientIdentity.getUser());
+        procurementModel.setCreateBy(new ClientModel(Objects.requireNonNull(ClientIdentity.getUser()).getId()));
         procurementRepository.save(procurementModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
