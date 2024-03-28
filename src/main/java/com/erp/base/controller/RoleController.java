@@ -4,7 +4,7 @@ import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
-import com.erp.base.model.dto.request.role.RoleRouterRequest;
+import com.erp.base.model.dto.request.role.RoleMenuRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,9 +53,9 @@ public class RoleController {
         return roleService.deleteById(request);
     }
 
-    @PostMapping(Router.ROLE.ROLE_ROUTER)
+    @PostMapping(Router.ROLE.ROLE_MENU)
     @Operation(summary = "編輯角色頁面權限")
-    public ResponseEntity<ApiResponse> roleRouter(@RequestBody RoleRouterRequest request){
-        return roleService.updateRoleRouter(request);
+    public ResponseEntity<ApiResponse> roleMenu(@RequestBody RoleMenuRequest request){
+        return roleService.updateRoleMenu(request);
     }
 }

@@ -29,7 +29,7 @@ public interface Router {
         String ADD = ROLE + "/add";
         String REMOVE = ROLE + "/remove";
         String ROLE_PERMISSION = ROLE + "/rolePermission";
-        String ROLE_ROUTER = ROLE + "/roleRouter";
+        String ROLE_MENU = ROLE + "/roleMenu";
     }
 
     interface PERMISSION{
@@ -40,11 +40,10 @@ public interface Router {
         String SECURITY_CONFIRM = PERMISSION + "/securityConfirm";
     }
 
-    interface ROUTER{
-        String ROUTER = "/router";
-        String CONFIG_LIST = ROUTER + "/configList";
-        String LIST = ROUTER + "/list";
-        String ROLE = ROUTER + "/role";
+    interface MENU{
+        String MENU = "/menu";
+        String ALL = MENU + "/all";
+        String P_MENU = MENU + "/pMenu";
     }
 
     interface SALARY{

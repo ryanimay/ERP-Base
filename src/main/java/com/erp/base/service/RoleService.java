@@ -4,12 +4,12 @@ import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
-import com.erp.base.model.dto.request.role.RoleRouterRequest;
+import com.erp.base.model.dto.request.role.RoleMenuRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.role.RoleNameResponse;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
-import com.erp.base.model.entity.RouterModel;
+import com.erp.base.model.entity.MenuModel;
 import com.erp.base.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -108,12 +108,12 @@ public class RoleService {
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
-    public ResponseEntity<ApiResponse> updateRoleRouter(RoleRouterRequest request) {
+    public ResponseEntity<ApiResponse> updateRoleMenu(RoleMenuRequest request) {
         Long id = request.getId();
         RoleModel roleModel = cacheService.getRole().get(id);
         if(roleModel == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
-        Set<RouterModel> set = request.getRouterSet();
-        roleModel.setRouters(set);
+        Set<MenuModel> set = request.getMenuSet();
+        roleModel.setMenus(set);
         roleRepository.save(roleModel);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
