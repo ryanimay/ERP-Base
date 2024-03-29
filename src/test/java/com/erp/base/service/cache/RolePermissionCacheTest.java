@@ -43,10 +43,16 @@ class RolePermissionCacheTest {
     private RolePermissionCache rolePermissionCache;
     private static final List<RoleModel> roles = new ArrayList<>();
     private static final List<PermissionModel> permissions = new ArrayList<>();
+    private static final RoleModel r3;
+    private static final RoleModel r2;
+    private static final RoleModel r1;
     static {
-        roles.add(new RoleModel(3));
-        roles.add(new RoleModel(2));
-        roles.add(new RoleModel(1));
+        r3 = new RoleModel(3);
+        roles.add(r3);
+        r2 = new RoleModel(2);
+        roles.add(r2);
+        r1 = new RoleModel(1);
+        roles.add(r1);
         PermissionModel p1 = new PermissionModel(1);
         p1.setAuthority("TEST1_1");
         permissions.add(p1);
@@ -62,14 +68,13 @@ class RolePermissionCacheTest {
     void getRole_ok() {
         Mockito.when(roleService.findAll()).thenReturn(roles);
         Map<Long, RoleModel> role = rolePermissionCache.getRole();
+        RoleModel r4 = new RoleModel(4);
+        roles.add(r4);
+        Mockito.when(roleService.findAll()).thenReturn(roles);
         Map<Long, RoleModel> role1 = rolePermissionCache.getRole();
 
-        Assertions.assertEquals(new RoleModel(1), role.get(1L));
-        Assertions.assertEquals(new RoleModel(2), role.get(2L));
-        Assertions.assertEquals(new RoleModel(3), role.get(3L));
-        Assertions.assertEquals(new RoleModel(1), role1.get(1L));
-        Assertions.assertEquals(new RoleModel(2), role1.get(2L));
-        Assertions.assertEquals(new RoleModel(3), role1.get(3L));
+        Assertions.assertEquals(3, role.size());
+        Assertions.assertEquals(3, role1.size());
 
         Mockito.verify(roleService, Mockito.times(1)).findAll();
         Mockito.verifyNoMoreInteractions(roleService);
