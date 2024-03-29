@@ -43,6 +43,8 @@ import java.util.Set;
 class PerformanceServiceTest {
     @Mock
     private PerformanceRepository performanceRepository;
+    @Mock
+    private CacheService cacheService;
     @InjectMocks
     private PerformanceService performanceService;
 
@@ -236,6 +238,7 @@ class PerformanceServiceTest {
         performanceModel.setStatus(StatusConstant.PENDING_NO);
         performanceModels.add(performanceModel);
         Page<PerformanceModel> page = new PageImpl<>(performanceModels);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
         Mockito.when(performanceRepository.findAllByStatus(Mockito.anyInt(), Mockito.anyLong(), Mockito.any())).thenReturn(page);
         ResponseEntity<ApiResponse> remove = performanceService.pendingList(new PageRequestParam());
         Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, PerformanceResponse.class)), remove);

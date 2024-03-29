@@ -30,6 +30,8 @@ import java.util.*;
 class JobServiceTest {
     @Mock
     private JobRepository jobRepository;
+    @Mock
+    private CacheService cacheService;
     @InjectMocks
     private JobService jobService;
     private static final ClientModel clientModel = new ClientModel(1);
@@ -76,6 +78,7 @@ class JobServiceTest {
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(jobRepository.findByUserOrTracking(Mockito.any())).thenReturn(list);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
         ResponseEntity<ApiResponse> all = jobService.findAll();
         Map<String, List<JobResponse>> map = new HashMap<>();
         map.put("tracking", List.of(new JobResponse(j1)));
