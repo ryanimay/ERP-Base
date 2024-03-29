@@ -11,6 +11,7 @@ import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.DepartmentRepository;
+import com.erp.base.tool.ObjectTool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,11 @@ class DepartmentServiceTest {
     void setDepartmentDefaultRole_defaultRole_ok() {
         ClientModel model = new ClientModel(1);
         ClientModel model1 = departmentService.setDepartmentDefaultRole(model, null);
-        Assertions.assertTrue(model1.getRoles().contains(new RoleModel(1)));
+        System.out.println(ObjectTool.toJson(model1));
+        Iterator<RoleModel> iterator = model1.getRoles().iterator();
+        Assertions.assertTrue(iterator.hasNext());
+        Assertions.assertEquals(1L, iterator.next().getId());
+        Assertions.assertFalse(iterator.hasNext());
     }
 
     @Test
@@ -52,7 +57,10 @@ class DepartmentServiceTest {
         d.setDefaultRole(new RoleModel(5));
         Mockito.when(cacheService.getDepartment(Mockito.any())).thenReturn(d);
         ClientModel model1 = departmentService.setDepartmentDefaultRole(model, 1L);
-        Assertions.assertTrue(model1.getRoles().contains(new RoleModel(5)));
+        Iterator<RoleModel> iterator = model1.getRoles().iterator();
+        Assertions.assertTrue(iterator.hasNext());
+        Assertions.assertEquals(5L, iterator.next().getId());
+        Assertions.assertFalse(iterator.hasNext());
     }
 
     @Test

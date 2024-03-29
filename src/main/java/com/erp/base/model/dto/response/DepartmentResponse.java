@@ -1,6 +1,7 @@
 package com.erp.base.model.dto.response;
 
 import com.erp.base.model.dto.response.role.RoleNameResponse;
+import com.erp.base.model.entity.DepartmentModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,4 +17,11 @@ public class DepartmentResponse implements Serializable {
     private long id;
     private String name;
     private RoleNameResponse role;
+
+    @SuppressWarnings("unused")
+    public DepartmentResponse(DepartmentModel model) {
+        this.id = model.getId();
+        this.name = model.getName();
+        this.role = new RoleNameResponse(model.getDefaultRole());
+    }
 }

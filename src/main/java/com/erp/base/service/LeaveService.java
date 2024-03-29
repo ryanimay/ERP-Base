@@ -68,7 +68,7 @@ public class LeaveService {
         ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
         LeaveModel entity = request.toModel();
-        LeaveModel saved = updateOrSave(entity, new ClientModel(user.getId()));
+        LeaveModel saved = updateOrSave(entity, user.toEntity());
         sendMessageToManager(user);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new LeaveResponse(saved));
     }

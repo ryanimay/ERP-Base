@@ -2,6 +2,7 @@ package com.erp.base.model.dto.security;
 
 import com.erp.base.model.dto.response.DepartmentResponse;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.DepartmentModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,9 +47,30 @@ public class ClientIdentityDto implements Serializable {
         this.createBy = model.getCreateBy();
         this.mustUpdatePassword = model.isMustUpdatePassword();
         this.attendStatus = model.getAttendStatus();
-        if(model.getDepartment() != null){
+        if (model.getDepartment() != null) {
             this.department.setId(model.getDepartment().getId());
             this.department.setName(model.getDepartment().getName());
         }
+    }
+
+    public ClientModel toEntity() {
+        ClientModel model = new ClientModel(id);
+        model.setUsername(this.username);
+        model.setPassword(this.password);
+        model.setActive(this.isActive);
+        model.setLock(this.isLock);
+        model.setEmail(this.email);
+        model.setLastLoginTime(this.lastLoginTime);
+        model.setCreateTime(this.createTime);
+        model.setCreateBy(this.createBy);
+        model.setMustUpdatePassword(this.mustUpdatePassword);
+        model.setAttendStatus(this.attendStatus);
+        if (this.department != null) {
+            DepartmentModel departmentModel = new DepartmentModel();
+            departmentModel.setId(this.department.getId());
+            departmentModel.setName(this.department.getName());
+            model.setDepartment(departmentModel);
+        }
+        return model;
     }
 }

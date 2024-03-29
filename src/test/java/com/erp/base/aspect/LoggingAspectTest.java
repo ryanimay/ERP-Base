@@ -4,6 +4,7 @@ import com.erp.base.controller.Router;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.LogService;
 import com.erp.base.tool.ObjectTool;
@@ -56,7 +57,7 @@ class LoggingAspectTest {
         try (MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class)) {
             requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
             try (MockedStatic<ClientIdentity> clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class)) {
-                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
+                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(new ClientIdentityDto(client));
                 response = ApiResponse.success(ApiResponseCode.SUCCESS);
                 Mockito.when(joinPoint.proceed()).thenReturn(response);
 
@@ -82,7 +83,7 @@ class LoggingAspectTest {
         try (MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class)) {
             requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
             try (MockedStatic<ClientIdentity> clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class)) {
-                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
+                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(new ClientIdentityDto(client));
                 response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
                 Mockito.when(joinPoint.proceed()).thenReturn(response);
 
@@ -108,7 +109,7 @@ class LoggingAspectTest {
         try (MockedStatic<RequestContextHolder> requestContextHolderMockedStatic = Mockito.mockStatic(RequestContextHolder.class)) {
             requestContextHolderMockedStatic.when(RequestContextHolder::currentRequestAttributes).thenReturn(servletRequestAttributes);
             try (MockedStatic<ClientIdentity> clientIdentityMockedStatic = Mockito.mockStatic(ClientIdentity.class)) {
-                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(client);
+                clientIdentityMockedStatic.when(ClientIdentity::getUser).thenReturn(new ClientIdentityDto(client));
                 response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
                 Mockito.when(joinPoint.proceed()).thenThrow(new RuntimeException("test error"));
 
