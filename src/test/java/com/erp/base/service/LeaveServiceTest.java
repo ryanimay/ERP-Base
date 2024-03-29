@@ -38,6 +38,8 @@ import java.util.*;
 class LeaveServiceTest {
     @Mock
     private LeaveRepository leaveRepository;
+    @Mock
+    private CacheService cacheService;
     private static final MessageSource messageSource = Mockito.spy(MessageSource.class);
     @InjectMocks
     private LeaveService leaveService;
@@ -211,6 +213,7 @@ class LeaveServiceTest {
         lm.setType(StatusConstant.PENDING_NO);
         leaveModels.add(lm);
         Page<LeaveModel> page = new PageImpl<>(leaveModels);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
         Mockito.when(leaveRepository.findByStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.any())).thenReturn(page);
         ResponseEntity<ApiResponse> delete = leaveService.pendingList(new PageRequestParam());
         Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, LeaveResponse.class)), delete);
@@ -236,6 +239,7 @@ class LeaveServiceTest {
         lm.setType(StatusConstant.PENDING_NO);
         leaveModels.add(lm);
         Page<LeaveModel> page = new PageImpl<>(leaveModels);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
         Mockito.when(leaveRepository.findByStatusAndDepartment(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.any())).thenReturn(page);
         ResponseEntity<ApiResponse> delete = leaveService.pendingList(new PageRequestParam());
         Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, LeaveResponse.class)), delete);
