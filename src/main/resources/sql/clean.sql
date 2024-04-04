@@ -24,8 +24,8 @@
   drop table quartz_job
   drop table role
   drop table role_permission
-  drop table router
-  drop table router_role
+  drop table menu
+  drop table menu_role
   drop table salary
   drop table tracking_job
   drop table log
