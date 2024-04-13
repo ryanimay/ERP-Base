@@ -38,6 +38,7 @@ public interface Router {
         String LIST = PERMISSION + "/list";
         String BAN = PERMISSION + "/ban";
         String SECURITY_CONFIRM = PERMISSION + "/securityConfirm";
+        String GET_KEY = PERMISSION + "/getKey";
     }
 
     interface MENU{
