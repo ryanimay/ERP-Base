@@ -1,14 +1,19 @@
 package com.erp.base.service.security;
 
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.LoginRequest;
+import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
+import com.erp.base.model.dto.response.ApiResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +25,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +33,8 @@ import java.util.Map;
 @Service
 @Transactional
 public class TokenService {
+    @Value("${security.password}")
+    private String securityPassword;
     private KeyPair keyPair;
     private AuthenticationProvider authenticationProvider;
     public static final String ACCESS_TOKEN = "X-Access-Token";
@@ -98,5 +106,13 @@ public class TokenService {
                 .plusSeconds(expirationTime)
                 .getEpochSecond()
                 * 1000;
+    }
+
+    public ResponseEntity<ApiResponse> getPublicKey(SecurityConfirmRequest request) {
+        if (securityPassword.equals(request.getSecurityPassword())){
+            PublicKey publicKey = keyPair.getPublic();
+            return ApiResponse.success(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
+        }
+        return ApiResponse.error(ApiResponseCode.SECURITY_ERROR, false);
     }
 }

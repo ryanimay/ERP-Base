@@ -5,6 +5,7 @@ import com.erp.base.model.dto.request.permission.BanRequest;
 import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.PermissionService;
+import com.erp.base.service.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "PermissionController", description = "權限相關API")
 public class PermissionController {
     private PermissionService permissionService;
+    private TokenService tokenService;
+    @Autowired
+    public void setTokenService(TokenService tokenService){
+        this.tokenService = tokenService;
+    }
     @Autowired
     public void setPermissionService(PermissionService permissionService){
         this.permissionService = permissionService;
@@ -44,5 +50,11 @@ public class PermissionController {
     @Operation(summary = "安全認證")
     public ResponseEntity<ApiResponse> securityConfirm(@RequestBody SecurityConfirmRequest request){
         return permissionService.securityConfirm(request);
+    }
+
+    @PostMapping(Router.PERMISSION.GET_KEY)
+    @Operation(summary = "獲取公鑰")
+    public ResponseEntity<ApiResponse> getKey(@RequestBody SecurityConfirmRequest request){
+        return tokenService.getPublicKey(request);
     }
 }
