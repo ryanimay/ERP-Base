@@ -73,14 +73,14 @@ class PermissionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data['*'][0].info").value(model.getInfo()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data['*'][0].url").value(model.getUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data['*'][0].status").value(model.getStatus()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.PERMISSION", Matchers.hasSize(4)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.PERMISSION", Matchers.hasSize(5)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.PROJECT", Matchers.hasSize(5)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.LOG", Matchers.hasSize(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.PERFORMANCE", Matchers.hasSize(7)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.MENU", Matchers.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.DEPARTMENT", Matchers.hasSize(4)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.PROCUREMENT", Matchers.hasSize(4)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data['*']", Matchers.hasSize(5)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data['*']", Matchers.hasSize(4)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.ATTEND", Matchers.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.CACHE", Matchers.hasSize(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.CLIENT", Matchers.hasSize(7)))
@@ -203,7 +203,8 @@ class PermissionControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, true);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.GET_KEY)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(ObjectTool.toJson(request));
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty());
@@ -217,7 +218,8 @@ class PermissionControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SECURITY_ERROR, false);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.GET_KEY)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(ObjectTool.toJson(request));
+                .content(ObjectTool.toJson(request))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }
