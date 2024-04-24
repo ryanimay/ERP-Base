@@ -51,7 +51,7 @@ i18n僅保留中/英
 把先前實現的UserDetailsService類注入<font color="#f00">AuthenticationProvider</font>(DaoAuthenticationProvider)  
 <font color="#f00">SecurityFilterChain</font>設置.addFilterBefore(<font color="#f00">JwtFilter</font>, UsernamePasswordAuthenticationFilter.class)
 之後登入就會先進行JWT驗證才會走到security的權限驗證  
-這邊的API權限設置也都是用動態加仔的方式設置在SecurityFilterChain  
+這邊的API權限設置也都是用動態加載的方式設置在SecurityFilterChain  
 後續流程:  
 用戶註冊時，密碼經由指定的<font color="#f00">PasswordEncoder</font>(像這邊是使用BCryptPasswordEncoder)  
 加密後存入資料庫  
@@ -72,10 +72,14 @@ Filter先驗證AccessToken是否過期，
 就必須透過JWT內儲存的用戶資訊產出Authentication以利該請求進行後續權限驗證  
 (目前是只存用戶名稱，想秉持用戶驗證和權限驗證的獨立性但不確定優劣)  
 然後因為是每次用戶請求都會產生新的Authentication，所以權限是即時更新的
-但缺點就是每次請求都要查詢當下權限，目前是只想到利用緩存優化
+但缺點就是每次請求都要查詢當下權限，目前是只想到利用緩存優化  
 另外  
-這邊JWT設計是用非對稱式加密  
-公鑰給前端，前後都需要驗證JWT時效和簽名  
+~~這邊JWT設計是用非對稱式加密  
+公鑰給前端，前後都需要驗證JWT時效和簽名~~  
+2024.4.24:  
+我的理解錯誤，這邊目前是修改為前端只進行時效驗證因為不需要密鑰  
+簽名驗證因為有密鑰隱私問題，由後端負責  
+JWT做非對稱加密的作用應該是比較偏向多服務間的後端溝通，不是前後端溝通
 
 ***
 ## 關於測試(UnitTest、IntegrationTest)
