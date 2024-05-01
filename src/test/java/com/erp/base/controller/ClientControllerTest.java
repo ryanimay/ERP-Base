@@ -1025,6 +1025,37 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(clientNameObject.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].username").value(clientNameObject.getUsername()));
     }
+
+    @Test
+    @DisplayName("用戶登出_成功")
+    void userLogout_bothToken_ok() throws Exception {
+        String accessToken = testUtils.createTestToken(DEFAULT_USER_NAME);
+        String refreshToken = "refreshToken";
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGOUT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .header(TokenService.REFRESH_TOKEN, refreshToken);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+
+        Assertions.assertTrue(cacheService.existsTokenBlackList(accessToken));
+        Assertions.assertTrue(cacheService.existsTokenBlackList(refreshToken));
+        cacheService.refreshAllCache();
+    }
+
+    @Test
+    @DisplayName("用戶登出_成功")
+    void userLogout_accessToken_ok() throws Exception {
+        String accessToken = testUtils.createTestToken(DEFAULT_USER_NAME);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGOUT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+
+        Assertions.assertTrue(cacheService.existsTokenBlackList(accessToken));
+        cacheService.refreshAllCache();
+    }
     //更改role用於測試權限
     private void editRole(long roleId){
         Optional<ClientModel> byId = repository.findById(1L);

@@ -95,12 +95,23 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
+    @DisplayName("JWT驗證_accessToken黑名單_錯誤")
+    void testDenyPermission_accessToken_refreshTokenBlackList_error() throws ServletException, IOException {
+        tokenService.init();
+        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, "test", 0));
+        Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(true);
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        ApiResponse apiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
+        Assertions.assertEquals(ObjectTool.toJson(apiResponse), response.getContentAsString());
+    }
+
+    @Test
     @DisplayName("JWT驗證_refreshToken黑名單_錯誤")
-    void testDenyPermission_refreshTokenBlackList_error() throws ServletException, IOException {
+    void testDenyPermission_refreshToken_refreshTokenBlackList_error() throws ServletException, IOException {
         tokenService.init();
         request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, "test", 0));
         request.addHeader(TokenService.REFRESH_TOKEN, "testToken");
-        Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(true);
+        Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(false).thenReturn(true);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         ApiResponse apiResponse = new ApiResponse(ApiResponseCode.INVALID_SIGNATURE);
         Assertions.assertEquals(ObjectTool.toJson(apiResponse), response.getContentAsString());
