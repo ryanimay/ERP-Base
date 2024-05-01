@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String url = ObjectTool.extractPath(request.getRequestURI());
             if (requiresAuthentication(url)) {
                 String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-                if(token == null) throw new AccessDeniedException("token is empty");
+                if(token == null || cacheService.existsTokenBlackList(token)) throw new AccessDeniedException("token error");
                 authenticationToken(token);
             }
         } catch (ExpiredJwtException e) {

@@ -20,6 +20,7 @@ public interface Router {
         String CLIENT_LOCK = CLIENT + "/clientLock";
         String CLIENT_STATUS = CLIENT + "/clientStatus";
         String NAME_LIST = CLIENT + "/nameList";
+        String LOGOUT = CLIENT + "/logout";
     }
 
     interface ROLE{

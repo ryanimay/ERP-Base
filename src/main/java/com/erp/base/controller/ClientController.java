@@ -5,6 +5,7 @@ import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.ClientService;
+import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.LogFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,7 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,5 +122,14 @@ public class ClientController {
     @Operation(summary = "用戶名清單")
     public ResponseEntity<ApiResponse> nameList(){
         return clientService.nameList();
+    }
+
+    @PostMapping(Router.CLIENT.LOGOUT)
+    @Operation(summary = "登入")
+    public ResponseEntity<ApiResponse> logout(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+            @RequestHeader(value = TokenService.REFRESH_TOKEN, required = false) String refreshToken
+            ){
+        return clientService.logout(accessToken, refreshToken);
     }
 }
