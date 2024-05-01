@@ -12,7 +12,7 @@ public class TestRedisConfiguration {
     private final RedisServer redisServer;
 
     public TestRedisConfiguration(RedisProperties redisProperties) {
-        this.redisServer = new RedisServer(redisProperties.getRedisPort());
+        this.redisServer = RedisServer.builder().setting("maxheap 200m").port(redisProperties.getRedisPort()).build();
     }
 
     @PostConstruct
