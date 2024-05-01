@@ -309,4 +309,13 @@ public class ClientService {
     public boolean checkExistsRoleId(Long id) {
         return clientRepository.checkExistsRoleId(id);
     }
+
+    /**
+     * 主要就是處理JWT加黑名單
+     * */
+    public ResponseEntity<ApiResponse> logout(String accessToken, String refreshToken) {
+        if(accessToken != null) cacheService.addTokenBlackList(accessToken);
+        if(refreshToken != null) cacheService.addTokenBlackList(refreshToken);
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
 }
