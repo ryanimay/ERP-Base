@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @Repository
 public interface AttendRepository extends JpaRepository<AttendModel, Long> {
     @Modifying
-    @Query("UPDATE AttendModel a SET a.attendTime = :nowTime WHERE a.date = :nowDate AND a.user.id = :id")
+    @Query("UPDATE AttendModel a SET a.attendTime = :nowTime WHERE a.attendTime IS NULL AND a.date = :nowDate AND a.user.id = :id")
     int signIn(long id, LocalDate nowDate, LocalDateTime nowTime);
     @Modifying
-    @Query("UPDATE AttendModel a SET a.leaveTime = :nowTime WHERE a.date = :nowDate AND a.user.id = :id")
+    @Query("UPDATE AttendModel a SET a.leaveTime = :nowTime WHERE a.leaveTime IS NULL AND a.date = :nowDate AND a.user.id = :id")
     int signOut(long id, LocalDate nowDate, LocalDateTime nowTime);
 }
