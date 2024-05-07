@@ -232,7 +232,6 @@ public class ClientService {
         Optional<ClientModel> clientOptional = clientRepository.findById(request.getId());
         if (clientOptional.isEmpty()) throw new UsernameNotFoundException("User Not Found");
         ClientModel client = clientOptional.get();
-        if (request.getUsername() != null) client.setUsername(request.getUsername());
         if (request.getEmail() != null) client.setEmail(request.getEmail());
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
         if (request.getRoles() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());

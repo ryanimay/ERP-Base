@@ -687,7 +687,7 @@ class ClientControllerTest {
         ClientResponseModel save = new ClientResponseModel(repository.save(testModel));
         UpdateClientInfoRequest request = new UpdateClientInfoRequest(
                 save.getId(),
-                save.getUsername() + "test",
+                save.getUsername(),
                 "test" + save.getEmail(),
                 List.of(2L, 3L),
                 null
