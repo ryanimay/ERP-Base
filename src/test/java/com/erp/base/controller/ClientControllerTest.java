@@ -711,7 +711,7 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.department").value(save.getDepartment()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(save.isActive()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(save.isLock()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId", Matchers.containsInAnyOrder(1, 2, 3)));//1是驗證預設部門和預設權限是否生效
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId", Matchers.containsInAnyOrder(2, 3)));//更新用戶時不帶departmentID就不做更動，預設部門只會在註冊生效
         repository.deleteById(save.getId());
     }
 
