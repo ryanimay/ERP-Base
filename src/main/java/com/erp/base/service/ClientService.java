@@ -234,7 +234,7 @@ public class ClientService {
         ClientModel client = clientOptional.get();
         if (request.getEmail() != null) client.setEmail(request.getEmail());
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
-        if (request.getRoles() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
+        if (request.getDepartmentId() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
         ClientModel save = clientRepository.save(client);
         cacheService.refreshClient(client.getUsername());
         //非本人就發送通知
