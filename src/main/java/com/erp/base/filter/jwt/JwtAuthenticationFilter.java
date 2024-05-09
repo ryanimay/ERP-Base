@@ -55,7 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (requiresAuthentication(url)) {
                 String token = request.getHeader(HttpHeaders.AUTHORIZATION);
                 if(token == null || cacheService.existsTokenBlackList(token)) throw new AccessDeniedException("token error");
-                authenticationToken(token);
+                Map<String, Object> payload = authenticationToken(token);
+                createAuthentication((String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME), request);
+            }else{
+                createEmptyUserAuth(request);
             }
         } catch (ExpiredJwtException e) {
             try{
@@ -83,10 +86,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * 驗證AccessToken
      */
-    private void authenticationToken(String token) {
+    private Map<String, Object> authenticationToken(String token) {
         String accessToken = token.replace(TokenService.TOKEN_PREFIX, "");
-        Map<String, Object> payload = tokenService.parseToken(accessToken);
-        createAuthentication((String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME));
+        return tokenService.parseToken(accessToken);
     }
 
     /**
@@ -104,20 +106,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String refreshToken = tokenService.createToken(TokenService.REFRESH_TOKEN, username, TokenService.REFRESH_TOKEN_EXPIRE_TIME);
             response.setHeader(TokenService.REFRESH_TOKEN, refreshToken);
             cacheService.addTokenBlackList(token);
-            createAuthentication(username);
+            createAuthentication(username, request);
         } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
             throw new SignatureException("");
         }
     }
 
-    private void createAuthentication(String username) {
+    private void createAuthentication(String username, HttpServletRequest request) {
+        String lang = request.getHeader("User-Lang");
         ClientModel client = cacheService.getClient(username);
         if(client == null) return;
-        UserDetailImpl userDetail = new UserDetailImpl(new ClientIdentityDto(client), cacheService);
+        UserDetailImpl userDetail = lang == null ? new UserDetailImpl(new ClientIdentityDto(client), cacheService) : new UserDetailImpl(lang, new ClientIdentityDto(client), cacheService);
         Collection<? extends GrantedAuthority> rolePermission = userDetail.getAuthorities();
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    /**
+     * 在lang不為null的情況下
+     * 創建不需驗證的api用的auth
+     * 只放帶有lang的principal，用於控制接口返回語系
+     * */
+    private void createEmptyUserAuth(HttpServletRequest request) {
+        String lang = request.getHeader("User-Lang");
+        if(lang != null){
+            UserDetailImpl userDetail = new UserDetailImpl(lang, new ClientIdentityDto(), cacheService);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, null);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
     }
 
     private void exceptionResponse(Exception e, HttpServletResponse response, ApiResponseCode code) throws IOException {

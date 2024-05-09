@@ -26,6 +26,12 @@ public class UserDetailImpl implements UserDetails {
     @JsonIgnore
     private CacheService cacheService;
 
+    public UserDetailImpl(String lang, ClientIdentityDto clientModel, CacheService cacheService) {
+        this.locale = new Locale(lang);
+        this.cacheService = cacheService;
+        this.clientModel = clientModel;
+    }
+
     public UserDetailImpl(ClientIdentityDto clientModel, CacheService cacheService) {
         this.cacheService = cacheService;
         this.clientModel = clientModel;
