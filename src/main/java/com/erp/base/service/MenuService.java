@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -57,11 +54,37 @@ public class MenuService {
     }
 
     public ResponseEntity<ApiResponse> pMenu(List<Long> roleIds) {
-        List<MenuModel> byRoleId = menuRepository.findByRoleId(roleIds);
+        Set<MenuResponse> set = new HashSet<>();
+        roleIds.forEach(id -> set.addAll(cacheService.getRoleMenu(id)));//set去重
+        List<MenuResponse> menuList = new ArrayList<>(set);
+        menuList.sort(new MenuComparator());//轉list排序
         Map<Long, List<MenuResponse>> menuMap = new HashMap<>();
-        for (MenuModel model : byRoleId) {
-            handleMenu(new MenuResponse(model), menuMap);
-        }
+        for (MenuResponse model : menuList) {
+            handleMenu(model, menuMap);
+        }//整理成樹狀返回根節點
         return ApiResponse.success(ApiResponseCode.SUCCESS, menuMap.get(0L));
+    }
+
+    public List<MenuResponse> getRoleMenu(long roleId){
+        List<MenuModel> byRoleId = menuRepository.findByRoleId(roleId);
+        return byRoleId.stream().map(MenuResponse::new).toList();
+    }
+
+    private static class MenuComparator implements Comparator<MenuResponse> {
+        @Override
+        public int compare(MenuResponse m1, MenuResponse m2) {
+            // level 降序排列
+            if (!Objects.equals(m1.getLevel(), m2.getLevel())) {
+                return Integer.compare(m2.getLevel(), m1.getLevel()); // m2在前面，以便降序排列
+            }
+
+            // parentId 升序排列
+            if (m1.getParentsId() != m2.getParentsId()) {
+                return Long.compare(m1.getParentsId(), m2.getParentsId());
+            }
+
+            // orderNum 升序排列
+            return Integer.compare(m1.getOrder(), m2.getOrder());
+        }
     }
 }

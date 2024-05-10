@@ -109,4 +109,9 @@ public class RolePermissionCache implements ICache {
     public List<MenuResponse> findMenuTree() {
         return menuService.findAllTree();
     }
+
+    @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROLE_MENU + " + #id")
+    public List<MenuResponse> getRoleMenu(Long id) {
+        return menuService.getRoleMenu(id);
+    }
 }

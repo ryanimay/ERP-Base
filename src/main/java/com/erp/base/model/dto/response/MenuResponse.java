@@ -17,6 +17,8 @@ public class MenuResponse implements Serializable {
     private String icon;
     private long parentsId;
     private List<MenuResponse> child;
+    private Integer level;
+    private Integer order;
 
     public MenuResponse(MenuModel model) {
         this.id = model.getId();
@@ -24,5 +26,7 @@ public class MenuResponse implements Serializable {
         this.path = model.getPath();
         this.icon = model.getIcon();
         this.parentsId = model.getParent() == null ? 0 : model.getParent().getId();
+        this.level = model.getLevel();
+        this.order = model.getOrderNum();
     }
 }

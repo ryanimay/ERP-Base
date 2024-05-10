@@ -11,6 +11,6 @@ import java.util.List;
 public interface MenuRepository extends JpaRepository<MenuModel, Long> {
     @Query("SELECT m FROM MenuModel m WHERE m.status ORDER BY m.level DESC, m.parent.id, m.orderNum ")
     List<MenuModel> findAllOrderByParentsAndOrderNum();
-    @Query("SELECT m FROM MenuModel m JOIN m.roles r WHERE m.status AND r.id IN :ids ORDER BY m.level DESC, m.parent.id, m.orderNum")
-    List<MenuModel> findByRoleId(List<Long> ids);
+    @Query("SELECT m FROM MenuModel m JOIN m.roles r WHERE m.status AND r.id = :id ORDER BY m.level DESC, m.parent.id, m.orderNum")
+    List<MenuModel> findByRoleId(Long id);
 }

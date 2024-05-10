@@ -4,10 +4,7 @@ import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.MenuResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
-import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.DepartmentModel;
-import com.erp.base.model.entity.PermissionModel;
-import com.erp.base.model.entity.RoleModel;
+import com.erp.base.model.entity.*;
 import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.cache.ICache;
 import com.erp.base.service.cache.RolePermissionCache;
@@ -16,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 所有緩存相關的調用都集中在這個service
@@ -109,5 +103,9 @@ public class CacheService {
 
     public List<MenuResponse> findMenuTree() {
         return rolePermissionCache.findMenuTree();
+    }
+
+    public List<MenuResponse> getRoleMenu(Long id) {
+        return rolePermissionCache.getRoleMenu(id);
     }
 }
