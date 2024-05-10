@@ -11,7 +11,6 @@ import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.DepartmentRepository;
-import com.erp.base.tool.ObjectTool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,6 @@ class DepartmentServiceTest {
     void setDepartmentDefaultRole_defaultRole_ok() {
         ClientModel model = new ClientModel(1);
         ClientModel model1 = departmentService.setDepartmentDefaultRole(model, null);
-        System.out.println(ObjectTool.toJson(model1));
         Iterator<RoleModel> iterator = model1.getRoles().iterator();
         Assertions.assertTrue(iterator.hasNext());
         Assertions.assertEquals(1L, iterator.next().getId());
