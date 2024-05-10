@@ -20,6 +20,7 @@ public interface CacheConstant {
         String PERMISSION_STATUS = "'permissionStatus_'";
         String DEPARTMENT = "'department_'";
         String MENU_TREE = "'menuTree'";
+        String ROLE_MENU = "'roleMenu_'";
     }
 
     interface TOKEN_BLACK_LIST{
