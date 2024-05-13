@@ -1,12 +1,14 @@
 package com.erp.base.config.security;
 
-import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.filter.jwt.DenyPermissionFilter;
 import com.erp.base.filter.jwt.JwtAuthenticationFilter;
 import com.erp.base.filter.jwt.UserStatusFilter;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.entity.PermissionModel;
+import com.erp.base.service.CacheService;
 import com.erp.base.service.PermissionService;
+import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,11 +39,15 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class SecurityConfig {
     LogFactory LOG = new LogFactory(SecurityConfig.class);
     private final PermissionService permissionService;
+    private final TokenService tokenService;
+    private final CacheService cacheService;
     //不須驗證權限的公開url
     public static Set<String> noRequiresAuthenticationSet = new HashSet<>();
     @Autowired
-    public SecurityConfig(PermissionService permissionService) {
+    public SecurityConfig(PermissionService permissionService, CacheService cacheService, TokenService tokenService) {
         this.permissionService = permissionService;
+        this.cacheService = cacheService;
+        this.tokenService = tokenService;
     }
 
     @Bean
@@ -52,7 +59,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter authFilter, UserStatusFilter userStatusFilter, DenyPermissionFilter denyPermissionFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //配置資料庫內permission表的所有API權限設定
         configurePermission(http);
 
@@ -61,9 +68,9 @@ public class SecurityConfig {
                         .requestMatchers("/swagger/swagger-ui.html", "/swagger/swagger-ui/**", "/swagger/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(denyPermissionFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(authFilter, DenyPermissionFilter.class)
-                .addFilterAfter(userStatusFilter, JwtAuthenticationFilter.class)
+                .addFilterBefore(new DenyPermissionFilter(cacheService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtAuthenticationFilter(tokenService, cacheService), DenyPermissionFilter.class)
+                .addFilterAfter(new UserStatusFilter(), JwtAuthenticationFilter.class)
                 .exceptionHandling(exception ->
                         exception.accessDeniedHandler((request, response, accessDeniedException) ->
                                 FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED))
@@ -79,6 +86,11 @@ public class SecurityConfig {
                                     }
                                 ));
         return http.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return (web) -> web.ignoring().requestMatchers("/ws");
     }
 
     @Bean

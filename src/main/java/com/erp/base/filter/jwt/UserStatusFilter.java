@@ -14,14 +14,12 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.AccessDeniedException;
 
-@Component
 public class UserStatusFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(UserStatusFilter.class);
     public static final String CLIENT_LOCK_URL = "/client/clientLock";
