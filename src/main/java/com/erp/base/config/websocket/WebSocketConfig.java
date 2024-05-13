@@ -47,7 +47,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         return new CustomPrincipal(userId);
                     }
                 })
-                .setAllowedOrigins("*")
+                .setAllowedOriginPatterns("*")
                 .withSockJS()
                 .setInterceptors(userHandshakeInterceptor);
     }
