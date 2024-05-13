@@ -17,14 +17,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -32,19 +30,16 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Map;
 
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     LogFactory LOG = new LogFactory(JwtAuthenticationFilter.class);
-    private TokenService tokenService;
-    private CacheService cacheService;
-    @Autowired
-    public void setTokenService(TokenService tokenService) {
+    private final TokenService tokenService;
+    private final CacheService cacheService;
+
+    public JwtAuthenticationFilter(TokenService tokenService, CacheService cacheService) {
         this.tokenService = tokenService;
-    }
-    @Autowired
-    public void setCacheService(CacheService cacheService) {
         this.cacheService = cacheService;
     }
+
     /**
      * 針對已登入用戶後續存取api做token驗證和例外處理
      */
