@@ -20,7 +20,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -66,6 +65,7 @@ public class SecurityConfig {
         //permission表以外的設定
         http.authorizeHttpRequests(request -> request
                         .requestMatchers("/swagger/swagger-ui.html", "/swagger/swagger-ui/**", "/swagger/api-docs/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new DenyPermissionFilter(cacheService), UsernamePasswordAuthenticationFilter.class)
@@ -86,11 +86,6 @@ public class SecurityConfig {
                                     }
                                 ));
         return http.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        return (web) -> web.ignoring().requestMatchers("/ws");
     }
 
     @Bean

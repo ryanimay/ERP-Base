@@ -1,8 +1,6 @@
 package com.erp.base.config.websocket;
 
 import com.erp.base.filter.UserHandshakeInterceptor;
-import com.erp.base.model.ClientIdentity;
-import com.erp.base.model.dto.security.ClientIdentityDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -32,18 +30,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableSimpleBroker(WebsocketConstant.TOPIC.PREFIX);
         config.setApplicationDestinationPrefixes("/app");
     }
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     @Override
                     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-                        ClientIdentityDto user = ClientIdentity.getUser();
-                        long userId = 0L;
-                        if (user != null) {
-                            userId = user.getId();
-                        }
+                        long userId = Long.parseLong((String) attributes.get("userId"));
                         return new CustomPrincipal(userId);
                     }
                 })
@@ -51,6 +44,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS()
                 .setInterceptors(userHandshakeInterceptor);
     }
+
 
     private class CustomPrincipal implements Principal{
 

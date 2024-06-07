@@ -1,11 +1,9 @@
 package com.erp.base.filter;
 
 import com.erp.base.config.websocket.WebsocketConstant;
-import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
-import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.service.CacheService;
+import com.erp.base.service.ClientService;
 import com.erp.base.service.MessageService;
 import com.erp.base.service.NotificationService;
 import com.erp.base.service.security.TokenService;
@@ -13,6 +11,7 @@ import com.erp.base.tool.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
@@ -28,10 +27,10 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
     private TokenService tokenService;
     private MessageService messageService;
     private NotificationService notificationService;
-    private CacheService cacheService;
+    private ClientService clientService;
     @Autowired
-    public void setCacheService(CacheService cacheService){
-        this.cacheService = cacheService;
+    public void setClientService(ClientService clientService) {
+        this.clientService = clientService;
     }
     @Autowired
     public void setNotificationService(NotificationService notificationService) {
@@ -48,22 +47,29 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        String authToken = request.getHeaders().getFirst("Authorization");
-        return isValidAuthToken(authToken);
+        if (request instanceof ServletServerHttpRequest servletRequest) {
+            if(isValidAuthToken(servletRequest.getServletRequest().getParameter("token"))){
+                String userId = servletRequest.getServletRequest().getParameter("userId");
+                attributes.put("userId", userId);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-        sendNotification();
+        //默認信息待修改，連接未完成不能這時候發送
+//        String userId = ((ServletServerHttpRequest)request).getServletRequest().getParameter("userId");
+//        sendNotification(Long.parseLong(userId));
     }
 
     //連結完先找歷史通知
-    private void sendNotification() {
-        ClientIdentityDto user = ClientIdentity.getUser();
-        if(user != null){
-            String userId = Long.toString(user.getId());
+    private void sendNotification(Long uid) {
+        if(uid != null){
+            String userId = Long.toString(uid);
             Set<NotificationModel> notifications = notificationService.findGlobal();//全域通知
-            Set<NotificationModel> userNotification = cacheService.getClient(user.getUsername()).getNotifications();
+            Set<NotificationModel> userNotification = clientService.findNotificationByUserId(uid);//個人通知
             notifications.addAll(userNotification);//個人通知
             //整理排序
             List<NotificationModel> notificationList = notifications.stream()
