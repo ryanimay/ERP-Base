@@ -1,6 +1,7 @@
 package com.erp.base.repository;
 
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.NotificationModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -55,4 +56,6 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     @Query("SELECT CASE WHEN EXISTS (SELECT 1 FROM ClientModel c JOIN c.roles r WHERE r.id = :id) THEN true ELSE false END FROM ClientModel c")
     boolean checkExistsRoleId(Long id);
     Page<ClientModel> findById(Long id, PageRequest page);
+    @Query("SELECT c.notifications FROM ClientModel c WHERE c.id = :id")
+    Set<NotificationModel> findNotificationByUserId(Long id);
 }

@@ -317,4 +317,8 @@ public class ClientService {
         if(refreshToken != null) cacheService.addTokenBlackList(refreshToken);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
+
+    public Set<NotificationModel> findNotificationByUserId(Long uid) {
+        return clientRepository.findNotificationByUserId(uid);
+    }
 }

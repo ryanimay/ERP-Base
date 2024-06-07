@@ -39,7 +39,7 @@ public class UserStatusFilter extends OncePerRequestFilter {
             return;
         }
         //不包含在公開API才需要驗證
-        if(!SecurityConfig.noRequiresAuthenticationSet.contains(url)){
+        if(!SecurityConfig.noRequiresAuthenticationSet.contains(url) && notEqualWebsocketUrl(url)){
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated()) {
                 try {
@@ -75,5 +75,9 @@ public class UserStatusFilter extends OncePerRequestFilter {
     private void exceptionResponse(Exception e, HttpServletResponse response, ApiResponseCode code) throws IOException {
         LOG.error(e.getMessage());
         FilterExceptionResponse.error(response, code);
+    }
+
+    private boolean notEqualWebsocketUrl(String requestedUrl) {
+        return !requestedUrl.contains("/ws");
     }
 }

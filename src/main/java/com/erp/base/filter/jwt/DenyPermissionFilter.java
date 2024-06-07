@@ -34,7 +34,7 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (!StringUtils.isEmpty(requestedUrl) && notEqualSwaggerUrl(requestedUrl)) {
+        if (!StringUtils.isEmpty(requestedUrl) && notEqualSwaggerUrl(requestedUrl) && notEqualWebsocketUrl(requestedUrl)) {
             //檢查路徑狀態是否為deny
             Boolean status = cacheService.permissionStatus(requestedUrl);
             if (status == null || Boolean.FALSE.equals(status)) {
@@ -48,5 +48,9 @@ public class DenyPermissionFilter extends OncePerRequestFilter {
 
     private boolean notEqualSwaggerUrl(String requestedUrl) {
         return !requestedUrl.contains("swagger");
+    }
+
+    private boolean notEqualWebsocketUrl(String requestedUrl) {
+        return !requestedUrl.contains("/ws");
     }
 }

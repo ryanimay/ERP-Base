@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String url = ObjectTool.extractPath(request.getRequestURI());
-            if (requiresAuthentication(url)) {
+            if (requiresAuthentication(url) && notEqualWebsocketUrl(url)) {
                 String token = request.getHeader(HttpHeaders.AUTHORIZATION);
                 if(token == null || cacheService.existsTokenBlackList(token)) throw new AccessDeniedException("token error");
                 Map<String, Object> payload = authenticationToken(token);
@@ -135,5 +135,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void exceptionResponse(Exception e, HttpServletResponse response, ApiResponseCode code) throws IOException {
         LOG.error(e.getMessage());
         FilterExceptionResponse.error(response, code);
+    }
+
+    private boolean notEqualWebsocketUrl(String requestedUrl) {
+        return !requestedUrl.contains("/ws");
     }
 }
