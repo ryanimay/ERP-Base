@@ -49,7 +49,7 @@ class AttendControllerTest {
     private AttendRepository attendRepository;
     @Autowired
     private ClientRepository clientRepository;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -59,7 +59,7 @@ class AttendControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SIGN_FAILED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
     
@@ -71,7 +71,7 @@ class AttendControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         Optional<ClientModel> userOptional = clientRepository.findById(1L);
         Assertions.assertTrue(userOptional.isPresent());
@@ -105,7 +105,7 @@ class AttendControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.SIGN_FAILED);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_IN)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -117,7 +117,7 @@ class AttendControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ATTEND.SIGN_OUT)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         Optional<ClientModel> userOptional = clientRepository.findById(1L);
         Assertions.assertTrue(userOptional.isPresent());

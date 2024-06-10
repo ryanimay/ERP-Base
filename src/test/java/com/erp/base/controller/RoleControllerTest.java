@@ -46,7 +46,7 @@ class RoleControllerTest {
     private TestUtils testUtils;
     @Autowired
     private RoleRepository roleRepository;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
 
     @Test
     @DisplayName("角色清單_成功")
@@ -55,7 +55,7 @@ class RoleControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.ROLE.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(all.get(0).getId()))
@@ -78,7 +78,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ROLE.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         Optional<RoleModel> byId = roleRepository.findById(3L);
         Assertions.assertTrue(byId.isPresent());
@@ -96,7 +96,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ROLE.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -110,7 +110,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.ROLE.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -123,7 +123,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<RoleModel> all = roleRepository.findAll();
         Optional<RoleModel> first = all.stream().filter(r -> r.getRoleName().equals(roleRequest.getName())).findFirst();
@@ -141,7 +141,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -162,7 +162,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ROLE_PERMISSION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         byId = roleRepository.findById(1L);
         Assertions.assertTrue(byId.isPresent());
@@ -184,7 +184,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ROLE_PERMISSION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -195,7 +195,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.ROLE.REMOVE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "2")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -208,7 +208,7 @@ class RoleControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.ROLE.REMOVE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "3")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         byId = roleRepository.findById(3L);
         Assertions.assertTrue(byId.isEmpty());

@@ -35,7 +35,7 @@ class MenuControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private TestUtils testUtils;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
 
     @Test
     @DisplayName("完整菜單_成功")
@@ -43,7 +43,7 @@ class MenuControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.MENU.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
@@ -85,7 +85,7 @@ class MenuControllerTest {
                 .param("roleIds", "1")
                 .param("roleIds", "2")
                 .param("roleIds", "3")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions

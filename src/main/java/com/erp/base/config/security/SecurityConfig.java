@@ -72,8 +72,9 @@ public class SecurityConfig {
                 .addFilterAfter(new JwtAuthenticationFilter(tokenService, cacheService), DenyPermissionFilter.class)
                 .addFilterAfter(new UserStatusFilter(), JwtAuthenticationFilter.class)
                 .exceptionHandling(exception ->
-                        exception.accessDeniedHandler((request, response, accessDeniedException) ->
-                                FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED))
+                        exception.accessDeniedHandler((request, response, accessDeniedException) ->{
+                                    accessDeniedException.printStackTrace();
+                                FilterExceptionResponse.error(response, ApiResponseCode.ACCESS_DENIED);})
                                 .authenticationEntryPoint((request, response, authException) -> {
                                     authException.printStackTrace();
                                     if(authException instanceof LockedException){

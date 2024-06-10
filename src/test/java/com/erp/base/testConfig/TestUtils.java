@@ -31,8 +31,8 @@ public class TestUtils {
     }
 
     //測試用，只建立短時間的accessToken
-    public String createTestToken(String username){
-        return TokenService.TOKEN_PREFIX + tokenService.createToken(TokenService.ACCESS_TOKEN, username, 30);
+    public String createTestToken(Long uid){
+        return TokenService.TOKEN_PREFIX + tokenService.createToken(TokenService.ACCESS_TOKEN, uid, 30);
     }
 
     public void comparePage(ResultActions resultActions, int pageSize, int totalPage, int totalElements, int PageNum) throws Exception {

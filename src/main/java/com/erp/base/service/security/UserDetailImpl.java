@@ -2,8 +2,6 @@ package com.erp.base.service.security;
 
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.dto.security.RolePermissionDto;
-import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.CacheService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -80,10 +78,10 @@ public class UserDetailImpl implements UserDetails {
     }
 
     private Collection<? extends GrantedAuthority> getRolePermission() {
-        ClientModel client = cacheService.getClient(clientModel.getUsername());
+        ClientIdentityDto client = cacheService.getClient(clientModel.getId());
         Set<RolePermissionDto> set = new HashSet<>();
-        for (RoleModel role : client.getRoles()) {
-            set.addAll(cacheService.getRolePermission(role.getId()));
+        for (Long role : client.getRoleId()) {
+            set.addAll(cacheService.getRolePermission(role));
         }
         return set;
     }

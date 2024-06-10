@@ -47,13 +47,13 @@ class SalaryControllerTest {
     private TestUtils testUtils;
     @Autowired
     private SalaryRepository salaryRepository;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
     private static ClientModel me;
 
     @BeforeAll
     static void beforeAll(){
         me = new ClientModel(1L);
-        me.setUsername(DEFAULT_USER_NAME);
+        me.setUsername("test");
         me.setRoles(Set.of(new RoleModel(2L)));
         me.setDepartment(new DepartmentModel(1L));
     }
@@ -66,7 +66,7 @@ class SalaryControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.ROOTS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -94,7 +94,7 @@ class SalaryControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -107,7 +107,7 @@ class SalaryControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -127,7 +127,7 @@ class SalaryControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         byUserIdAndRoot = salaryRepository.findByUserIdAndRoot(me.getId(), true);
         Assertions.assertNotNull(byUserIdAndRoot);
@@ -151,7 +151,7 @@ class SalaryControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.SALARY.EDIT_ROOT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         SalaryModel byUserIdAndRoot = salaryRepository.findByUserIdAndRoot(salary.getUser().getId(), true);
         Assertions.assertNotNull(byUserIdAndRoot);
@@ -172,7 +172,7 @@ class SalaryControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.GET)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(salary1.getId()))
@@ -220,7 +220,7 @@ class SalaryControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.INFO)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", id)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -230,7 +230,7 @@ class SalaryControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id[" + null + "] Not Found");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.INFO)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -242,7 +242,7 @@ class SalaryControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.SALARY.INFO)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", String.valueOf(salaryResponse.getId()))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(salaryResponse.getId()))

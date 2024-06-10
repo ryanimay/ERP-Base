@@ -4,6 +4,8 @@ import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.LoginRequest;
 import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.entity.ClientModel;
+import com.erp.base.service.ClientService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -17,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,16 +38,22 @@ public class TokenService {
     private String securityPassword;
     private KeyPair keyPair;
     private AuthenticationProvider authenticationProvider;
+    private ClientService clientService;
     public static final String ACCESS_TOKEN = "X-Access-Token";
     public static final int ACCESS_TOKEN_EXPIRE_TIME = 60 * 30;//30分鐘刷新(秒為單位)
     public static final String REFRESH_TOKEN = "X-Refresh-Token";
     public static final int REFRESH_TOKEN_EXPIRE_TIME = 60 * 60 * 6;//6hr(秒為單位)
-    public static final String TOKEN_PROPERTIES_USERNAME = "username";
+    public static final String TOKEN_PROPERTIES_UID = "uid";
     public static final String TOKEN_PREFIX = "Bearer ";
 
     @Autowired
     public void setAuthenticationProvider(@Lazy AuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
+    }
+
+    @Autowired
+    public void setClientService(@Lazy ClientService clientService) {
+        this.clientService = clientService;
     }
 
     @PostConstruct
@@ -56,19 +63,19 @@ public class TokenService {
 
     public HttpHeaders createToken(LoginRequest request){
         Boolean rememberMe = request.getRememberMe();
+        String username = request.getUsername();
         // 封裝帳密
-        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, request.getPassword());
         // security執行帳密認證
-        authentication = authenticationProvider.authenticate(authentication);
-        // 認證成功後取得結果
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        authenticationProvider.authenticate(authentication);
+        ClientModel clientByUsername = clientService.findByUsername(username);
         // 產token
         HttpHeaders httpHeaders = new HttpHeaders();
-        String accessToken = createToken(ACCESS_TOKEN, userDetails.getUsername(), ACCESS_TOKEN_EXPIRE_TIME);
+        String accessToken = createToken(ACCESS_TOKEN, clientByUsername.getId(), ACCESS_TOKEN_EXPIRE_TIME);
         httpHeaders.add(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + accessToken);
         //rememberMe才發refreshToken
         if(Boolean.TRUE.equals(rememberMe)) {
-            String refreshToken = createToken(REFRESH_TOKEN, userDetails.getUsername(), REFRESH_TOKEN_EXPIRE_TIME);
+            String refreshToken = createToken(REFRESH_TOKEN, clientByUsername.getId(), REFRESH_TOKEN_EXPIRE_TIME);
             httpHeaders.add(REFRESH_TOKEN, refreshToken);
         }
         return httpHeaders;
@@ -82,7 +89,7 @@ public class TokenService {
     }
 
     //私鑰加密
-    public String createToken(String type, String username, int expirationTime) {
+    public String createToken(String type, Long uid, int expirationTime) {
         //轉毫秒
         long expirationMillis = getExpireMillisecond(expirationTime);
 
@@ -91,7 +98,7 @@ public class TokenService {
         claims.setSubject(type);
         claims.setIssuedAt(new Date());
         claims.setExpiration(new Date(expirationMillis));
-        claims.put(TOKEN_PROPERTIES_USERNAME, username);
+        claims.put(TOKEN_PROPERTIES_UID, uid);
 
         // 簽名後產生 token
         PrivateKey privateKey = keyPair.getPrivate();

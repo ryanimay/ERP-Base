@@ -1,6 +1,7 @@
 package com.erp.base.service.cache;
 
 import com.erp.base.model.dto.response.ClientNameObject;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
@@ -50,47 +51,50 @@ class ClientCacheTest {
 
     @Test
     void getClient_unknownUser() {
-        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(null);
-        ClientModel unknown = clientCache.getClient("unknown");
+        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(null);
+        ClientIdentityDto unknown = clientCache.getClient(9999L);
         Assertions.assertNull(unknown);
     }
 
     @Test
     void getClient_ok() {
-        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(client);
+        ClientIdentityDto expectClientDto = new ClientIdentityDto(client);
+        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(client);
 
-        ClientModel result1 = clientCache.getClient(key);
-        ClientModel result2 = clientCache.getClient(key);
+        long id = client.getId();
+        ClientIdentityDto result1 = clientCache.getClient(id);
+        ClientIdentityDto result2 = clientCache.getClient(id);
 
-        Assertions.assertEquals(client, result1);
-        Assertions.assertEquals(client, result2);
+        Assertions.assertEquals(expectClientDto, result1);
+        Assertions.assertEquals(expectClientDto, result2);
 
-        Mockito.verify(clientService, Mockito.times(1)).findByUsername(Mockito.eq(key));
+        Mockito.verify(clientService, Mockito.times(1)).findById(id);
         Mockito.verifyNoMoreInteractions(clientService);
     }
 
     @Test
     void refreshClient_ok() {
-        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(client);
-        clientCache.refreshClient(key);
-        clientCache.getClient(key);
-        clientCache.refreshClient(key);
-        clientCache.getClient(key);
-        Mockito.verify(clientService, Mockito.times(2)).findByUsername(Mockito.eq(key));
+        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(client);
+        clientCache.refreshClient(client.getId());
+        clientCache.getClient(client.getId());
+        clientCache.refreshClient(client.getId());
+        clientCache.getClient(client.getId());
+        Mockito.verify(clientService, Mockito.times(2)).findById(client.getId());
         Mockito.verifyNoMoreInteractions(clientService);
     }
 
     @Test
     void refreshAll_ok() {
-        Mockito.when(clientService.findByUsername(Mockito.anyString())).thenReturn(client);
+        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(client);
         clientCache.refreshAll();
-        clientCache.getClient(key);
-        clientCache.getClient(key + 1);
+        long id = client.getId();
+        clientCache.getClient(id);
+        clientCache.getClient(id + 1);
         clientCache.refreshAll();
-        clientCache.getClient(key);
-        clientCache.getClient(key + 1);
-        Mockito.verify(clientService, Mockito.times(2)).findByUsername(Mockito.eq(key));
-        Mockito.verify(clientService, Mockito.times(2)).findByUsername(Mockito.eq(key + 1));
+        clientCache.getClient(id);
+        clientCache.getClient(id + 1);
+        Mockito.verify(clientService, Mockito.times(2)).findById(id);
+        Mockito.verify(clientService, Mockito.times(2)).findById(id + 1);
         Mockito.verifyNoMoreInteractions(clientService);
     }
 

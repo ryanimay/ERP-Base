@@ -57,7 +57,7 @@ class JobControllerTest {
     private ClientRepository clientRepository;
     @PersistenceContext
     private EntityManager entityManager;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
     private long testJobId;
     private long userJobId;
     private long trackingJobId;
@@ -66,7 +66,7 @@ class JobControllerTest {
     @BeforeAll
     static void beforeAll(){
         me = new ClientModel(1L);
-        me.setUsername(DEFAULT_USER_NAME);
+        me.setUsername("test");
     }
 
     @Test
@@ -82,7 +82,7 @@ class JobControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.JOB.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].id").value(trackingJobResponse.getId()))
@@ -125,7 +125,7 @@ class JobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.JOB.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(jobRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<JobModel> list = jobRepository.findByUserOrTracking(me);
         Optional<JobModel> model = list.stream().filter(m -> m.getInfo().equals("測試任務卡內容1")).findFirst();
@@ -149,7 +149,7 @@ class JobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.JOB.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(jobRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -169,7 +169,7 @@ class JobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.JOB.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(jobRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         entityManager.flush();
         entityManager.clear();
@@ -182,7 +182,7 @@ class JobControllerTest {
         Assertions.assertEquals(jobModel.getStartTime(), DateTool.format(jobRequest.getStartTime()));
         Assertions.assertEquals(jobModel.getEndTime(), DateTool.format(jobRequest.getEndTime()));
         Assertions.assertEquals(jobModel.getCreatedTime(), DateTool.format(userJob.getCreatedTime()));
-        Assertions.assertEquals(jobModel.getCreateBy(), DEFAULT_USER_NAME);
+        Assertions.assertEquals(jobModel.getCreateBy(), "test");
         Assertions.assertEquals(jobModel.getStatus(), StatusConstant.get(2));
         clearData();
     }
@@ -197,7 +197,7 @@ class JobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.JOB.REMOVE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", String.valueOf(userJobId))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         entityManager.flush();
         entityManager.clear();

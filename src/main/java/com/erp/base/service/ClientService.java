@@ -113,7 +113,7 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> login(LoginRequest request) {
         HttpHeaders token = tokenService.createToken(request);
-        ClientModel user = cacheService.getClient(request.getUsername());
+        ClientModel user = findByUsername(request.getUsername());
         ClientResponseModel client = new ClientResponseModel(user);
         updateLastLoginTime(user);
         return ApiResponse.success(token, client);
@@ -122,7 +122,7 @@ public class ClientService {
     private void updateLastLoginTime(ClientModel user) {
         user.setLastLoginTime(DateTool.now());
         clientRepository.save(user);
-        cacheService.refreshClient(user.getUsername());
+        cacheService.refreshClient(user.getId());
     }
 
     public PageResponse<ClientResponseModel> list(ClientListRequest param) {
@@ -143,6 +143,10 @@ public class ClientService {
         return clientRepository.findByUsername(username);
     }
 
+    public ClientModel findById(Long id) {
+        return clientRepository.findById(id).orElse(null);
+    }
+
     public ResponseEntity<ApiResponse> resetPassword(ResetPasswordRequest resetRequest) throws MessagingException {
         ApiResponseCode code = checkResetPassword(resetRequest);
         if (code != null) return ApiResponse.error(code);
@@ -156,7 +160,8 @@ public class ClientService {
             //更新成功才發送郵件
             Context context = mailService.createContext(username, password);
             mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context, null);
-            cacheService.refreshClient(username);
+            ClientModel newClient = findByUsername(username);
+            cacheService.refreshClient(newClient.getId());
             return ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
@@ -172,7 +177,7 @@ public class ClientService {
         int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail(), client.getId());
         //如果不為1代表更改有問題，拋出並回滾
         if (result != 1) throw new IncorrectResultSizeDataAccessException(1, result);
-        cacheService.refreshClient(username);
+        cacheService.refreshClient(client.getId());
         return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
     }
 
@@ -236,7 +241,7 @@ public class ClientService {
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
         if (request.getDepartmentId() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
         ClientModel save = clientRepository.save(client);
-        cacheService.refreshClient(client.getUsername());
+        cacheService.refreshClient(client.getId());
         //非本人就發送通知
         checkUserOrSendMessage(client);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(save));
@@ -260,7 +265,7 @@ public class ClientService {
         String username = request.getUsername();
         int count = clientRepository.lockClientByIdAndUsername(request.getClientId(), username, request.isStatus());
         if (count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        cacheService.refreshClient(username);
+        cacheService.refreshClient(request.getClientId());
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -268,7 +273,7 @@ public class ClientService {
         String username = request.getUsername();
         int count = clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
         if (count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        cacheService.refreshClient(username);
+        cacheService.refreshClient(request.getClientId());
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -299,10 +304,11 @@ public class ClientService {
         return clientRepository.findUsernameById(id);
     }
 
-    public ClientModel updateClientAttendStatus(ClientIdentityDto model, int status) {
+    public ClientResponseModel updateClientAttendStatus(ClientIdentityDto model, int status) {
         int resultCount = clientRepository.updateClientAttendStatus(model.getId(), status);
-        if (resultCount == 1) cacheService.refreshClient(model.getUsername());
-        return cacheService.getClient(model.getUsername());
+        if (resultCount == 1) cacheService.refreshClient(model.getId());
+        ClientIdentityDto clientDto = cacheService.getClient(model.getId());
+        return new ClientResponseModel(clientDto);
     }
 
     public boolean checkExistsRoleId(Long id) {

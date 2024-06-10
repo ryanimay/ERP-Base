@@ -57,13 +57,13 @@ class ProjectControllerTest {
     private ProjectRepository projectRepository;
     @PersistenceContext
     private EntityManager entityManager;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
     private static ClientModel me;
 
     @BeforeAll
     static void beforeAll(){
         me = new ClientModel(1L);
-        me.setUsername(DEFAULT_USER_NAME);
+        me.setUsername("test");
         me.setRoles(Set.of(new RoleModel(2L)));
         me.setDepartment(new DepartmentModel(1L));
     }
@@ -76,7 +76,7 @@ class ProjectControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROJECT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 2, 1);
         resultActions
@@ -121,7 +121,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROJECT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("type", projectResponse2.getType())
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -152,7 +152,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROJECT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("managerId", String.valueOf(me.getId()))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 2, 1);
         resultActions
@@ -187,7 +187,7 @@ class ProjectControllerTest {
         requestBuilder = MockMvcRequestBuilders.get(Router.PROJECT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("managerId", String.valueOf(99))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 0, 0, 1);
         resultActions
@@ -210,7 +210,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PROJECT.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<ProjectModel> all = projectRepository.findAll();
         Optional<ProjectModel> first = all.stream().filter(p -> p.getName().equals(request.getName())).findFirst();
@@ -236,7 +236,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         Optional<ProjectModel> first = projectRepository.findById(project.getId());
         Assertions.assertTrue(first.isPresent());
@@ -261,7 +261,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.START)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         entityManager.flush();
         entityManager.clear();
@@ -281,7 +281,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.START)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -298,7 +298,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.DONE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         entityManager.flush();
         entityManager.clear();
@@ -320,7 +320,7 @@ class ProjectControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.DONE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         entityManager.flush();
         entityManager.clear();

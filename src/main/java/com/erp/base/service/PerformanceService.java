@@ -33,11 +33,6 @@ public class PerformanceService {
     private MessageService messageService;
     private NotificationService notificationService;
     private ClientService clientService;
-    private CacheService cacheService;
-    @Autowired
-    public void setCacheService(CacheService cacheService){
-        this.cacheService = cacheService;
-    }
     @Autowired
     public void setClientService(ClientService clientService) {
         this.clientService = clientService;
@@ -133,7 +128,7 @@ public class PerformanceService {
         if (user == null) {
             return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
-        ClientModel client = cacheService.getClient(user.getUsername());
+        ClientModel client = clientService.findById(user.getId());
         boolean isManager = client.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<PerformanceModel> list;
         //管理權限全搜不分部門

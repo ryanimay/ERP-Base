@@ -60,7 +60,7 @@ class QuartzJobControllerTest {
     private Scheduler scheduler;
     @Autowired
     private AttendRepository attendRepository;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
 
     @Test
     @DisplayName("排程清單_成功")
@@ -71,7 +71,7 @@ class QuartzJobControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.QUARTZ_JOB.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(quartzJob1.getId()))
@@ -107,7 +107,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.QUARTZ_JOB.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJobModel))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -124,7 +124,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.QUARTZ_JOB.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJobModel))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -145,7 +145,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.QUARTZ_JOB.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJobModel))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<QuartzJobModel> all = quartzJobRepository.findAll();
         Optional<QuartzJobModel> first = all.stream().filter(q -> q.getName().equals(name)).findFirst();
@@ -181,7 +181,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJob))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         quartzJobRepository.deleteById(quartzJob.getId());
     }
@@ -195,7 +195,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJob))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         quartzJobRepository.deleteById(quartzJob.getId());
     }
@@ -209,7 +209,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -228,7 +228,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJob))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<QuartzJobModel> all = quartzJobRepository.findAll();
         Optional<QuartzJobModel> first = all.stream().filter(q -> q.getName().equals(name)).findFirst();
@@ -261,7 +261,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.TOGGLE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -290,7 +290,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.TOGGLE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         entityManager.flush();
         entityManager.clear();
@@ -317,7 +317,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.QUARTZ_JOB.DELETE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", String.valueOf(quartzJob.getId()))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         Assertions.assertNull(scheduler.getJobDetail(jobKey));
         Optional<QuartzJobModel> byId = quartzJobRepository.findById(quartzJob.getId());
@@ -345,7 +345,7 @@ class QuartzJobControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.QUARTZ_JOB.EXEC)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(idRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         quartzJobRepository.deleteById(quartzJob.getId());
         scheduler.clear();

@@ -46,6 +46,7 @@ class GlobalExceptionHandlerTest {
     private TestUtils testUtils;
     @MockBean
     private JobController jobController;
+    private static final long DEFAULT_UID = 1L;
 
     @Test
     @DisplayName("異常處理_用戶鎖定")
@@ -89,7 +90,7 @@ class GlobalExceptionHandlerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.REGISTER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken("test"));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, ApiResponse.error(HttpStatus.BAD_REQUEST, "用戶名不得為空"));
     }
 
@@ -116,7 +117,7 @@ class GlobalExceptionHandlerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.JOB.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken("test"));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }

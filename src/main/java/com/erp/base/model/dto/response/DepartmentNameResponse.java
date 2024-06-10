@@ -13,6 +13,9 @@ public class DepartmentNameResponse implements Serializable {
     private long id;
     private String name;
 
+    public DepartmentNameResponse() {
+    }
+
     public DepartmentNameResponse(DepartmentModel model) {
         this.id = model.getId();
         this.name = model.getName();

@@ -37,12 +37,13 @@ public class JobService {
     public ResponseEntity<ApiResponse> findAll() {
         ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        ClientModel client = cacheService.getClient(user.getUsername());
-        List<JobModel> all = jobRepository.findByUserOrTracking(client);
+        ClientIdentityDto client = cacheService.getClient(user.getId());
+        ClientModel clientModel = client.toEntity();
+        List<JobModel> all = jobRepository.findByUserOrTracking(clientModel);
 
         Map<String, List<JobResponse>> map = all.stream()
                 .collect(Collectors.groupingBy(
-                        model -> model.getUser().equals(client) ? StatusConstant.get(model.getStatus()) : "tracking",
+                        model -> model.getUser().equals(clientModel) ? StatusConstant.get(model.getStatus()) : "tracking",
                         Collectors.mapping(JobResponse::new, Collectors.toList())
                 ));
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);

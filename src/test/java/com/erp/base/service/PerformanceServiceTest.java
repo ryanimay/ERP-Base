@@ -44,7 +44,7 @@ class PerformanceServiceTest {
     @Mock
     private PerformanceRepository performanceRepository;
     @Mock
-    private CacheService cacheService;
+    private ClientService clientService;
     @InjectMocks
     private PerformanceService performanceService;
 
@@ -53,7 +53,6 @@ class PerformanceServiceTest {
         SecurityContextHolder.clearContext();
         performanceService.setMessageService(Mockito.mock(MessageService.class));
         performanceService.setNotificationService(Mockito.mock(NotificationService.class));
-        performanceService.setClientService(Mockito.mock(ClientService.class));
     }
 
     @Test
@@ -226,7 +225,8 @@ class PerformanceServiceTest {
         clientModel.setUsername("test");
         clientModel.setRoles(roles);
         clientModel.setDepartment(new DepartmentModel(1L));
-        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
+        ClientIdentityDto clientDto = new ClientIdentityDto(clientModel);
+        UserDetailImpl principal = new UserDetailImpl(clientDto, null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ArrayList<PerformanceModel> performanceModels = new ArrayList<>();
@@ -238,7 +238,7 @@ class PerformanceServiceTest {
         performanceModel.setStatus(StatusConstant.PENDING_NO);
         performanceModels.add(performanceModel);
         Page<PerformanceModel> page = new PageImpl<>(performanceModels);
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
+        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(clientModel);
         Mockito.when(performanceRepository.findAllByStatus(Mockito.anyInt(), Mockito.anyLong(), Mockito.any())).thenReturn(page);
         ResponseEntity<ApiResponse> remove = performanceService.pendingList(new PageRequestParam());
         Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, PerformanceResponse.class)), remove);

@@ -3,7 +3,7 @@ package com.erp.base.filter.jwt;
 import com.erp.base.controller.Router;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.tool.ObjectTool;
@@ -41,6 +41,7 @@ class JwtAuthenticationFilterTest {
     private MockHttpServletResponse response;
     private FilterChain filterChain;
     private static final String contextPath = "/erp_base";
+    private static final long DEFAULT_UID = 1L;
 
 
     @BeforeEach
@@ -62,10 +63,12 @@ class JwtAuthenticationFilterTest {
     @DisplayName("JWT驗證_通過驗證_成功")
     void testDenyPermission_pass() throws ServletException, IOException {
         Map<String, Object> map = new HashMap<>();
-        map.put(TokenService.TOKEN_PROPERTIES_USERNAME, "test");
+        map.put(TokenService.TOKEN_PROPERTIES_UID, 1);
         request.addHeader(HttpHeaders.AUTHORIZATION, "testToken");
         Mockito.doReturn(map).when(tokenService).parseToken(Mockito.any());
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(new ClientModel(1));
+        ClientIdentityDto clientIdentityDto = new ClientIdentityDto();
+        clientIdentityDto.setId(1L);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientIdentityDto);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Mockito.verify(filterChain).doFilter(request, response);
     }
@@ -98,7 +101,7 @@ class JwtAuthenticationFilterTest {
     @DisplayName("JWT驗證_accessToken黑名單_錯誤")
     void testDenyPermission_accessToken_refreshTokenBlackList_error() throws ServletException, IOException {
         tokenService.init();
-        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, "test", 0));
+        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, DEFAULT_UID, 0));
         Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(true);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         ApiResponse apiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
@@ -109,7 +112,7 @@ class JwtAuthenticationFilterTest {
     @DisplayName("JWT驗證_refreshToken黑名單_錯誤")
     void testDenyPermission_refreshToken_refreshTokenBlackList_error() throws ServletException, IOException {
         tokenService.init();
-        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, "test", 0));
+        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, DEFAULT_UID, 0));
         request.addHeader(TokenService.REFRESH_TOKEN, "testToken");
         Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(false).thenReturn(true);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -121,10 +124,12 @@ class JwtAuthenticationFilterTest {
     @DisplayName("JWT驗證_refreshToken刷新_成功")
     void testDenyPermission_refreshToken_pass() throws ServletException, IOException {
         tokenService.init();
-        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, "test", 0));
-        request.addHeader(TokenService.REFRESH_TOKEN, tokenService.createToken(TokenService.REFRESH_TOKEN, "test", TokenService.REFRESH_TOKEN_EXPIRE_TIME));
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(new ClientModel(1));
-        Mockito.doReturn("testToken").when(tokenService).createToken(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt());
+        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, DEFAULT_UID, 0));
+        request.addHeader(TokenService.REFRESH_TOKEN, tokenService.createToken(TokenService.REFRESH_TOKEN, DEFAULT_UID, TokenService.REFRESH_TOKEN_EXPIRE_TIME));
+        ClientIdentityDto clientIdentityDto = new ClientIdentityDto();
+        clientIdentityDto.setId(1L);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientIdentityDto);
+        Mockito.doReturn("testToken").when(tokenService).createToken(Mockito.anyString(), Mockito.anyLong(), Mockito.anyInt());
         Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(false);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Assertions.assertEquals(TokenService.TOKEN_PREFIX + "testToken", response.getHeader(HttpHeaders.AUTHORIZATION));

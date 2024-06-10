@@ -39,7 +39,7 @@ class LeaveServiceTest {
     @Mock
     private LeaveRepository leaveRepository;
     @Mock
-    private CacheService cacheService;
+    private ClientService clientService;
     private static final MessageSource messageSource = Mockito.spy(MessageSource.class);
     @InjectMocks
     private LeaveService leaveService;
@@ -54,7 +54,6 @@ class LeaveServiceTest {
         SecurityContextHolder.clearContext();
         leaveService.setMessageService(Mockito.mock(MessageService.class));
         leaveService.setNotificationService(Mockito.mock(NotificationService.class));
-        leaveService.setClientService(Mockito.mock(ClientService.class));
     }
 
     @Test
@@ -203,7 +202,8 @@ class LeaveServiceTest {
         roleModel.setLevel(RoleConstant.LEVEL_3);
         roles.add(roleModel);
         clientModel.setRoles(roles);
-        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
+        ClientIdentityDto clientDto = new ClientIdentityDto(clientModel);
+        UserDetailImpl principal = new UserDetailImpl(clientDto, null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ArrayList<LeaveModel> leaveModels = new ArrayList<>();
@@ -213,7 +213,7 @@ class LeaveServiceTest {
         lm.setType(StatusConstant.PENDING_NO);
         leaveModels.add(lm);
         Page<LeaveModel> page = new PageImpl<>(leaveModels);
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
+        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(clientModel);
         Mockito.when(leaveRepository.findByStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.any())).thenReturn(page);
         ResponseEntity<ApiResponse> delete = leaveService.pendingList(new PageRequestParam());
         Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, LeaveResponse.class)), delete);
@@ -229,7 +229,8 @@ class LeaveServiceTest {
         roleModel.setLevel(RoleConstant.LEVEL_1);
         roles.add(roleModel);
         clientModel.setRoles(roles);
-        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
+        ClientIdentityDto clientDto = new ClientIdentityDto(clientModel);
+        UserDetailImpl principal = new UserDetailImpl(clientDto, null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ArrayList<LeaveModel> leaveModels = new ArrayList<>();
@@ -239,7 +240,7 @@ class LeaveServiceTest {
         lm.setType(StatusConstant.PENDING_NO);
         leaveModels.add(lm);
         Page<LeaveModel> page = new PageImpl<>(leaveModels);
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
+        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(clientModel);
         Mockito.when(leaveRepository.findByStatusAndDepartment(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.any())).thenReturn(page);
         ResponseEntity<ApiResponse> delete = leaveService.pendingList(new PageRequestParam());
         Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, LeaveResponse.class)), delete);
