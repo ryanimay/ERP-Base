@@ -35,11 +35,6 @@ public class LeaveService {
     private MessageService messageService;
     private NotificationService notificationService;
     private ClientService clientService;
-    private CacheService cacheService;
-    @Autowired
-    public void setCacheService(CacheService cacheService){
-        this.cacheService = cacheService;
-    }
     @Autowired
     public void setClientService(ClientService clientService){
         this.clientService = clientService;
@@ -119,7 +114,7 @@ public class LeaveService {
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
         ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        ClientModel client = cacheService.getClient(user.getUsername());
+        ClientModel client = clientService.findById(user.getId());
         boolean isManager = client.getRoles().stream().anyMatch(model -> model.getLevel() == RoleConstant.LEVEL_3);
         Page<LeaveModel> allPending;
         //管理權限全搜不分部門

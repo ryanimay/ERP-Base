@@ -46,8 +46,6 @@ class ClientServiceTest {
     @Mock
     private TokenService tokenService;
     @Mock
-    private CacheService cacheService;
-    @Mock
     private DepartmentService departmentService;
     @InjectMocks
     private ClientService clientService;
@@ -86,7 +84,7 @@ class ClientServiceTest {
     void login_ok() {
         ClientModel client = new ClientModel(1);
         Mockito.when(tokenService.createToken(Mockito.any())).thenReturn(new HttpHeaders());
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(client);
+        Mockito.when(clientRepository.findByUsername(Mockito.any())).thenReturn(client);
         ResponseEntity<ApiResponse> response = clientService.login(new LoginRequest());
         ResponseEntity<ApiResponse> expected = ApiResponse.success(new HttpHeaders(), new ClientResponseModel(client));
         Assertions.assertEquals(expected.getHeaders(), response.getHeaders());
@@ -142,6 +140,7 @@ class ClientServiceTest {
         Mockito.when(clientRepository.existsByUsernameAndEmail(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(encodeTool.randomPassword(Mockito.anyInt())).thenReturn(new EncodeTool().randomPassword(18));
         Mockito.when(clientRepository.updatePasswordByUsernameAndEmailAndId(Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(clientRepository.findByUsername(Mockito.any())).thenReturn(new ClientModel(1));
         ResponseEntity<ApiResponse> response = clientService.resetPassword(new ResetPasswordRequest());
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS), response);
     }

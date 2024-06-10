@@ -3,8 +3,11 @@ package com.erp.base.service;
 import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.MenuResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.dto.security.RolePermissionDto;
-import com.erp.base.model.entity.*;
+import com.erp.base.model.entity.DepartmentModel;
+import com.erp.base.model.entity.PermissionModel;
+import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.cache.ICache;
 import com.erp.base.service.cache.RolePermissionCache;
@@ -13,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 所有緩存相關的調用都集中在這個service
@@ -51,12 +57,12 @@ public class CacheService {
         rolePermissionCache.refreshAll();
     }
 
-    public ClientModel getClient(String username) {
-        return clientCache.getClient(username);
+    public ClientIdentityDto getClient(Long id) {
+        return clientCache.getClient(id);
     }
 
-    public void refreshClient(String username) {
-        clientCache.refreshClient(username);
+    public void refreshClient(Long id) {
+        clientCache.refreshClient(id);
     }
 
     public List<ClientNameObject> getClientNameList() {

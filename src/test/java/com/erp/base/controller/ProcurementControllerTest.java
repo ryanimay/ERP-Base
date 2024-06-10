@@ -52,13 +52,14 @@ class ProcurementControllerTest {
     private TestUtils testUtils;
     @Autowired
     private ProcurementRepository procurementRepository;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final String DEFAULT_USERNAME = "test";
+    private static final long DEFAULT_UID = 1L;
     private static ClientModel me;
 
     @BeforeAll
     static void beforeAll(){
         me = new ClientModel(1L);
-        me.setUsername(DEFAULT_USER_NAME);
+        me.setUsername(DEFAULT_USERNAME);
         me.setRoles(Set.of(new RoleModel(2L)));
         me.setDepartment(new DepartmentModel(1L));
     }
@@ -71,7 +72,7 @@ class ProcurementControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROCUREMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 2, 1);
         resultActions
@@ -110,7 +111,7 @@ class ProcurementControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROCUREMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("type", "1")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -138,7 +139,7 @@ class ProcurementControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PROCUREMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("status", "2")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -170,7 +171,7 @@ class ProcurementControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PROCUREMENT.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(procurementRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<ProcurementModel> all = procurementRepository.findAll();
         Optional<ProcurementModel> first = all.stream().filter(p -> p.getName().equals(procurementRequest.getName())).findFirst();
@@ -197,7 +198,7 @@ class ProcurementControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROCUREMENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(procurementRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<ProcurementModel> all = procurementRepository.findAll();
         Optional<ProcurementModel> first = all.stream().filter(p -> p.getId() == procurementRequest.getId()).findFirst();
@@ -221,7 +222,7 @@ class ProcurementControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROCUREMENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(procurementRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -235,7 +236,7 @@ class ProcurementControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.PROCUREMENT.DELETE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", String.valueOf(procurement.getId()))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         byId = procurementRepository.findById(procurement.getId());
         Assertions.assertTrue(byId.isEmpty());

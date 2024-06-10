@@ -44,7 +44,7 @@ class LogControllerTest {
     @Autowired
     private LogRepository logRepository;
     private long sec = 0;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
 
     @Test
     @DisplayName("日誌清單_AOP插入成功_成功")
@@ -53,7 +53,7 @@ class LogControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         List<LogModel> all = logRepository.findAll();
         Assertions.assertEquals(1, all.size());
@@ -77,7 +77,7 @@ class LogControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LOG.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 3, 1);
         resultActions
@@ -123,7 +123,7 @@ class LogControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LOG.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("status", "false")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -155,7 +155,7 @@ class LogControllerTest {
                 .param("endTime", DateTool.format(log2.getTime()))
                 .param("sort", "2")
                 .param("sortBy", "time")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 2, 1);
         resultActions
@@ -193,7 +193,7 @@ class LogControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LOG.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("url", Router.PERMISSION.BAN)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -213,7 +213,7 @@ class LogControllerTest {
     private LogModel createLog(boolean status, String url, String result){
         LogModel entity = new LogModel();
         entity.setStatus(status);
-        entity.setUserName(DEFAULT_USER_NAME);
+        entity.setUserName("test");
         entity.setUrl(url);
         entity.setResult(result);
         entity.setIp("127.0.0.1");

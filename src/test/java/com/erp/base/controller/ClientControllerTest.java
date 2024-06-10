@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
@@ -78,9 +79,10 @@ class ClientControllerTest {
     @PersistenceContext
     private EntityManager entityManager;
     private static ClientModel testModel;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
     private static final String testJson = """
             {
+            
             "username": "testRegister",
             "password": "testRegister",
             "createBy": 0
@@ -92,6 +94,8 @@ class ClientControllerTest {
     @BeforeAll
     static void beforeAll() {
         testModel = new ClientModel();
+        testModel.setId(2L);
+        testModel.setRoles(Set.of(new RoleModel(2)));
         testModel.setUsername("test1");
         testModel.setPassword("test1");
         testModel.setEmail("testMail1@gmail.com");
@@ -262,7 +266,7 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.header().doesNotExist(TokenService.REFRESH_TOKEN))
                 .andDo(result -> {
                     String token = Objects.requireNonNull(result.getResponse().getHeader(HttpHeaders.AUTHORIZATION)).replace(TokenService.TOKEN_PREFIX, "");
-                    Assertions.assertEquals("testRegister", tokenService.parseToken(token).get(TokenService.TOKEN_PROPERTIES_USERNAME));
+                    Assertions.assertEquals((int) model.getId(), tokenService.parseToken(token).get(TokenService.TOKEN_PROPERTIES_UID));
                 });
         repository.deleteById(model.getId());
     }
@@ -304,8 +308,8 @@ class ClientControllerTest {
                 .andDo(result -> {
                     String token = Objects.requireNonNull(result.getResponse().getHeader(HttpHeaders.AUTHORIZATION)).replace(TokenService.TOKEN_PREFIX, "");
                     String refreshToken = result.getResponse().getHeader(TokenService.REFRESH_TOKEN);
-                    Assertions.assertEquals("testRegister", tokenService.parseToken(token).get(TokenService.TOKEN_PROPERTIES_USERNAME));
-                    Assertions.assertEquals("testRegister", tokenService.parseToken(refreshToken).get(TokenService.TOKEN_PROPERTIES_USERNAME));
+                    Assertions.assertEquals((int) model.getId(), tokenService.parseToken(token).get(TokenService.TOKEN_PROPERTIES_UID));
+                    Assertions.assertEquals((int) model.getId(), tokenService.parseToken(refreshToken).get(TokenService.TOKEN_PROPERTIES_UID));
                 });
         repository.deleteById(model.getId());
     }
@@ -313,6 +317,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_用戶名為空_錯誤")
     void resetPassword_requestUserNameBlank_error() throws Exception {
+        System.out.println(1);
         ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "用戶名不得為空");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -327,6 +332,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_輸入用戶mail為空_錯誤")
     void resetPassword_requestEmailBlank_error() throws Exception {
+        System.out.println(2);
         ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email不得為空");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -341,6 +347,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_輸入用戶mail格式錯誤_錯誤")
     void resetPassword_invalidEmailFormat_error() throws Exception {
+        System.out.println(3);
         ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email格式錯誤");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -356,6 +363,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_用戶不存在_錯誤")
     void resetPassword_userNotFound_error() throws Exception {
+        System.out.println(4);
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_USER_OR_EMAIL);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -371,6 +379,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_email不存在_錯誤")
     void resetPassword_emailNotFound_error() throws Exception {
+        System.out.println(5);
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_USER_OR_EMAIL);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -386,6 +395,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_發送email異常_錯誤")
     void resetPassword_sendEmailException_error() throws Exception {
+        System.out.println(6);
         Mockito.doThrow(MessagingException.class).when(mailService).sendMail(any(), any(), any(), any());
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
@@ -402,8 +412,9 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_成功")
     void resetPassword_ok() throws Exception {
+        System.out.println(7);
         ClientModel save = repository.save(testModel);
-        ClientModel cacheClient = cacheService.getClient(testModel.getUsername());
+        ClientIdentityDto cacheClient = cacheService.getClient(testModel.getId());
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -413,7 +424,7 @@ class ClientControllerTest {
         entityManager.clear();//事務內清除內建緩存
         Assertions.assertNotEquals(save.getPassword(), repository.findByUsername(save.getUsername()).getPassword());
         //驗證緩存刷新
-        Assertions.assertNotEquals(cacheClient.getPassword(), cacheService.getClient(testModel.getUsername()).getPassword());
+        Assertions.assertNotEquals(cacheClient.getPassword(), cacheService.getClient(testModel.getId()).getPassword());
         repository.deleteById(save.getId());
     }
 
@@ -446,7 +457,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         editRole(2L);
     }
@@ -454,12 +465,12 @@ class ClientControllerTest {
     @Test
     @DisplayName("用戶清單_預設全搜_成功")
     void clientList_findAll_ok() throws Exception {
-        ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
+        ClientResponseModel save = new ClientResponseModel(Objects.requireNonNull(repository.findById(DEFAULT_UID).orElse(null)));
         ClientResponseModel save1 = new ClientResponseModel(repository.save(testModel));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getId()));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 2, 1);
         resultActions
@@ -494,14 +505,14 @@ class ClientControllerTest {
     @Test
     @DisplayName("用戶清單_id搜尋_成功")
     void clientList_findById_ok() throws Exception {
-        ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
+        ClientResponseModel save = new ClientResponseModel(Objects.requireNonNull(repository.findById(DEFAULT_UID).orElse(null)));
         ClientModel save1 = repository.save(testModel);
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("type", "1")
                 .param("id", String.valueOf(save.getId()))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getId()));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -530,7 +541,7 @@ class ClientControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("type", "2")
                 .param("name", save1.getUsername())
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -552,13 +563,13 @@ class ClientControllerTest {
     @Test
     @DisplayName("測試分頁_搜一筆_成功")
     void clientList_findFirst_ok() throws Exception {
-        ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
+        ClientResponseModel save = new ClientResponseModel(Objects.requireNonNull(repository.findById(DEFAULT_UID).orElse(null)));
         ClientResponseModel save1 = new ClientResponseModel(repository.save(testModel));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageSize", "1")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getId()));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 1, 2, 2, 1);
         resultActions
@@ -587,7 +598,7 @@ class ClientControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageSize", "1")
                 .param("sort", "2")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 1, 2, 2, 1);
         resultActions
@@ -615,7 +626,7 @@ class ClientControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageSize", "1")
                 .param("pageNum", "2")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 1, 2, 2, 2);
         resultActions
@@ -637,12 +648,12 @@ class ClientControllerTest {
     @Test
     @DisplayName("搜單一用戶_成功")
     void getClient_ok() throws Exception {
-        ClientResponseModel save = new ClientResponseModel(repository.findByUsername(DEFAULT_USER_NAME));
+        ClientResponseModel save = new ClientResponseModel(Objects.requireNonNull(repository.findById(DEFAULT_UID).orElse(null)));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", String.valueOf(save.getId()))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getUsername()));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getId()));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(save.getId()))
@@ -666,7 +677,7 @@ class ClientControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_INPUT);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -677,7 +688,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.GET_CLIENT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "99999")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -696,7 +707,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(save.getId()))
@@ -729,7 +740,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -747,7 +758,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -765,7 +776,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -781,7 +792,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -797,7 +808,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -813,7 +824,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -829,7 +840,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -845,7 +856,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -861,7 +872,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -877,7 +888,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -893,7 +904,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -909,7 +920,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -926,7 +937,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         //驗證資料庫資料
         entityManager.clear();//事務內清除內建緩存
@@ -948,7 +959,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_LOCK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -964,13 +975,16 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_LOCK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         //驗證資料庫資料
         entityManager.clear();//事務內清除內建緩存
         Optional<ClientModel> byId = repository.findById(1L);
         Assertions.assertTrue(byId.isPresent());
-        Assertions.assertTrue(byId.get().isLock());
+        ClientModel clientModel = byId.get();
+        Assertions.assertTrue(clientModel.isLock());
+        clientModel.setLock(false);
+        repository.save(clientModel);
     }
 
     @Test
@@ -985,7 +999,7 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_STATUS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -1001,13 +1015,16 @@ class ClientControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.CLIENT_STATUS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         //驗證資料庫資料
         entityManager.clear();//事務內清除內建緩存
         Optional<ClientModel> byId = repository.findById(1L);
         Assertions.assertTrue(byId.isPresent());
-        Assertions.assertFalse(byId.get().isActive());
+        ClientModel clientModel = byId.get();
+        Assertions.assertFalse(clientModel.isActive());
+        clientModel.setActive(true);
+        repository.save(clientModel);
     }
 
     @Test
@@ -1019,7 +1036,7 @@ class ClientControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.NAME_LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(clientNameObject.getId()))
@@ -1029,7 +1046,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("用戶登出_成功")
     void userLogout_bothToken_ok() throws Exception {
-        String accessToken = testUtils.createTestToken(DEFAULT_USER_NAME);
+        String accessToken = testUtils.createTestToken(DEFAULT_UID);
         String refreshToken = "refreshToken";
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGOUT)
@@ -1046,7 +1063,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("用戶登出_成功")
     void userLogout_accessToken_ok() throws Exception {
-        String accessToken = testUtils.createTestToken(DEFAULT_USER_NAME);
+        String accessToken = testUtils.createTestToken(DEFAULT_UID);
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.LOGOUT)
                 .contentType(MediaType.APPLICATION_JSON)

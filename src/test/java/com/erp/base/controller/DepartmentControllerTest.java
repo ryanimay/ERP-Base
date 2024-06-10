@@ -46,7 +46,7 @@ class DepartmentControllerTest {
     private DepartmentRepository departmentRepository;
     @PersistenceContext
     private EntityManager entityManager;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
 
     @Test
     @DisplayName("部門清單_搜ID_成功")
@@ -55,7 +55,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "1")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 1, 1);
         resultActions
@@ -72,7 +72,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("name", "depart")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 3, 1);
         resultActions
@@ -96,7 +96,7 @@ class DepartmentControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 1, 3, 1);
         resultActions
@@ -121,7 +121,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageSize", "1")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 1, 3, 3, 1);
         resultActions
@@ -139,7 +139,7 @@ class DepartmentControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageSize", "1")
                 .param("pageNum", "2")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 1, 3, 3, 2);
         resultActions
@@ -156,7 +156,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "99")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 15, 0, 0, 1);
         resultActions
@@ -171,7 +171,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.STAFF)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "99")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -182,7 +182,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.STAFF)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "1")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(1))
@@ -203,7 +203,7 @@ class DepartmentControllerTest {
                         "defaultRoleId": 1
                         }
                         """)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         Optional<DepartmentModel> departmentOptional = departmentRepository.findById(3L);
         Assertions.assertTrue(departmentOptional.isPresent());
@@ -228,7 +228,7 @@ class DepartmentControllerTest {
                         "defaultRoleId": 1
                         }
                         """)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         entityManager.clear();
         departmentOptional = departmentRepository.findById(4L);
@@ -246,7 +246,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.DEPARTMENT.REMOVE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", "1")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -261,7 +261,7 @@ class DepartmentControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(Router.DEPARTMENT.REMOVE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("id", String.valueOf(entity.getId()))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         Optional<DepartmentModel> byId = departmentRepository.findById(entity.getId());
         Assertions.assertTrue(byId.isEmpty());

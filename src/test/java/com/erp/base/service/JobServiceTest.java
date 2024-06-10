@@ -74,11 +74,12 @@ class JobServiceTest {
     @Test
     @DisplayName("任務卡清單_成功")
     void findAll_ok() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
+        ClientIdentityDto clientDto = new ClientIdentityDto(clientModel);
+        UserDetailImpl principal = new UserDetailImpl(clientDto, null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Mockito.when(jobRepository.findByUserOrTracking(Mockito.any())).thenReturn(list);
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientDto);
         ResponseEntity<ApiResponse> all = jobService.findAll();
         Map<String, List<JobResponse>> map = new HashMap<>();
         map.put("tracking", List.of(new JobResponse(j1)));

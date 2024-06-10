@@ -62,7 +62,7 @@ class UserDetailImplTest {
     void getAuthorities_ok() {
         Set<RolePermissionDto> set = new HashSet<>();
         set.add(new RolePermissionDto(new PermissionModel(1)));
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientModel);
+        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(new ClientIdentityDto(clientModel));
         Mockito.when(cacheService.getRolePermission(Mockito.anyLong())).thenReturn(set);
         Assertions.assertEquals(userDetail.getAuthorities(), set);
     }

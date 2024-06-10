@@ -53,7 +53,7 @@ class PermissionControllerTest {
     private PermissionRepository permissionRepository;
     @Value("${security.password}")
     private String securityPwd;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
     private final List<Integer> permissionArray = List.of(35,18,5,9,31,59,49,37,40,44,52,63,3,56,39,34,29,11,30,42,28,58,1,68,36,12,4,7,21,19,27,6,64,10,13,41,17,62,57,48,32,51,2,67,47,50,43,14,46,20,66,24,60,55,15,23,45,54,22,53,38,65,16,25,26,61,33,8,69,70);
 
     @Test
@@ -65,7 +65,7 @@ class PermissionControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data['*'][0].id").value(model.getId()))
@@ -98,7 +98,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.ROLE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("roleId", "1")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
@@ -112,7 +112,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.ROLE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("roleId", "2")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
@@ -127,7 +127,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.PERMISSION.ROLE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("roleId", "99")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -141,7 +141,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PERMISSION.BAN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(banRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         entityManager.flush();
         entityManager.clear();
@@ -156,7 +156,7 @@ class PermissionControllerTest {
         requestBuilder = MockMvcRequestBuilders.put(Router.PERMISSION.BAN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(banRequest))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         response = ApiResponse.success(ApiResponseCode.SUCCESS);
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         entityManager.flush();
@@ -178,7 +178,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.SECURITY_CONFIRM)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -191,7 +191,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.SECURITY_CONFIRM)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 
@@ -204,7 +204,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.GET_KEY)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty());
@@ -219,7 +219,7 @@ class PermissionControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.PERMISSION.GET_KEY)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(request))
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }

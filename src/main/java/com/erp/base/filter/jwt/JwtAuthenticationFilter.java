@@ -4,7 +4,6 @@ import com.erp.base.config.security.SecurityConfig;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
@@ -51,7 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String token = request.getHeader(HttpHeaders.AUTHORIZATION);
                 if(token == null || cacheService.existsTokenBlackList(token)) throw new AccessDeniedException("token error");
                 Map<String, Object> payload = authenticationToken(token);
-                createAuthentication((String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME), request);
+                String uid = String.valueOf(payload.get(TokenService.TOKEN_PROPERTIES_UID));
+                createAuthentication(Long.parseLong(uid), request);
             }else{
                 createEmptyUserAuth(request);
             }
@@ -95,24 +95,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //不在黑名單才可刷新
         if (token != null && !cacheService.existsTokenBlackList(token)) {
             Map<String, Object> payload = tokenService.parseToken(token);
-            String username = (String) payload.get(TokenService.TOKEN_PROPERTIES_USERNAME);
-            String accessToken = tokenService.createToken(TokenService.ACCESS_TOKEN, username, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
+            String id = String.valueOf(payload.get(TokenService.TOKEN_PROPERTIES_UID));
+            long uid = Long.parseLong(id);
+            String accessToken = tokenService.createToken(TokenService.ACCESS_TOKEN, uid, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
             response.setHeader(HttpHeaders.AUTHORIZATION, TokenService.TOKEN_PREFIX + accessToken);
-            String refreshToken = tokenService.createToken(TokenService.REFRESH_TOKEN, username, TokenService.REFRESH_TOKEN_EXPIRE_TIME);
+            String refreshToken = tokenService.createToken(TokenService.REFRESH_TOKEN, uid, TokenService.REFRESH_TOKEN_EXPIRE_TIME);
             response.setHeader(TokenService.REFRESH_TOKEN, refreshToken);
             cacheService.addTokenBlackList(token);
-            createAuthentication(username, request);
+            createAuthentication(uid, request);
         } else {
             LOG.warn(TokenService.REFRESH_TOKEN + " empty");
             throw new SignatureException("");
         }
     }
 
-    private void createAuthentication(String username, HttpServletRequest request) {
+    private void createAuthentication(Long id, HttpServletRequest request) {
+        System.out.println(id);
         String lang = request.getHeader("User-Lang");
-        ClientModel client = cacheService.getClient(username);
+        ClientIdentityDto client = cacheService.getClient(id);
         if(client == null) return;
-        UserDetailImpl userDetail = lang == null ? new UserDetailImpl(new ClientIdentityDto(client), cacheService) : new UserDetailImpl(lang, new ClientIdentityDto(client), cacheService);
+        UserDetailImpl userDetail = lang == null ? new UserDetailImpl(client, cacheService) : new UserDetailImpl(lang, client, cacheService);
         Collection<? extends GrantedAuthority> rolePermission = userDetail.getAuthorities();
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -1,12 +1,11 @@
 package com.erp.base.service;
 
-import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.AttendModel;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.tool.DateTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,9 +58,9 @@ public class AttendService {
             }
         }
         if(count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        ClientModel clientModel = clientService.updateClientAttendStatus(user, status);
+        ClientResponseModel clientModel = clientService.updateClientAttendStatus(user, status);
 
-        return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(clientModel));
+        return ApiResponse.success(ApiResponseCode.SUCCESS, clientModel);
     }
 
     public void saveAll(List<AttendModel> attends) {

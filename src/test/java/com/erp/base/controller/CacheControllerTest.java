@@ -1,16 +1,17 @@
 package com.erp.base.controller;
 
 import com.erp.base.model.constant.cache.CacheConstant;
-import com.erp.base.testConfig.TestUtils;
-import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.repository.DepartmentRepository;
 import com.erp.base.service.CacheService;
+import com.erp.base.testConfig.TestUtils;
+import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ class CacheControllerTest {
     private CacheService cacheService;
     @Autowired
     private DepartmentRepository departmentRepository;
-    private static final String DEFAULT_USER_NAME = "test";
+    private static final long DEFAULT_UID = 1L;
 
     @Test
     @DisplayName("刷緩存_全刷_成功")
@@ -61,14 +62,15 @@ class CacheControllerTest {
         newDepartment.setDefaultRole(new RoleModel(1));
         newDepartment = departmentRepository.save(newDepartment);
 
-        ClientModel client = cacheService.getClient(DEFAULT_USER_NAME);
+        ClientIdentityDto client = cacheService.getClient(DEFAULT_UID);
         Assertions.assertNotNull(client);
         client.setEmail("testEdit@gmail.com");
-        client = clientRepository.save(client);
+        ClientModel entity = client.toEntity();
+        entity = clientRepository.save(entity);
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         department = cacheService.getDepartment(5L);
         Assertions.assertEquals(department.getId(), newDepartment.getId());
@@ -77,8 +79,8 @@ class CacheControllerTest {
         Assertions.assertEquals(department.getDefaultRole().getRoleName(), newDepartment.getDefaultRole().getRoleName());
         Assertions.assertEquals(department.getDefaultRole().getId(), newDepartment.getDefaultRole().getId());
 
-        ClientModel newClient = cacheService.getClient(DEFAULT_USER_NAME);
-        Assertions.assertEquals(newClient.getEmail(), client.getEmail());
+        ClientIdentityDto newClient = cacheService.getClient(DEFAULT_UID);
+        Assertions.assertEquals(newClient.getEmail(), entity.getEmail());
         departmentRepository.deleteById(5L);
     }
 
@@ -86,18 +88,19 @@ class CacheControllerTest {
     @DisplayName("刷緩存_刷新用戶緩存_成功")
     void refreshCache_refreshClient_ok() throws Exception {
         cacheService.refreshClient();
-        ClientModel client = cacheService.getClient(DEFAULT_USER_NAME);
+        ClientIdentityDto client = cacheService.getClient(DEFAULT_UID);
         Assertions.assertNotNull(client);
         client.setEmail("testEdit2@gmail.com");
-        client = clientRepository.save(client);
+        ClientModel entity = client.toEntity();
+        entity = clientRepository.save(entity);
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("cacheKey", CacheConstant.CLIENT.NAME_CLIENT)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
-        ClientModel newClient = cacheService.getClient(DEFAULT_USER_NAME);
-        Assertions.assertEquals(newClient.getEmail(), client.getEmail());
+        ClientIdentityDto newClient = cacheService.getClient(DEFAULT_UID);
+        Assertions.assertEquals(newClient.getEmail(), entity.getEmail());
     }
 
     @Test
@@ -115,7 +118,7 @@ class CacheControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("cacheKey", CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION)
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         department = cacheService.getDepartment(4L);
         Assertions.assertEquals(department.getId(), newDepartment.getId());
@@ -133,7 +136,7 @@ class CacheControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("cacheKey", "testKey")
-                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_USER_NAME));
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }

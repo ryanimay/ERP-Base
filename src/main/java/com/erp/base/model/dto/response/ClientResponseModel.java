@@ -1,5 +1,6 @@
 package com.erp.base.model.dto.response;
 
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
 import com.erp.base.tool.BeanProviderTool;
@@ -54,5 +55,30 @@ public class ClientResponseModel implements Serializable {
         this.mustUpdatePassword = clientModel.isMustUpdatePassword();
         this.attendStatus = clientModel.getAttendStatus();
         if(clientModel.getDepartment() != null) this.department = new DepartmentNameResponse(clientModel.getDepartment());
+    }
+
+    public ClientResponseModel(ClientIdentityDto clientModel) {
+        this.id = clientModel.getId();
+        this.username = clientModel.getUsername();
+        this.roleId = clientModel.getRoleId();
+        this.isActive = clientModel.isActive();
+        this.isLock = clientModel.isLock();
+        this.email = clientModel.getEmail();
+        this.lastLoginTime = DateTool.format(clientModel.getLastLoginTime());
+        this.createTime = DateTool.format(clientModel.getCreateTime());
+        long createId = clientModel.getCreateBy();
+        String createName = "System";
+        if(createId != 0){
+            ClientService service = BeanProviderTool.getBean(ClientService.class);
+            createName = service.findNameByUserId(createId);
+        }
+        this.createBy = createName;
+        this.mustUpdatePassword = clientModel.isMustUpdatePassword();
+        this.attendStatus = clientModel.getAttendStatus();
+        DepartmentNameResponse departmentResponse = new DepartmentNameResponse();
+        DepartmentResponse clientDepartment = clientModel.getDepartment();
+        departmentResponse.setId(clientDepartment.getId());
+        departmentResponse.setName(clientDepartment.getName());
+        this.department = departmentResponse;
     }
 }

@@ -30,9 +30,11 @@ class AttendServiceTest {
     @InjectMocks
     private AttendService attendService;
     private static final ClientModel clientModel;
+    private static final ClientResponseModel clientResponse;
     static {
         clientModel = new ClientModel(1);
         clientModel.setUsername("test");
+        clientResponse = new ClientResponseModel(clientModel);
     }
 
     @Test
@@ -47,7 +49,7 @@ class AttendServiceTest {
     @DisplayName("簽到_成功")
     void signIn_ok() {
         Mockito.when(attendRepository.signIn(Mockito.anyLong(), Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(clientService.updateClientAttendStatus(Mockito.any(), Mockito.anyInt())).thenReturn(clientModel);
+        Mockito.when(clientService.updateClientAttendStatus(Mockito.any(), Mockito.anyInt())).thenReturn(clientResponse);
         UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -78,7 +80,7 @@ class AttendServiceTest {
     @DisplayName("簽退_成功")
     void signOut_ok() {
         Mockito.when(attendRepository.signOut(Mockito.anyLong(), Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(clientService.updateClientAttendStatus(Mockito.any(), Mockito.anyInt())).thenReturn(clientModel);
+        Mockito.when(clientService.updateClientAttendStatus(Mockito.any(), Mockito.anyInt())).thenReturn(clientResponse);
         UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
