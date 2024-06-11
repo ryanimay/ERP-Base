@@ -1,6 +1,7 @@
 package com.erp.base.config.websocket;
 
 import com.erp.base.filter.UserHandshakeInterceptor;
+import com.erp.base.service.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -28,7 +29,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker(WebsocketConstant.TOPIC.PREFIX);
-        config.setApplicationDestinationPrefixes("/app");
+        config.setApplicationDestinationPrefixes(WebsocketConstant.DESTINATION.PREFIX);
     }
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -36,7 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     @Override
                     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-                        long userId = Long.parseLong((String) attributes.get("userId"));
+                        long userId = Long.parseLong((String) attributes.get(TokenService.TOKEN_PROPERTIES_UID));
                         return new CustomPrincipal(userId);
                     }
                 })

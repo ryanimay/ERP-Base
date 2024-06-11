@@ -56,6 +56,7 @@ class ClientServiceTest {
         clientService.setResetPasswordModel(Mockito.mock(ResetPasswordModel.class));
         clientService.setMessageService(Mockito.mock(MessageService.class));
         clientService.setNotificationService(Mockito.mock(NotificationService.class));
+        clientService.setCacheService(Mockito.mock(CacheService.class));
     }
 
     @Test
