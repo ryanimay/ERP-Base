@@ -1,7 +1,6 @@
 package com.erp.base.filter;
 
 import com.erp.base.model.dto.security.ClientIdentityDto;
-import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
@@ -53,9 +52,9 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
         authToken = authToken.replace(TokenService.TOKEN_PREFIX, "");
         try {
             Map<String, Object> payload = tokenService.parseToken(authToken);
-            String userId = String.valueOf(payload.get(TokenService.TOKEN_PROPERTIES_USERNAME));
+            String userId = String.valueOf(payload.get(TokenService.TOKEN_PROPERTIES_UID));
             createAuthentication(userId);
-            attributes.put(TokenService.TOKEN_PROPERTIES_USERNAME, userId);
+            attributes.put(TokenService.TOKEN_PROPERTIES_UID, userId);
         } catch (Exception e) {
             LOG.error("User authentication failed");
             return false;
@@ -64,9 +63,9 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private void createAuthentication(String userId) {
-        ClientModel client = cacheService.getClient(userId);
+        ClientIdentityDto client = cacheService.getClient(Long.valueOf(userId));
         if(client == null) return;
-        UserDetailImpl userDetail = new UserDetailImpl(new ClientIdentityDto(client), cacheService);
+        UserDetailImpl userDetail = new UserDetailImpl(client, cacheService);
         Collection<? extends GrantedAuthority> rolePermission = userDetail.getAuthorities();
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);
