@@ -9,4 +9,9 @@ public interface WebsocketConstant {
         String PREFIX = "/topic";
         String NOTIFICATION = PREFIX + "/notification";
     }
+
+    interface DESTINATION{
+        String PREFIX = "/app";
+        String SEND_NOTIFICATION = "/sendNotification";
+    }
 }
