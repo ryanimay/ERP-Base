@@ -1,11 +1,12 @@
 package com.erp.base.filter;
 
+import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.erp.base.tool.ObjectTool;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -13,31 +14,26 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.Collection;
 import java.util.Map;
 
-@Component
 public class UserHandshakeInterceptor implements HandshakeInterceptor {
     LogFactory LOG = new LogFactory(UserHandshakeInterceptor.class);
-    private TokenService tokenService;
-    private CacheService cacheService;
-    @Autowired
-    public void setCacheService(CacheService cacheService) {
-        this.cacheService = cacheService;
-    }
-    @Autowired
-    public void setTokenService(TokenService tokenService) {
+    private final TokenService tokenService;
+    private final CacheService cacheService;
+
+    public UserHandshakeInterceptor(TokenService tokenService, CacheService cacheService) {
         this.tokenService = tokenService;
+        this.cacheService = cacheService;
     }
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         if (request instanceof ServletServerHttpRequest servletRequest) {
-            return isValidAuthToken(servletRequest.getServletRequest().getParameter("token"), attributes);
+            return verifyToken(servletRequest.getServletRequest().getParameter("token"), attributes);
         }
         return false;
     }
@@ -47,7 +43,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
         LOG.info("Socket Connected");
     }
 
-    private boolean isValidAuthToken(String authToken, Map<String, Object> attributes) {
+    private boolean verifyToken(String authToken, Map<String, Object> attributes) {
         if (authToken == null) return false;
         authToken = authToken.replace(TokenService.TOKEN_PREFIX, "");
         try {
@@ -56,6 +52,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
             createAuthentication(userId);
             attributes.put(TokenService.TOKEN_PROPERTIES_UID, userId);
         } catch (Exception e) {
+            e.printStackTrace();
             LOG.error("User authentication failed");
             return false;
         }
@@ -69,5 +66,6 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
         Collection<? extends GrantedAuthority> rolePermission = userDetail.getAuthorities();
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println(ObjectTool.toJson(ClientIdentity.getUser()));
     }
 }

@@ -317,7 +317,6 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_用戶名為空_錯誤")
     void resetPassword_requestUserNameBlank_error() throws Exception {
-        System.out.println(1);
         ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "用戶名不得為空");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -332,7 +331,6 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_輸入用戶mail為空_錯誤")
     void resetPassword_requestEmailBlank_error() throws Exception {
-        System.out.println(2);
         ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email不得為空");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -347,7 +345,6 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_輸入用戶mail格式錯誤_錯誤")
     void resetPassword_invalidEmailFormat_error() throws Exception {
-        System.out.println(3);
         ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email格式錯誤");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -363,7 +360,6 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_用戶不存在_錯誤")
     void resetPassword_userNotFound_error() throws Exception {
-        System.out.println(4);
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_USER_OR_EMAIL);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -379,7 +375,6 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_email不存在_錯誤")
     void resetPassword_emailNotFound_error() throws Exception {
-        System.out.println(5);
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_USER_OR_EMAIL);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -395,7 +390,6 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_發送email異常_錯誤")
     void resetPassword_sendEmailException_error() throws Exception {
-        System.out.println(6);
         Mockito.doThrow(MessagingException.class).when(mailService).sendMail(any(), any(), any(), any());
         ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.MESSAGING_ERROR);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.RESET_PASSWORD)
@@ -412,7 +406,6 @@ class ClientControllerTest {
     @Test
     @DisplayName("重設密碼_成功")
     void resetPassword_ok() throws Exception {
-        System.out.println(7);
         ClientModel save = repository.save(testModel);
         ClientIdentityDto cacheClient = cacheService.getClient(testModel.getId());
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);

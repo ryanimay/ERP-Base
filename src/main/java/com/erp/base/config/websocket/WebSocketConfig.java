@@ -1,10 +1,13 @@
 package com.erp.base.config.websocket;
 
 import com.erp.base.filter.UserHandshakeInterceptor;
+import com.erp.base.filter.WebSocketContextInterceptor;
+import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -19,10 +22,15 @@ import java.util.Map;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final UserHandshakeInterceptor userHandshakeInterceptor;
+    private TokenService tokenService;
+    private CacheService cacheService;
     @Autowired
-    public WebSocketConfig(UserHandshakeInterceptor userHandshakeInterceptor){
-        this.userHandshakeInterceptor = userHandshakeInterceptor;
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
+    }
+    @Autowired
+    public void setTokenService(TokenService tokenService) {
+        this.tokenService = tokenService;
     }
 
 
@@ -43,7 +51,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 })
                 .setAllowedOriginPatterns("*")
                 .withSockJS()
-                .setInterceptors(userHandshakeInterceptor);
+                .setInterceptors(new UserHandshakeInterceptor(tokenService, cacheService));
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new WebSocketContextInterceptor());
     }
 
 
