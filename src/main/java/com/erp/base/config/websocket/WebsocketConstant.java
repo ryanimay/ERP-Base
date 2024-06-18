@@ -12,6 +12,6 @@ public interface WebsocketConstant {
 
     interface DESTINATION{
         String PREFIX = "/app";
-        String SEND_NOTIFICATION = "/sendNotification";
+        String USER = "/user";
     }
 }

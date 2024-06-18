@@ -110,7 +110,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void createAuthentication(Long id, HttpServletRequest request) {
-        System.out.println(id);
         String lang = request.getHeader("User-Lang");
         ClientIdentityDto client = cacheService.getClient(id);
         if(client == null) return;
