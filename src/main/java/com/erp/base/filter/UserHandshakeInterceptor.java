@@ -1,12 +1,10 @@
 package com.erp.base.filter;
 
-import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.security.TokenService;
 import com.erp.base.service.security.UserDetailImpl;
 import com.erp.base.tool.LogFactory;
-import com.erp.base.tool.ObjectTool;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -66,6 +64,5 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
         Collection<? extends GrantedAuthority> rolePermission = userDetail.getAuthorities();
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetail, null, rolePermission);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println(ObjectTool.toJson(ClientIdentity.getUser()));
     }
 }

@@ -37,7 +37,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker(WebsocketConstant.TOPIC.PREFIX);
-        config.setApplicationDestinationPrefixes(WebsocketConstant.DESTINATION.PREFIX);
+        config.setApplicationDestinationPrefixes(WebsocketConstant.DESTINATION.PREFIX, WebsocketConstant.DESTINATION.USER);
+        config.setUserDestinationPrefix(WebsocketConstant.DESTINATION.USER);
     }
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

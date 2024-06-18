@@ -5,7 +5,7 @@ import com.erp.base.service.WebsocketService;
 import com.erp.base.service.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
@@ -20,8 +20,8 @@ public class WebsocketController {
         this.websocketService = websocketService;
     }
 
-    @MessageMapping(WebsocketConstant.DESTINATION.SEND_NOTIFICATION)
-    public void getNotification(@Header("simpSessionAttributes") Map<String, Object> session){
+    @SubscribeMapping(WebsocketConstant.TOPIC.NOTIFICATION)
+    public void subNotification(@Header("simpSessionAttributes") Map<String, Object> session){
         String uid = (String) session.get(TokenService.TOKEN_PROPERTIES_UID);
         websocketService.sendNotification(uid);
     }
