@@ -1,8 +1,5 @@
 package com.erp.base.controller;
 
-import com.erp.base.model.dto.security.ClientIdentityDto;
-import com.erp.base.testConfig.TestUtils;
-import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.ClientStatusRequest;
 import com.erp.base.model.dto.request.client.UpdateClientInfoRequest;
@@ -10,12 +7,17 @@ import com.erp.base.model.dto.request.client.UpdatePasswordRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
+import com.erp.base.model.dto.security.ClientIdentityDto;
+import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.RoleModel;
+import com.erp.base.repository.AttendRepository;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.CacheService;
 import com.erp.base.service.MailService;
 import com.erp.base.service.security.TokenService;
+import com.erp.base.testConfig.TestUtils;
+import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.tool.EncodeTool;
 import com.erp.base.tool.ObjectTool;
 import jakarta.mail.MessagingException;
@@ -68,6 +70,8 @@ class ClientControllerTest {
     private RedisServer redisServer;
     @Autowired
     private ClientRepository repository;
+    @Autowired
+    private AttendRepository attendRepository;
     @Autowired
     private TokenService tokenService;
     @Autowired
@@ -147,6 +151,9 @@ class ClientControllerTest {
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         ClientModel model = repository.findByUsername("testRegister");
         Assertions.assertNotNull(model);
+
+        List<AttendModel> all = attendRepository.findAll();
+        Assertions.assertTrue(all.stream().anyMatch(attend -> attend.getUser().getId() == model.getId()));
         repository.deleteById(model.getId());
     }
 
