@@ -79,7 +79,7 @@ class LogControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 3, 1);
+        testUtils.comparePage(resultActions, 10, 1, 3, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(log1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(log1.getStatus()))
@@ -125,7 +125,7 @@ class LogControllerTest {
                 .param("status", "false")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(log3.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(log3.getStatus()))
@@ -157,7 +157,7 @@ class LogControllerTest {
                 .param("sortBy", "time")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(log2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(log2.getStatus()))
@@ -195,7 +195,7 @@ class LogControllerTest {
                 .param("url", Router.PERMISSION.BAN)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(log3.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(log3.getStatus()))

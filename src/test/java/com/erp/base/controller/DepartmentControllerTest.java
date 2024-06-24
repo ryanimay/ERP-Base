@@ -57,7 +57,7 @@ class DepartmentControllerTest {
                 .param("id", "1")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value("departmentA"))
@@ -74,7 +74,7 @@ class DepartmentControllerTest {
                 .param("name", "depart")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 3, 1);
+        testUtils.comparePage(resultActions, 10, 1, 3, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value("departmentA"))
@@ -98,7 +98,7 @@ class DepartmentControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 3, 1);
+        testUtils.comparePage(resultActions, 10, 1, 3, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value("departmentA"))
@@ -158,7 +158,7 @@ class DepartmentControllerTest {
                 .param("id", "99")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 0, 0, 1);
+        testUtils.comparePage(resultActions, 10, 0, 0, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data").isEmpty());

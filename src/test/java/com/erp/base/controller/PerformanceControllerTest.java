@@ -101,7 +101,7 @@ class PerformanceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(performance1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].event").value(performance1.getEvent()))
@@ -150,7 +150,7 @@ class PerformanceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(performance2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].event").value(performance2.getEvent()))
@@ -221,7 +221,7 @@ class PerformanceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(selfPerformance1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].event").value(selfPerformance1.getEvent()))
@@ -265,7 +265,7 @@ class PerformanceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(selfPerformance2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].event").value(selfPerformance2.getEvent()))

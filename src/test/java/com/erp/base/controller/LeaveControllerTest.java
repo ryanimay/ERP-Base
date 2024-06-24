@@ -99,7 +99,7 @@ class LeaveControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(otherLeave1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(otherLeave1.getUser().getId()))
@@ -148,7 +148,7 @@ class LeaveControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
 
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(otherLeave2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(otherLeave2.getUser().getId()))
@@ -217,7 +217,7 @@ class LeaveControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 3, 1);
+        testUtils.comparePage(resultActions, 10, 1, 3, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(selfLeave1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(selfLeave1.getUser().getId()))

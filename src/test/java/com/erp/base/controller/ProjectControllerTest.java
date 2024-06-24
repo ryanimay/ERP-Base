@@ -78,7 +78,7 @@ class ProjectControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(projectResponse1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value(projectResponse1.getName()))
@@ -123,7 +123,7 @@ class ProjectControllerTest {
                 .param("type", projectResponse2.getType())
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(projectResponse2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value(projectResponse2.getName()))
@@ -154,7 +154,7 @@ class ProjectControllerTest {
                 .param("managerId", String.valueOf(me.getId()))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(projectResponse1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value(projectResponse1.getName()))
@@ -189,7 +189,7 @@ class ProjectControllerTest {
                 .param("managerId", String.valueOf(99))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 0, 0, 1);
+        testUtils.comparePage(resultActions, 10, 0, 0, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data").isEmpty());
         projectRepository.deleteById(projectResponse1.getId());
