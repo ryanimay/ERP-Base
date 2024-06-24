@@ -74,7 +74,7 @@ class ProcurementControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(procurement1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(procurement1.getType()))
@@ -113,7 +113,7 @@ class ProcurementControllerTest {
                 .param("type", "1")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(procurement1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(procurement1.getType()))
@@ -141,7 +141,7 @@ class ProcurementControllerTest {
                 .param("status", "2")
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(procurement2.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(procurement2.getType()))

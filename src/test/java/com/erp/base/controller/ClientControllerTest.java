@@ -465,7 +465,7 @@ class ClientControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getId()));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 2, 1);
+        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(save.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].username").value(save.getUsername()))
@@ -507,7 +507,7 @@ class ClientControllerTest {
                 .param("id", String.valueOf(save.getId()))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(save.getId()));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(save.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].username").value(save.getUsername()))
@@ -536,7 +536,7 @@ class ClientControllerTest {
                 .param("name", save1.getUsername())
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 15, 1, 1, 1);
+        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(save1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].username").value(save1.getUsername()))

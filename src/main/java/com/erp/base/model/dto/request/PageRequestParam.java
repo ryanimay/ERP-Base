@@ -11,7 +11,7 @@ public class PageRequestParam {
     @Schema(description = "頁數", defaultValue = "1")
     private Integer pageNum;
 
-    @Schema(description = "每頁顯示筆數", defaultValue = "15")
+    @Schema(description = "每頁顯示筆數", defaultValue = "10")
     private Integer pageSize;
 
     @Schema(description = "正序/倒序", defaultValue = "1")
@@ -22,7 +22,7 @@ public class PageRequestParam {
 
     public PageRequest getPage() {
         if(pageNum == null) this.pageNum = 1;
-        if(pageSize == null) this.pageSize = 15;
+        if(pageSize == null) this.pageSize = 10;
         if(sort == null) this.sort = 1;
         if(sortBy == null) this.sortBy = "id";
         pageNum--;
