@@ -9,6 +9,7 @@ import com.erp.base.model.entity.AttendModel;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.tool.DateTool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class AttendService {
     private AttendRepository attendRepository;
     private ClientService clientService;
     @Autowired
-    public void setClientService(ClientService clientService){
+    public void setClientService(@Lazy ClientService clientService){
         this.clientService = clientService;
     }
     @Autowired
@@ -65,5 +66,9 @@ public class AttendService {
 
     public void saveAll(List<AttendModel> attends) {
         attendRepository.saveAll(attends);
+    }
+
+    public void save(AttendModel attendModel) {
+        attendRepository.save(attendModel);
     }
 }

@@ -12,6 +12,7 @@ import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
+import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
@@ -50,7 +51,13 @@ public class ClientService {
     private MessageService messageService;
     private NotificationService notificationService;
     private DepartmentService departmentService;
+    private AttendService attendService;
     private static final String RESET_PREFIX = "##";
+
+    @Autowired
+    public void setAttendService(AttendService attendService) {
+        this.attendService = attendService;
+    }
 
     @Autowired
     public void setDepartmentService(DepartmentService departmentService) {
@@ -107,8 +114,14 @@ public class ClientService {
         entity = departmentService.setDepartmentDefaultRole(entity, dto.getDepartmentId());
         entity.setPassword(passwordEncode(entity.getPassword()));
         clientRepository.save(entity);
-
+        //新增空的簽到表
+        addNewAttend(entity.getId());
         return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
+    }
+
+    private void addNewAttend(long id) {
+        AttendModel attendModel = new AttendModel(new ClientModel(id));
+        attendService.save(attendModel);
     }
 
     public ResponseEntity<ApiResponse> login(LoginRequest request) {

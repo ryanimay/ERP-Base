@@ -57,6 +57,7 @@ class ClientServiceTest {
         clientService.setMessageService(Mockito.mock(MessageService.class));
         clientService.setNotificationService(Mockito.mock(NotificationService.class));
         clientService.setCacheService(Mockito.mock(CacheService.class));
+        clientService.setAttendService(Mockito.mock(AttendService.class));
     }
 
     @Test
