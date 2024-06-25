@@ -2,6 +2,7 @@
   drop table client
   drop table client_notifications
   drop table client_roles
+  drop table department_role
   drop table department
   drop table job
   drop table leave

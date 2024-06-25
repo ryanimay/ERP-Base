@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serial;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 部門
@@ -18,7 +20,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "clientModelList")
+@ToString(exclude = {"clientModelList", "roles"})
 public class DepartmentModel implements IBaseModel {
     @Serial
     private static final long serialVersionUID = 2L;
@@ -38,6 +40,14 @@ public class DepartmentModel implements IBaseModel {
     @JoinColumn(name = "default_role")
     @JsonIgnore
     private RoleModel defaultRole; //預設權限
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "department_role",
+            joinColumns = @JoinColumn(name = "department_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonIgnore
+    private Set<RoleModel> roles = new HashSet<>();
 
     public DepartmentModel(Long departmentId) {
         this.id = departmentId;
