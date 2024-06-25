@@ -276,18 +276,30 @@ public class ClientService {
 
     public ResponseEntity<ApiResponse> lockClient(ClientStatusRequest request) {
         String username = request.getUsername();
-        int count = clientRepository.lockClientByIdAndUsername(request.getClientId(), username, request.isStatus());
+        long uid = request.getClientId();
+        int count = clientRepository.lockClientByIdAndUsername(uid, username, request.isStatus());
         if (count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        cacheService.refreshClient(request.getClientId());
+        cacheService.refreshClient(uid);
+        //如果是更新成鎖定，就觸發用戶
+        if (request.isStatus()) callClientLogout(uid);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
     public ResponseEntity<ApiResponse> clientStatus(ClientStatusRequest request) {
         String username = request.getUsername();
-        int count = clientRepository.switchClientStatusByIdAndUsername(request.getClientId(), username, request.isStatus());
+        long uid = request.getClientId();
+        int count = clientRepository.switchClientStatusByIdAndUsername(uid, username, request.isStatus());
         if (count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        cacheService.refreshClient(request.getClientId());
+        cacheService.refreshClient(uid);
+        //如果是更新成停用，就觸發用戶
+        if (!request.isStatus()) callClientLogout(uid);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    //發websocket觸發，踢出被鎖定用戶
+    private void callClientLogout(long uid) {
+        MessageModel messageModel = new MessageModel("system", Long.toString(uid), WebsocketConstant.TOPIC.CLIENT_STATUS, "message.kickOut");
+        messageService.sendTo(messageModel);
     }
 
     public Set<ClientModel> findActiveUserAndNotExistAttend() {
