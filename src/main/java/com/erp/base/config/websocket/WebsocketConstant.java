@@ -8,6 +8,7 @@ public interface WebsocketConstant {
     interface TOPIC {
         String PREFIX = "/topic";
         String NOTIFICATION = PREFIX + "/notification";
+        String CLIENT_STATUS = PREFIX + "/clientStatus";
     }
 
     interface DESTINATION{
