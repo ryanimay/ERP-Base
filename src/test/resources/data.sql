@@ -151,15 +151,15 @@ WHERE NOT EXISTS(SELECT 1 FROM client_roles WHERE source.client_id = client_role
 INSERT INTO menu (name, path, icon, level, order_num, status, parent_id)
 SELECT name, path, icon, level, order_num, status, parent_id
 FROM (VALUES
-          ('用戶管理', null, 'User', 0, 1, true, null),
-          ('權限管理', null, 'Key', 0, 2, true, null),
-          ('薪資管理', null, 'Wallet', 0, 3, true, null),
-          ('績效管理', null, 'Trophy', 0, 4, true, null),
-          ('休假管理', null, 'Calendar', 0, 5, true, null),
-          ('專案管理', null, 'Briefcase', 0, 6, true, null),
-          ('採購管理', null, 'ShoppingCart', 0, 7, true, null),
-          ('任務管理', null, 'EditPen', 0, 8, true, null),
-          ('排程管理', null, 'Clock', 0, 9, true, null)
+          ('router.clientManagement', null, 'User', 0, 1, 'true', null),
+          ('router.permissionManagement', null, 'Key', 0, 2, 'true', null),
+          ('router.salaryManagement', null, 'Wallet', 0, 3, 'true', null),
+          ('router.performanceManagement', null, 'Trophy', 0, 4, 'true', null),
+          ('router.leaveManagement', null, 'Calendar', 0, 5, 'true', null),
+          ('router.projectManagement', null, 'Briefcase', 0, 6, 'true', null),
+          ('router.procureManagement', null, 'ShoppingCart', 0, 7, 'true', null),
+          ('router.jobManagement', null, 'EditPen', 0, 8, 'true', null),
+          ('router.scheduleManagement', null, 'Clock', 0, 9, 'true', null)
      ) AS source (name, path, icon, level, order_num, status, parent_id)
 WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
 
@@ -167,31 +167,31 @@ INSERT INTO menu (name, path, icon, level, order_num, status, parent_id)
 SELECT name, path, icon, level, order_num, status, parent_id
 FROM (VALUES
           ('用戶清單', 'client', 'List', 1, 1, true,
-           (SELECT id FROM menu WHERE name = '用戶管理')
+           (SELECT id FROM menu WHERE name = 'router.clientManagement')
           ),
           ('test', 'client', 'List', 1, 2, true,
-           (SELECT id FROM menu WHERE name = '權限管理')
+           (SELECT id FROM menu WHERE name = 'router.permissionManagement')
           ),
           ('test', 'client', 'List', 1, 3, true,
-           (SELECT id FROM menu WHERE name = '薪資管理')
+           (SELECT id FROM menu WHERE name = 'router.salaryManagement')
           ),
           ('test', 'client', 'List', 1, 4, true,
-           (SELECT id FROM menu WHERE name = '績效管理')
+           (SELECT id FROM menu WHERE name = 'router.performanceManagement')
           ),
           ('test', 'client', 'List', 1, 5, true,
-           (SELECT id FROM menu WHERE name = '休假管理')
+           (SELECT id FROM menu WHERE name = 'router.leaveManagement')
           ),
           ('test', 'client', 'List', 1, 6, true,
-           (SELECT id FROM menu WHERE name = '專案管理')
+           (SELECT id FROM menu WHERE name = 'router.projectManagement')
           ),
           ('test', 'client', 'List', 1, 7, true,
-           (SELECT id FROM menu WHERE name = '採購管理')
+           (SELECT id FROM menu WHERE name = 'router.procureManagement')
           ),
           ('test', 'client', 'List', 1, 8, true,
-           (SELECT id FROM menu WHERE name = '任務管理')
+           (SELECT id FROM menu WHERE name = 'router.jobManagement')
           ),
           ('test', 'client', 'List', 1, 9, true,
-           (SELECT id FROM menu WHERE name = '排程管理')
+           (SELECT id FROM menu WHERE name = 'router.scheduleManagement')
           )
      ) AS source (name, path, icon, level, order_num, status, parent_id)
 WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
