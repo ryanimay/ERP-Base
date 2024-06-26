@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * 系統通知
@@ -39,4 +40,6 @@ public class NotificationModel implements IBaseModel{
     @Column(name = "create_by")
     @Builder.Default
     private long createBy = 0;
+    @ManyToMany(mappedBy = "notifications", fetch = FetchType.LAZY)
+    private Set<ClientModel> clients;
 }

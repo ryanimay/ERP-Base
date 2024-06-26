@@ -10,6 +10,7 @@ import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.AttendModel;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.repository.ClientRepository;
@@ -723,6 +724,9 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.active").value(save.isActive()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.lock").value(save.isLock()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleId", Matchers.containsInAnyOrder(2, 3)));//更新用戶時不帶departmentID就不做更動，預設部門只會在註冊生效
+        Set<NotificationModel> notificationByUserId = repository.findNotificationByUserId(save.getId());
+        Assertions.assertNotNull(notificationByUserId);
+        Assertions.assertFalse(notificationByUserId.isEmpty());
         repository.deleteById(save.getId());
     }
 

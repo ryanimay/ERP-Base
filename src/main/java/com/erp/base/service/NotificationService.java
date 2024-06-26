@@ -3,6 +3,7 @@ package com.erp.base.service;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.NotificationEnum;
 import com.erp.base.model.dto.security.ClientIdentityDto;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class NotificationService {
     }
 
     /**
-     *
+     * 創建系統通知, 不指定用戶
      * @param notificationEnum 對應的enum模板
      * @param params 按順序放要替換的字元
      * @return i18n翻譯完的通知
@@ -45,6 +46,25 @@ public class NotificationService {
                 .status(false)
                 .global(notificationEnum.getGlobal())
                 .createBy(Objects.requireNonNull(user).getId())
+                .build();
+        save(build);
+        return build;
+    }
+    /**
+     * 創建系統通知, 指定用戶
+     * @param notificationEnum 對應的enum模板
+     * @param params 按順序放要替換的字元
+     * @return i18n翻譯完的通知
+     */
+    public NotificationModel createNotificationToUser(NotificationEnum notificationEnum, Set<ClientModel> set, Object...params){
+        ClientIdentityDto user = ClientIdentity.getUser();
+        NotificationModel build = NotificationModel.builder()
+                .info(notificationEnum.getInfo(params))
+                .router(notificationEnum.getRouterName())
+                .status(false)
+                .global(notificationEnum.getGlobal())
+                .createBy(Objects.requireNonNull(user).getId())
+                .clients(set)
                 .build();
         save(build);
         return build;
