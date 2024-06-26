@@ -52,12 +52,6 @@ public class ClientModel implements IBaseModel, Comparable<ClientModel> {
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleModel> roles = new HashSet<>();
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "client_notifications",
-            joinColumns = @JoinColumn(name = "client_id"),
-            inverseJoinColumns = @JoinColumn(name = "notifications_id"))
-    private Set<NotificationModel> notifications = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id")

@@ -1,6 +1,7 @@
 package com.erp.base.model.entity;
 
 import com.erp.base.tool.DateTool;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -40,6 +42,12 @@ public class NotificationModel implements IBaseModel{
     @Column(name = "create_by")
     @Builder.Default
     private long createBy = 0;
-    @ManyToMany(mappedBy = "notifications", fetch = FetchType.LAZY)
-    private Set<ClientModel> clients;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    @JoinTable(
+            name = "client_notifications",
+            joinColumns = @JoinColumn(name = "notifications_id"),
+            inverseJoinColumns = @JoinColumn(name = "client_id"))
+    private Set<ClientModel> clients = new HashSet<>();
 }
