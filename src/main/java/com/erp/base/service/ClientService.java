@@ -33,10 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -263,7 +260,9 @@ public class ClientService {
     private void checkUserOrSendMessage(ClientModel client) {
         ClientIdentityDto user = ClientIdentity.getUser();
         if (user != null && user.getId() != client.getId()) {
-            NotificationModel notification = notificationService.createNotification(NotificationEnum.UPDATE_USER, user.getUsername());
+            Set<ClientModel> set = new HashSet<>();
+            set.add(client);
+            NotificationModel notification = notificationService.createNotificationToUser(NotificationEnum.UPDATE_USER, set, user.getUsername());
             MessageModel messageModel = new MessageModel(user.getUsername(), Long.toString(client.getId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
         }
