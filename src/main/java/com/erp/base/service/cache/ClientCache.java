@@ -36,7 +36,6 @@ public class ClientCache implements ICache{
         ClientModel model = clientService.findById(id);
         if(model == null) return null;
         Hibernate.initialize(model.getRoles());
-        Hibernate.initialize(model.getNotifications());
         return new ClientIdentityDto(model);
     }
 
