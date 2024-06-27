@@ -2,6 +2,7 @@ package com.erp.base.repository;
 
 import com.erp.base.model.entity.NotificationModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,7 @@ public interface NotificationRepository extends JpaRepository<NotificationModel,
     //搜尋全域通知
     @Query("SELECT n FROM NotificationModel n WHERE n.global")
     Set<NotificationModel> findGlobal();
+    @Modifying
+    @Query("UPDATE NotificationModel n SET n.status = TRUE WHERE n.id = :id")
+    int updateStatusById(Long id);
 }
