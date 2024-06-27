@@ -106,28 +106,46 @@ class DepartmentServiceTest {
     }
 
     @Test
-    @DisplayName("部門員工清單_按level排序_成功")
+    @DisplayName("部門員工清單_成功")
     void findStaffById_ok() {
         DepartmentModel departmentModel = new DepartmentModel(1L);
         List<ClientModel> clientModelList = new ArrayList<>();
         ClientModel c1 = new ClientModel(1);
+        HashSet<RoleModel> roles1 = new HashSet<>();
+        RoleModel role1 = new RoleModel(1L);
+        role1.setLevel(RoleConstant.LEVEL_0);
+        roles1.add(role1);
+        c1.setRoles(roles1);
         clientModelList.add(c1);
         ClientModel c2 = new ClientModel(2);
+        HashSet<RoleModel> roles2 = new HashSet<>();
+        RoleModel role2 = new RoleModel(2L);
+        role2.setLevel(RoleConstant.LEVEL_1);
+        roles2.add(role2);
+        c2.setRoles(roles2);
         clientModelList.add(c2);
         ClientModel c3 = new ClientModel(3);
-        HashSet<RoleModel> roles = new HashSet<>();
-        RoleModel role = new RoleModel(1L);
-        role.setLevel(RoleConstant.LEVEL_3);
-        roles.add(role);
-        c3.setRoles(roles);
+        HashSet<RoleModel> roles3 = new HashSet<>();
+        RoleModel role3 = new RoleModel(3L);
+        role3.setLevel(RoleConstant.LEVEL_3);
+        roles3.add(role1);
+        roles3.add(role2);
+        roles3.add(role3);
+        c3.setRoles(roles3);
         clientModelList.add(c3);
+        ClientModel c4 = new ClientModel(3);
+        HashSet<RoleModel> roles4 = new HashSet<>();
+        roles4.add(role3);
+        roles4.add(role2);
+        roles4.add(role1);
+        c4.setRoles(roles4);
         departmentModel.setClientModelList(clientModelList);
         Mockito.when(departmentRepository.findById(Mockito.any())).thenReturn(Optional.of(departmentModel));
         ResponseEntity<ApiResponse> response = departmentService.findStaffById(1L);
         List<ClientNameRoleObject> expectList = new ArrayList<>();
-        expectList.add(new ClientNameRoleObject(c3, RoleConstant.LEVEL_3));
-        expectList.add(new ClientNameRoleObject(c1, RoleConstant.LEVEL_0));
-        expectList.add(new ClientNameRoleObject(c1, RoleConstant.LEVEL_0));
+        expectList.add(new ClientNameRoleObject(c1));
+        expectList.add(new ClientNameRoleObject(c2));
+        expectList.add(new ClientNameRoleObject(c4));
         Assertions.assertEquals(ApiResponse.success(expectList), response);
     }
 

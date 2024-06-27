@@ -1,6 +1,5 @@
 package com.erp.base.service;
 
-import com.erp.base.model.constant.RoleConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.department.DepartmentRequest;
 import com.erp.base.model.dto.response.ApiResponse;
@@ -18,7 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -73,23 +75,11 @@ public class DepartmentService {
             return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "DepartmentId Not Found.");
         }
         List<ClientModel> modelList = model.getClientModelList();
-        return ApiResponse.success(sortClientByRoleLevel(modelList));
+        return ApiResponse.success(transToDto(modelList));
     }
 
-    private List<ClientNameRoleObject> sortClientByRoleLevel(List<ClientModel> modelList) {
-        return modelList.stream()
-                .map(this::transToDto)
-                .sorted(Comparator
-                        .comparingInt(ClientNameRoleObject::getLevel).reversed()
-                        .thenComparing(ClientNameRoleObject::getId)).toList();
-    }
-
-    private ClientNameRoleObject transToDto(ClientModel model) {
-        Set<RoleModel> roles = model.getRoles();
-        if (roles == null || roles.isEmpty()) return new ClientNameRoleObject(model, RoleConstant.LEVEL_0);
-        int level = roles.stream().max(Comparator
-                .comparing(RoleModel::getLevel)).get().getLevel();
-        return new ClientNameRoleObject(model, level);
+    private List<ClientNameRoleObject> transToDto(List<ClientModel> clientList) {
+        return clientList.stream().map(ClientNameRoleObject::new).toList();
     }
 
     public ResponseEntity<ApiResponse> edit(DepartmentRequest request) {

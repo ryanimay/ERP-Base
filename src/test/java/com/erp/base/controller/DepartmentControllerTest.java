@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.model.dto.response.role.RoleNameResponse;
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
@@ -178,6 +179,9 @@ class DepartmentControllerTest {
     @Test
     @DisplayName("部門員工清單_成功")
     void departmentStaff_ok() throws Exception {
+        RoleNameResponse roleNameResponse = new RoleNameResponse();
+        roleNameResponse.setId(2);
+        roleNameResponse.setRoleName("Basic");
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.DEPARTMENT.STAFF)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -187,7 +191,7 @@ class DepartmentControllerTest {
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].username").value("test"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].level").value(1));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].roles[0]").value(roleNameResponse));
     }
 
     @Test
