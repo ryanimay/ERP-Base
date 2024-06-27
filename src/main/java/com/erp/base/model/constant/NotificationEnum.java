@@ -1,13 +1,8 @@
 package com.erp.base.model.constant;
 
-import com.erp.base.model.ClientIdentity;
-import com.erp.base.tool.BeanProviderTool;
-import org.springframework.context.MessageSource;
-
-import java.util.Locale;
-
 /**
- * 固定創建通知的格式(顯示I18n、轉跳路徑、是否全域通知)
+ * 固定創建通知的格式(顯示I18nKey、轉跳路徑、是否全域通知)
+ * info由前端轉換語系，因為要在DB做持久化，會導致沒辦法動態轉換
  * */
 public enum NotificationEnum {
     UPDATE_USER("notification.updateUser", "client", false),
@@ -29,9 +24,17 @@ public enum NotificationEnum {
     }
 
     public String getInfo(Object... params) {
-        MessageSource messageSource = BeanProviderTool.getBean(MessageSource.class);
-        Locale locale = ClientIdentity.getLocale();
-        return messageSource.getMessage(info, params, locale);
+        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
+        sb.append(info);
+        sb.append("++");
+        for (int i = 0; i < params.length; i++) {
+            sb.append(params[i]);
+            if (i < params.length - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 
     public String getRouterName() {
