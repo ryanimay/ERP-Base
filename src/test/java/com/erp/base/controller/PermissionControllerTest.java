@@ -54,7 +54,7 @@ class PermissionControllerTest {
     @Value("${security.password}")
     private String securityPwd;
     private static final long DEFAULT_UID = 1L;
-    private final List<Integer> permissionArray = List.of(35,18,5,9,31,59,49,37,40,44,52,63,3,56,39,34,29,11,30,42,28,58,1,68,36,12,4,7,21,19,27,6,64,10,13,41,17,62,57,48,32,51,2,67,47,50,43,14,46,20,66,24,60,55,15,23,45,54,22,53,38,65,16,25,26,61,33,8,69,70);
+    private final List<Integer> permissionArray = List.of(35,18,5,9,31,59,49,37,40,44,52,63,3,56,39,34,29,11,30,42,28,58,1,68,36,12,4,7,21,19,27,6,64,10,13,41,17,62,57,48,32,51,2,67,47,50,43,14,46,20,66,24,60,55,15,23,45,54,22,53,38,65,16,25,26,61,33,8,69,70, 71);
 
     @Test
     @DisplayName("權限清單_成功")
@@ -116,7 +116,7 @@ class PermissionControllerTest {
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data", Matchers.hasSize(70)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data", Matchers.hasSize(71)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data", Matchers.containsInAnyOrder(permissionArray.toArray())));
     }
 

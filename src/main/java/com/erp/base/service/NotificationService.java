@@ -2,11 +2,15 @@ package com.erp.base.service;
 
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.NotificationEnum;
+import com.erp.base.model.constant.response.ApiResponseCode;
+import com.erp.base.model.dto.request.IdRequest;
+import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,5 +72,12 @@ public class NotificationService {
                 .build();
         save(build);
         return build;
+    }
+
+    public ResponseEntity<ApiResponse> notificationStatus(IdRequest request) {
+        Long id = request.getId();
+        if(id == null) return ApiResponse.error(ApiResponseCode.INVALID_INPUT);
+        int count = notificationRepository.updateStatusById(id);
+        return count == 0 ? ApiResponse.error(ApiResponseCode.INVALID_INPUT) : ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

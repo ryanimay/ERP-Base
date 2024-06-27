@@ -70,6 +70,7 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
              ('QUARTZ_TOGGLE', '排程:切換排程狀態', '/quartzJob/toggle', 'true'),
              ('QUARTZ_DELETE', '排程:刪除排程', '/quartzJob/delete', 'true'),
              ('QUARTZ_EXEC', '排程:執行一次排程任務', '/quartzJob/exec', 'true'),
-             ('LOG_LIST', '日誌:清單', '/log/list', 'true')
+             ('LOG_LIST', '日誌:清單', '/log/list', 'true'),
+             ('NOTIFICATION_STATUS', '通知:更改狀態', '/notification/status', 'true')
      ) AS source (authority, info, url, status)
 WHERE NOT EXISTS(SELECT 1 FROM permission WHERE source.url = permission.url);

@@ -131,4 +131,9 @@ public interface Router {
         String LOG = "/log";
         String LIST = LOG + "/list";
     }
+
+    interface NOTIFICATION{
+        String NOTIFICATION = "/notification";
+        String STATUS = NOTIFICATION + "/status";
+    }
 }
