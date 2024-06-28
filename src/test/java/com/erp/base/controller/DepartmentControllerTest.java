@@ -1,13 +1,13 @@
 package com.erp.base.controller;
 
-import com.erp.base.model.dto.response.role.RoleNameResponse;
-import com.erp.base.testConfig.TestUtils;
-import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.role.RoleNameResponse;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.DepartmentRepository;
+import com.erp.base.testConfig.TestUtils;
+import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
@@ -204,7 +204,8 @@ class DepartmentControllerTest {
                         {
                         "id": 3,
                         "name": "departmentTest",
-                        "defaultRoleId": 1
+                        "defaultRoleId": 1,
+                        "roles": [1, 2, 3]
                         }
                         """)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
@@ -216,6 +217,10 @@ class DepartmentControllerTest {
         Assertions.assertEquals("departmentTest", model.getName());
         Assertions.assertEquals(1L, model.getDefaultRole().getId());
         Assertions.assertEquals("visitor", model.getDefaultRole().getRoleName());
+        Assertions.assertEquals(3, model.getRoles().size());
+        Assertions.assertTrue(model.getRoles().stream().anyMatch(r -> r.getId() == 1));
+        Assertions.assertTrue(model.getRoles().stream().anyMatch(r -> r.getId() == 2));
+        Assertions.assertTrue(model.getRoles().stream().anyMatch(r -> r.getId() == 3));
     }
 
     @Test
@@ -229,11 +234,13 @@ class DepartmentControllerTest {
                 .content("""
                         {
                         "name": "newDepartmentTest",
-                        "defaultRoleId": 1
+                        "defaultRoleId": 1,
+                        "roles": [1, 2, 3]
                         }
                         """)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
         entityManager.clear();
         departmentOptional = departmentRepository.findById(4L);
         Assertions.assertTrue(departmentOptional.isPresent());
@@ -241,6 +248,10 @@ class DepartmentControllerTest {
         Assertions.assertEquals("newDepartmentTest", model.getName());
         Assertions.assertEquals(1L, model.getDefaultRole().getId());
         Assertions.assertEquals("visitor", model.getDefaultRole().getRoleName());
+        Assertions.assertEquals(3, model.getRoles().size());
+        Assertions.assertTrue(model.getRoles().stream().anyMatch(r -> r.getId() == 1));
+        Assertions.assertTrue(model.getRoles().stream().anyMatch(r -> r.getId() == 2));
+        Assertions.assertTrue(model.getRoles().stream().anyMatch(r -> r.getId() == 3));
     }
 
     @Test

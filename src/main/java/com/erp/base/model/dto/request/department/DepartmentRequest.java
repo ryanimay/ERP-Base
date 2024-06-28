@@ -11,6 +11,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+import java.util.Set;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "部門共用請求")
@@ -21,6 +24,8 @@ public class DepartmentRequest extends PageRequestParam implements IBaseDto<Depa
     private String name;
     @Schema(description = "部門預設權限ID")
     private Long defaultRoleId;
+    @Schema(description = "部門權限ID清單")
+    private List<Long> roles;
 
 
     @Override
@@ -28,7 +33,10 @@ public class DepartmentRequest extends PageRequestParam implements IBaseDto<Depa
         DepartmentModel model = new DepartmentModel();
         if(id != null) model.setId(id);
         model.setName(name);
-        model.setDefaultRole(new RoleModel(defaultRoleId));
+        if(defaultRoleId != null)model.setDefaultRole(new RoleModel(defaultRoleId));
+        Set<RoleModel> rolesSet = model.getRoles();
+        if(roles != null) roles.forEach(id -> rolesSet.add(new RoleModel(id)));
+        model.setRoles(rolesSet);
         return model;
     }
 
