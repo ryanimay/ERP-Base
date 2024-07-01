@@ -251,21 +251,10 @@ public class ClientService {
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
         if (request.getDepartmentId() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
         ClientModel save = clientRepository.save(client);
-        checkRemoveDefaultRole(save);
         cacheService.refreshClient(client.getId());
         //非本人就發送通知
         checkUserOrSendMessage(client);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(save));
-    }
-    //如果有編制部門，就移除visit的默認權限
-    private void checkRemoveDefaultRole(ClientModel client) {
-        if(client.getDepartment() != null){
-            Set<RoleModel> roles = client.getRoles();
-            if(roles.stream().anyMatch(r -> r.getId() == 1)){
-                client.setRoles(roles.stream().filter(r -> r.getId() != 1).collect(Collectors.toSet()));
-                clientRepository.save(client);
-            }
-        }
     }
 
     private void checkUserOrSendMessage(ClientModel client) {
