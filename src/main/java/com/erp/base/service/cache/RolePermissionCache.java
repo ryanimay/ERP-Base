@@ -82,6 +82,11 @@ public class RolePermissionCache implements ICache {
             list.add(permission);
         }
         List<PermissionListResponse> responseList = new ArrayList<>();
+        //不需要權限的放最前面顯示
+        if(map.containsKey("*")){
+            responseList.add(new PermissionListResponse("*", map.get("*")));
+            map.remove("*");
+        }
         map.keySet().forEach(key -> responseList.add(new PermissionListResponse(key, map.get(key))));
         return responseList;
     }
