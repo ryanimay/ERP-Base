@@ -1,6 +1,7 @@
 package com.erp.base.controller;
 
 import com.erp.base.aspect.Loggable;
+import com.erp.base.model.dto.request.department.DepartmentEditRequest;
 import com.erp.base.model.dto.request.department.DepartmentRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.DepartmentService;
@@ -34,7 +35,7 @@ public class DepartmentController {
     @Loggable
     @PostMapping(Router.DEPARTMENT.EDIT)
     @Operation(summary = "編輯部門")
-    public ResponseEntity<ApiResponse> edit(@Parameter(description = "編輯部門請求") @RequestBody DepartmentRequest request){
+    public ResponseEntity<ApiResponse> edit(@Parameter(description = "編輯部門請求") @RequestBody DepartmentEditRequest request){
         return departmentService.edit(request);
     }
     @Loggable
