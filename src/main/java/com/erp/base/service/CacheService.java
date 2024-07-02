@@ -3,10 +3,10 @@ package com.erp.base.service;
 import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.MenuResponse;
+import com.erp.base.model.dto.response.role.PermissionListResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.DepartmentModel;
-import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.cache.ClientCache;
 import com.erp.base.service.cache.ICache;
@@ -81,8 +81,8 @@ public class CacheService {
         rolePermissionCache.refreshRole();
     }
 
-    public Map<String, List<PermissionModel>> getPermissionMap() {
-        return rolePermissionCache.getPermissionMap();
+    public List<PermissionListResponse> getPermissionMap() {
+        return rolePermissionCache.getPermissionList();
     }
 
     public Boolean permissionStatus(String requestedUrl) {

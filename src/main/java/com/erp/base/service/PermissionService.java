@@ -4,6 +4,7 @@ import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.permission.BanRequest;
 import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.role.PermissionListResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.repository.PermissionRepository;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -47,7 +47,8 @@ public class PermissionService {
     }
 
     public ResponseEntity<ApiResponse> getPermissionList() {
-        Map<String, List<PermissionModel>> map = cacheService.getPermissionMap();
+
+        List<PermissionListResponse> map = cacheService.getPermissionMap();
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
     }
 

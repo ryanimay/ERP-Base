@@ -1,13 +1,14 @@
 package com.erp.base.service.cache;
 
+import com.erp.base.model.dto.response.role.PermissionListResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.DepartmentService;
+import com.erp.base.service.MenuService;
 import com.erp.base.service.PermissionService;
 import com.erp.base.service.RoleService;
-import com.erp.base.service.MenuService;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -107,14 +108,13 @@ class RolePermissionCacheTest {
     }
 
     @Test
-    void getPermissionMap_ok() {
+    void getPermissionList_ok() {
         Mockito.when(permissionService.findAll()).thenReturn(permissions);
         rolePermissionCache.refreshAll();
-        Map<String, List<PermissionModel>> permissionMap = rolePermissionCache.getPermissionMap();
-
-        Assertions.assertEquals(permissions.get(0), permissionMap.get("TEST1").get(0));
-        Assertions.assertEquals(permissions.get(1), permissionMap.get("TEST1").get(1));
-        Assertions.assertEquals(permissions.get(2), permissionMap.get("TEST2").get(0));
+        List<PermissionListResponse> permissionList = rolePermissionCache.getPermissionList();
+        Assertions.assertEquals(permissions.get(0), permissionList.get(1).getChildren().get(0));
+        Assertions.assertEquals(permissions.get(1), permissionList.get(1).getChildren().get(1));
+        Assertions.assertEquals(permissions.get(2), permissionList.get(0).getChildren().get(0));
     }
 
     @Test
