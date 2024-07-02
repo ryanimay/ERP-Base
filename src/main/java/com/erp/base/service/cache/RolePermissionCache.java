@@ -2,6 +2,7 @@ package com.erp.base.service.cache;
 
 import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.dto.response.MenuResponse;
+import com.erp.base.model.dto.response.role.PermissionListResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.PermissionModel;
@@ -72,7 +73,7 @@ public class RolePermissionCache implements ICache {
     }
 
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSIONS_MAP)
-    public Map<String, List<PermissionModel>> getPermissionMap() {
+    public List<PermissionListResponse> getPermissionList() {
         List<PermissionModel> allPermission = getPermission();
         Map<String, List<PermissionModel>> map = new HashMap<>();
         for (PermissionModel permission : allPermission) {
@@ -80,7 +81,9 @@ public class RolePermissionCache implements ICache {
             List<PermissionModel> list = map.computeIfAbsent(key, k -> new ArrayList<>());
             list.add(permission);
         }
-        return map;
+        List<PermissionListResponse> responseList = new ArrayList<>();
+        map.keySet().forEach(key -> responseList.add(new PermissionListResponse(key, map.get(key))));
+        return responseList;
     }
 
     //角色擁有權限
