@@ -1,6 +1,7 @@
 package com.erp.base.service;
 
 import com.erp.base.model.constant.response.ApiResponseCode;
+import com.erp.base.model.dto.request.department.DepartmentEditRequest;
 import com.erp.base.model.dto.request.department.DepartmentRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientNameRoleObject;
@@ -82,7 +83,7 @@ public class DepartmentService {
         return clientList.stream().map(ClientNameRoleObject::new).toList();
     }
 
-    public ResponseEntity<ApiResponse> edit(DepartmentRequest request) {
+    public ResponseEntity<ApiResponse> edit(DepartmentEditRequest request) {
         departmentRepository.save(request.toModel());
         cacheService.refreshRolePermission();
         return ApiResponse.success(ApiResponseCode.SUCCESS);

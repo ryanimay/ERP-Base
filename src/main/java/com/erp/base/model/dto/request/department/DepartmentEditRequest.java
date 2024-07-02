@@ -2,8 +2,8 @@ package com.erp.base.model.dto.request.department;
 
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
-import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.DepartmentModel;
+import com.erp.base.model.entity.RoleModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -11,11 +11,12 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "部門共用請求")
-public class DepartmentRequest extends PageRequestParam implements IBaseDto<DepartmentModel> {
+public class DepartmentEditRequest implements IBaseDto<DepartmentModel> {
     @Schema(description = "部門ID")
     private Long id;
     @Schema(description = "部門名稱")
@@ -28,7 +29,14 @@ public class DepartmentRequest extends PageRequestParam implements IBaseDto<Depa
 
     @Override
     public DepartmentModel toModel() {
-        return null;
+        DepartmentModel model = new DepartmentModel();
+        if(id != null) model.setId(id);
+        model.setName(name);
+        if(defaultRoleId != null)model.setDefaultRole(new RoleModel(defaultRoleId));
+        Set<RoleModel> rolesSet = model.getRoles();
+        if(roles != null) roles.forEach(id -> rolesSet.add(new RoleModel(id)));
+        model.setRoles(rolesSet);
+        return model;
     }
 
     @Override
