@@ -12,6 +12,7 @@ FROM (VALUES
           ('router.jobManagement', null, 'EditPen', 0, 8, 'true', null),
           ('router.scheduleManagement', null, 'Clock', 0, 9, 'true', null),
           ('router.client', 'client', 'List', 1, 1, 'true', 1),
-          ('router.department', 'department', 'Grid', 1, 1, 'true', 2)
+          ('router.department', 'department', 'Grid', 1, 1, 'true', 2),
+          ('router.rolePermission', 'rolePermission', 'Finished', 1, 2, 'true', 2)
      ) AS source (name, path, icon, level, order_num, status, parent_id)
 WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
