@@ -31,6 +31,8 @@ class RoleServiceTest {
     @Mock
     private CacheService cacheService;
     @Mock
+    private DepartmentService departmentService;
+    @Mock
     private ClientService clientService;
     @InjectMocks
     private RoleService roleService;
@@ -96,6 +98,7 @@ class RoleServiceTest {
     @DisplayName("刪除角色_成功")
     void deleteById_ok() {
         Mockito.when(clientService.checkExistsRoleId(Mockito.anyLong())).thenReturn(false);
+        roleService.setDepartmentService(departmentService);
         IdRequest request = new IdRequest();
         request.setId(1L);
         ResponseEntity<ApiResponse> response = roleService.deleteById(request);
