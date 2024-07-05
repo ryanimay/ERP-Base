@@ -7,6 +7,7 @@ import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
 import com.erp.base.model.dto.request.role.RoleMenuRequest;
 import com.erp.base.model.dto.response.ApiResponse;
+import com.erp.base.model.dto.response.role.RoleNameResponse;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.repository.RoleRepository;
 import org.junit.jupiter.api.Assertions;
@@ -76,8 +77,9 @@ class RoleServiceTest {
     @DisplayName("新增角色_成功")
     void addRole_ok() {
         Mockito.when(roleRepository.findByRoleName(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(roleRepository.save(Mockito.any())).thenReturn(new RoleModel());
         ResponseEntity<ApiResponse> response = roleService.addRole(new RoleRequest());
-        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), response);
+        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS, new RoleNameResponse()), response);
     }
 
     @Test

@@ -124,12 +124,15 @@ class RoleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(roleRequest))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
-        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         List<RoleModel> all = roleRepository.findAll();
         Optional<RoleModel> first = all.stream().filter(r -> r.getRoleName().equals(roleRequest.getName())).findFirst();
         Assertions.assertTrue(first.isPresent());
         RoleModel model = first.get();
         Assertions.assertEquals(roleRequest.getName(), model.getRoleName());
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(model.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.roleName").value(model.getRoleName()));
     }
 
     @Test

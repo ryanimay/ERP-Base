@@ -72,9 +72,9 @@ public class RoleService {
         String name = request.getName();
         ResponseEntity<ApiResponse> response = checkRoleName(name, null);
         if (response != null) return response;
-        roleRepository.save(new RoleModel(name));
+        RoleModel model = roleRepository.save(new RoleModel(name));
         cacheService.refreshRole();
-        return ApiResponse.success(ApiResponseCode.SUCCESS);
+        return ApiResponse.success(ApiResponseCode.SUCCESS, new RoleNameResponse(model));
     }
 
     private ResponseEntity<ApiResponse> checkRoleName(String name, Long id) {
