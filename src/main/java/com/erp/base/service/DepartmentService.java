@@ -98,4 +98,8 @@ public class DepartmentService {
         }
         return ApiResponse.error(ApiResponseCode.DEPARTMENT_IN_USE);
     }
+
+    public void removeRole(Long id) {
+        departmentRepository.removeRole(id);
+    }
 }

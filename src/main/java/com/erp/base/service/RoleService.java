@@ -27,6 +27,11 @@ public class RoleService {
     private RoleRepository roleRepository;
     private CacheService cacheService;
     private ClientService clientService;
+    private DepartmentService departmentService;
+    @Autowired
+    public void setDepartmentService(DepartmentService departmentService) {
+        this.departmentService = departmentService;
+    }
     @Autowired
     public void setClientService(ClientService clientService) {
         this.clientService = clientService;
@@ -91,9 +96,12 @@ public class RoleService {
     }
 
     public ResponseEntity<ApiResponse> deleteById(IdRequest request) {
-        boolean exists = clientService.checkExistsRoleId(request.getId());
+        Long id = request.getId();
+        boolean exists = clientService.checkExistsRoleId(id);
         if(exists) return ApiResponse.error(ApiResponseCode.ROLE_IN_USE);
-        roleRepository.deleteById(request.getId());
+        //確定角色沒人使用，先把部門角色關聯解除
+        departmentService.removeRole(id);
+        roleRepository.deleteById(id);
         cacheService.refreshRole();
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
