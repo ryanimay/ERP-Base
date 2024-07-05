@@ -2,20 +2,21 @@ package com.erp.base.service;
 
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
+import com.erp.base.model.dto.request.role.RoleMenuRequest;
 import com.erp.base.model.dto.request.role.RolePermissionRequest;
 import com.erp.base.model.dto.request.role.RoleRequest;
-import com.erp.base.model.dto.request.role.RoleMenuRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.role.RoleNameResponse;
+import com.erp.base.model.entity.MenuModel;
 import com.erp.base.model.entity.PermissionModel;
 import com.erp.base.model.entity.RoleModel;
-import com.erp.base.model.entity.MenuModel;
 import com.erp.base.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -47,7 +48,12 @@ public class RoleService {
     }
 
     public ResponseEntity<ApiResponse> roleNameList() {
-        List<RoleNameResponse> roleNameResponses = cacheService.getRole().values().stream().map(RoleNameResponse::new).toList();
+        List<RoleNameResponse> roleNameResponses = cacheService.getRole()
+                .values()
+                .stream()
+                .sorted(Comparator.comparing(RoleModel::getId))
+                .map(RoleNameResponse::new)
+                .toList();
         return ApiResponse.success(roleNameResponses);
     }
 
