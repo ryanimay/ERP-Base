@@ -68,8 +68,14 @@ public class SecurityConfig {
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new DenyPermissionFilter(cacheService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new JwtAuthenticationFilter(tokenService, cacheService), DenyPermissionFilter.class)
+                //按順序:
+                //JwtAuthenticationFilter: 解析header，驗證token和設置lang(後續所有請求返回語系都會依照這裡)
+                //DenyPermissionFilter: 驗證路徑權限
+                //UserStatusFilter: 驗證用戶狀態
+                //UsernamePasswordAuthenticationFilter: SpringSecurity預設驗證，但這邊因為手動驗證，所以基本用不到
+                //順序是JwtAuthenticationFilter -> DenyPermissionFilter -> UserStatusFilter -> UsernamePasswordAuthenticationFilter
+                .addFilterBefore(new JwtAuthenticationFilter(tokenService, cacheService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new DenyPermissionFilter(cacheService), JwtAuthenticationFilter.class)
                 .addFilterAfter(new UserStatusFilter(), JwtAuthenticationFilter.class)
                 .exceptionHandling(exception ->
                         exception.accessDeniedHandler((request, response, accessDeniedException) ->{
