@@ -125,7 +125,7 @@ public class ClientController {
     }
 
     @PostMapping(Router.CLIENT.LOGOUT)
-    @Operation(summary = "登入")
+    @Operation(summary = "登出")
     public ResponseEntity<ApiResponse> logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
             @RequestHeader(value = TokenService.REFRESH_TOKEN, required = false) String refreshToken
