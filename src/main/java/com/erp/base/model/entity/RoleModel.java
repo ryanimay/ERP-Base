@@ -37,7 +37,12 @@ public class RoleModel implements IBaseModel {
     private Set<PermissionModel> permissions = new HashSet<>();
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "menu_role",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "menu_id")
+    )
     private Set<MenuModel> menus = new HashSet<>();
 
     public RoleModel(String roleName) {
