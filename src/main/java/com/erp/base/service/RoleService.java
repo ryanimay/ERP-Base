@@ -129,6 +129,7 @@ public class RoleService {
         Set<MenuModel> set = request.getMenuSet();
         roleModel.setMenus(set);
         roleRepository.save(roleModel);
+        cacheService.refreshRoleMenu(id);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

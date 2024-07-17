@@ -114,4 +114,8 @@ public class CacheService {
     public List<MenuResponse> getRoleMenu(Long id) {
         return rolePermissionCache.getRoleMenu(id);
     }
+
+    public void refreshRoleMenu(Long id) {
+        rolePermissionCache.refreshRoleMenu(id);
+    }
 }

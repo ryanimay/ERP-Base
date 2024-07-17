@@ -37,12 +37,7 @@ public class MenuModel implements IBaseModel {
     @Column(name = "status")
     private boolean status = true;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "menu_role",
-            joinColumns = @JoinColumn(name = "menu_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @ManyToMany(mappedBy = "menus", fetch = FetchType.LAZY)
     private Set<RoleModel> roles = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

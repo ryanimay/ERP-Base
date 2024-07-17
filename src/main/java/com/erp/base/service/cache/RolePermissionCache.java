@@ -122,4 +122,8 @@ public class RolePermissionCache implements ICache {
     public List<MenuResponse> getRoleMenu(Long id) {
         return menuService.getRoleMenu(id);
     }
+
+    @CacheEvict(key = CacheConstant.ROLE_PERMISSION.ROLE_MENU + " + #id")
+    public void refreshRoleMenu(Long id) {
+    }
 }
