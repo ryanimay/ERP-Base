@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.model.dto.request.role.RoleMenuRequest;
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.response.ApiResponseCode;
@@ -215,5 +216,48 @@ class RoleControllerTest {
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         byId = roleRepository.findById(3L);
         Assertions.assertTrue(byId.isEmpty());
+    }
+
+    @Test
+    @DisplayName("編輯角色菜單_成功")
+    void roleMenu_ok() throws Exception {
+        Optional<RoleModel> byId = roleRepository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        Assertions.assertTrue(byId.get().getMenus().isEmpty());
+        RoleMenuRequest roleRequest = new RoleMenuRequest();
+        roleRequest.setId(1L);
+        List<Long> list = new ArrayList<>();
+        list.add(1L);
+        list.add(2L);
+        list.add(3L);
+        roleRequest.setMenuIds(list);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ROLE_MENU)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        byId = roleRepository.findById(1L);
+        Assertions.assertTrue(byId.isPresent());
+        RoleModel model = byId.get();
+        Assertions.assertEquals(3, model.getMenus().size());
+    }
+
+    @Test
+    @DisplayName("編輯角色菜單_未知ID_錯誤")
+    void roleMenu_unknownId_error() throws Exception {
+        RoleMenuRequest roleRequest = new RoleMenuRequest();
+        roleRequest.setId(99L);
+        List<Long> list = new ArrayList<>();
+        list.add(1L);
+        list.add(2L);
+        list.add(3L);
+        roleRequest.setMenuIds(list);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.ROLE.ROLE_MENU)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectTool.toJson(roleRequest))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
 }
