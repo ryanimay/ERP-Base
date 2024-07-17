@@ -62,7 +62,7 @@ public class MenuService {
         for (MenuResponse model : menuList) {
             handleMenu(model, menuMap);
         }//整理成樹狀返回根節點
-        return ApiResponse.success(ApiResponseCode.SUCCESS, menuMap.get(0L));
+        return ApiResponse.success(ApiResponseCode.SUCCESS, menuMap.get(0L) == null ? new ArrayList<>() : menuMap.get(0L));
     }
 
     public List<MenuResponse> getRoleMenu(long roleId){
