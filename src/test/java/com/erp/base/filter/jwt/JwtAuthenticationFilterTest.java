@@ -79,7 +79,7 @@ class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
         Assertions.assertEquals("application/json; charset=utf-8", response.getContentType());
-        ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
+        ApiResponse expectedApiResponse = new ApiResponse(ApiResponseCode.INVALID_SIGNATURE);
         String expectedErrorMessage = ObjectTool.toJson(expectedApiResponse);
         Assertions.assertEquals(expectedErrorMessage, response.getContentAsString());
     }
@@ -104,7 +104,7 @@ class JwtAuthenticationFilterTest {
         request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, DEFAULT_UID, 0));
         Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(true);
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-        ApiResponse apiResponse = new ApiResponse(ApiResponseCode.ACCESS_DENIED);
+        ApiResponse apiResponse = new ApiResponse(ApiResponseCode.INVALID_SIGNATURE);
         Assertions.assertEquals(ObjectTool.toJson(apiResponse), response.getContentAsString());
     }
 
@@ -118,22 +118,6 @@ class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
         ApiResponse apiResponse = new ApiResponse(ApiResponseCode.INVALID_SIGNATURE);
         Assertions.assertEquals(ObjectTool.toJson(apiResponse), response.getContentAsString());
-    }
-
-    @Test
-    @DisplayName("JWT驗證_refreshToken刷新_成功")
-    void testDenyPermission_refreshToken_pass() throws ServletException, IOException {
-        tokenService.init();
-        request.addHeader(HttpHeaders.AUTHORIZATION, tokenService.createToken(TokenService.ACCESS_TOKEN, DEFAULT_UID, 0));
-        request.addHeader(TokenService.REFRESH_TOKEN, tokenService.createToken(TokenService.REFRESH_TOKEN, DEFAULT_UID, TokenService.REFRESH_TOKEN_EXPIRE_TIME));
-        ClientIdentityDto clientIdentityDto = new ClientIdentityDto();
-        clientIdentityDto.setId(1L);
-        Mockito.when(cacheService.getClient(Mockito.any())).thenReturn(clientIdentityDto);
-        Mockito.doReturn("testToken").when(tokenService).createToken(Mockito.anyString(), Mockito.anyLong(), Mockito.anyInt());
-        Mockito.when(cacheService.existsTokenBlackList(Mockito.any())).thenReturn(false);
-        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
-        Assertions.assertEquals(TokenService.TOKEN_PREFIX + "testToken", response.getHeader(HttpHeaders.AUTHORIZATION));
-        Mockito.verify(filterChain).doFilter(request, response);
     }
 
     @Test

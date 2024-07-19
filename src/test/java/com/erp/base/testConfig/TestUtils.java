@@ -35,6 +35,11 @@ public class TestUtils {
         return TokenService.TOKEN_PREFIX + tokenService.createToken(TokenService.ACCESS_TOKEN, uid, 30);
     }
 
+    //測試用，只建立短時間的refreshToken
+    public String createTestRefreshToken(Long uid){
+        return TokenService.TOKEN_PREFIX + tokenService.createToken(TokenService.REFRESH_TOKEN, uid, 30);
+    }
+
     public void comparePage(ResultActions resultActions, int pageSize, int totalPage, int totalElements, int PageNum) throws Exception {
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.pageSize").value(pageSize))

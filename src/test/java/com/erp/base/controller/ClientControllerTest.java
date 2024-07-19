@@ -432,7 +432,7 @@ class ClientControllerTest {
     @Test
     @DisplayName("測試API權限_無JWT_錯誤")
     void testApiPermission_noJwt_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CLIENT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testJson);
@@ -1076,6 +1076,27 @@ class ClientControllerTest {
 
         Assertions.assertTrue(cacheService.existsTokenBlackList(accessToken));
         cacheService.refreshAllCache();
+    }
+
+    @Test
+    @DisplayName("刷新Token_成功")
+    void refreshToken_ok() throws Exception {
+        String refreshToken = testUtils.createTestRefreshToken(DEFAULT_UID);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.REFRESHT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(TokenService.REFRESH_TOKEN, refreshToken);
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions.andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION));
+    }
+
+    @Test
+    @DisplayName("刷新Token_沒有refreshToken_錯誤")
+    void refreshToken_noToken_error() throws Exception {
+        ResponseEntity<ApiResponse> response = ApiResponse.error(ApiResponseCode.INVALID_SIGNATURE);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.REFRESHT)
+                .contentType(MediaType.APPLICATION_JSON);
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
     //更改role用於測試權限
     private void editRole(long roleId){
