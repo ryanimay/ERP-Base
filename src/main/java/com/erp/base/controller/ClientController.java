@@ -129,7 +129,12 @@ public class ClientController {
     public ResponseEntity<ApiResponse> logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
             @RequestHeader(value = TokenService.REFRESH_TOKEN, required = false) String refreshToken
-            ){
+    ){
         return clientService.logout(accessToken, refreshToken);
+    }
+    @PostMapping(Router.CLIENT.REFRESHT)
+    @Operation(summary = "刷新Token")
+    public ResponseEntity<ApiResponse> refresh(){
+        return clientService.refreshToken();
     }
 }
