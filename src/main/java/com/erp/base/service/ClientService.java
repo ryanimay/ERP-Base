@@ -351,4 +351,14 @@ public class ClientService {
     public Set<NotificationModel> findNotificationByUserId(Long uid) {
         return clientRepository.findNotificationByUserId(uid);
     }
+
+    public ResponseEntity<ApiResponse> refreshToken() {
+        ClientIdentityDto user = ClientIdentity.getUser();
+        if(user == null) return ApiResponse.error(ApiResponseCode.ACCESS_DENIED);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String accessToken = tokenService.createToken(TokenService.ACCESS_TOKEN, user.getId(), TokenService.ACCESS_TOKEN_EXPIRE_TIME);
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, TokenService.TOKEN_PREFIX + accessToken);
+        return ApiResponse.success(httpHeaders, null);
+    }
 }

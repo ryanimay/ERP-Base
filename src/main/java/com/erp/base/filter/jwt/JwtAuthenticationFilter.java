@@ -1,6 +1,7 @@
 package com.erp.base.filter.jwt;
 
 import com.erp.base.config.security.SecurityConfig;
+import com.erp.base.controller.Router;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.FilterExceptionResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
@@ -47,8 +48,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String url = ObjectTool.extractPath(request.getRequestURI());
             if (requiresAuthentication(url) && notEqualWebsocketUrl(url)) {
-                String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-                if(token == null || cacheService.existsTokenBlackList(token)) throw new AccessDeniedException("token error");
+                String token;
+                //刷Token的請求改成驗證refreshToken
+                if(Router.CLIENT.REFRESHT.equals(url)){
+                    token = request.getHeader(TokenService.REFRESH_TOKEN);
+                }else{
+                    token = request.getHeader(HttpHeaders.AUTHORIZATION);
+                }
+                if(token == null || cacheService.existsTokenBlackList(token)) throw new ExpiredJwtException(null, null, null);
                 Map<String, Object> payload = authenticationToken(token);
                 String uid = String.valueOf(payload.get(TokenService.TOKEN_PROPERTIES_UID));
                 createAuthentication(Long.parseLong(uid), request);
@@ -56,13 +63,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 createEmptyUserAuth(request);
             }
         } catch (ExpiredJwtException e) {
-            try{
-                LOG.info("AccessToken inValid, refresh: " + e.getMessage());
-                refreshToken(request, response);
-            }catch (SignatureException | ExpiredJwtException e1){
-                exceptionResponse(e1, response, ApiResponseCode.INVALID_SIGNATURE);
-                return;
-            }
+            exceptionResponse(e, response, ApiResponseCode.INVALID_SIGNATURE);
+            return;
         } catch (SignatureException | AccessDeniedException | MalformedJwtException e) {
             exceptionResponse(e, response, ApiResponseCode.ACCESS_DENIED);
             return;
@@ -87,28 +89,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * AccessToken過期，驗證refreshToken是否過期，如未過期則一起刷新放行，過期就拋出
-     * 舊Token加黑名單
-     */
-    private void refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getHeader(TokenService.REFRESH_TOKEN);
-        //不在黑名單才可刷新
-        if (token != null && !cacheService.existsTokenBlackList(token)) {
-            Map<String, Object> payload = tokenService.parseToken(token);
-            String id = String.valueOf(payload.get(TokenService.TOKEN_PROPERTIES_UID));
-            long uid = Long.parseLong(id);
-            String accessToken = tokenService.createToken(TokenService.ACCESS_TOKEN, uid, TokenService.ACCESS_TOKEN_EXPIRE_TIME);
-            response.setHeader(HttpHeaders.AUTHORIZATION, TokenService.TOKEN_PREFIX + accessToken);
-            String refreshToken = tokenService.createToken(TokenService.REFRESH_TOKEN, uid, TokenService.REFRESH_TOKEN_EXPIRE_TIME);
-            response.setHeader(TokenService.REFRESH_TOKEN, refreshToken);
-            cacheService.addTokenBlackList(token);
-            createAuthentication(uid, request);
-        } else {
-            LOG.warn(TokenService.REFRESH_TOKEN + " empty");
-            throw new SignatureException("");
-        }
-    }
-
+     * 建立ClientIdentity
+     * */
     private void createAuthentication(Long id, HttpServletRequest request) {
         String lang = request.getHeader("User-Lang");
         ClientIdentityDto client = cacheService.getClient(id);
