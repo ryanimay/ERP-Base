@@ -39,11 +39,11 @@ public class SalaryRequest extends PageRequestParam implements IBaseDto<SalaryMo
         SalaryModel salaryModel = new SalaryModel();
         salaryModel.setId(id);
         salaryModel.setUser(new ClientModel(userId));
-        salaryModel.setBaseSalary(baseSalary);
-        salaryModel.setMealAllowance(mealAllowance);
-        salaryModel.setBonus(bonus);
-        salaryModel.setLaborInsurance(laborInsurance);
-        salaryModel.setNationalHealthInsurance(nationalHealthInsurance);
+        salaryModel.setBaseSalary(baseSalary == null ?  BigDecimal.valueOf(0) : baseSalary);
+        salaryModel.setMealAllowance(mealAllowance == null ?  BigDecimal.valueOf(0) : mealAllowance);
+        salaryModel.setBonus(bonus == null ?  BigDecimal.valueOf(0) : bonus);
+        salaryModel.setLaborInsurance(laborInsurance == null ?  BigDecimal.valueOf(0) : laborInsurance);
+        salaryModel.setNationalHealthInsurance(nationalHealthInsurance == null ?  BigDecimal.valueOf(0) : nationalHealthInsurance);
         if(root != null) salaryModel.setRoot(root);
         return salaryModel;
     }

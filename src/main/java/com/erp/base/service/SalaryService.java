@@ -10,6 +10,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.response.SalaryResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import com.erp.base.model.entity.SalaryModel;
 import com.erp.base.repository.SalaryRepository;
@@ -20,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -80,7 +78,9 @@ public class SalaryService {
 
     private void sendMessage(Long userId) {
         ClientIdentityDto user = ClientIdentity.getUser();
-        NotificationModel notification = notificationService.createNotification(NotificationEnum.EDIT_SALARY_ROOT);
+        Set<ClientModel> set = new HashSet<>();
+        set.add(new ClientModel(userId));
+        NotificationModel notification = notificationService.createNotificationToUser(NotificationEnum.EDIT_SALARY_ROOT, set);
         MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), Long.toString(userId), WebsocketConstant.TOPIC.NOTIFICATION, notification);
         messageService.sendTo(messageModel);
     }
