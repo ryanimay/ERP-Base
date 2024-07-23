@@ -43,7 +43,7 @@ public class NotificationModel implements IBaseModel{
     @Builder.Default
     private long createBy = 0;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinTable(
             name = "client_notifications",
