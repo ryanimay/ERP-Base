@@ -28,6 +28,7 @@ FROM (VALUES
           ('router.rolePermission', 'rolePermission', 'Finished', 1, 2, 'true', 2),
           ('router.roleMenu', 'roleMenu', 'Guide', 1, 3, 'true', 2),
           ('router.salaryList', 'salaryList', 'WalletFilled', 1, 1, 'true', 3),
-          ('router.salarySetting', 'salarySetting', 'MagicStick', 1, 2, 'true', 3)
+          ('router.salarySetting', 'salarySetting', 'MagicStick', 1, 2, 'true', 3),
+          ('router.performanceList', 'performanceList', 'Star', 1, 1, 'true', 4)
      ) AS source (name, path, icon, level, order_num, status, parent_id)
 WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
