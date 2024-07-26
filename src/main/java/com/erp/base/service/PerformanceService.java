@@ -73,10 +73,10 @@ public class PerformanceService {
     }
 
     private void sendMessageToManger(ClientIdentityDto user) {
-        NotificationModel notification = notificationService.createNotification(NotificationEnum.ADD_PERFORMANCE, user.getUsername());
-        Set<Long> byHasAcceptPermission = clientService.queryReviewer(user.getDepartment().getId());
-        byHasAcceptPermission.forEach(id -> {
-            MessageModel messageModel = new MessageModel(user.getUsername(), id.toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+        Set<ClientModel> byHasAcceptPermission = clientService.queryReviewer(user.getDepartment().getId());
+        NotificationModel notification = notificationService.createNotificationToUser(NotificationEnum.ADD_PERFORMANCE, byHasAcceptPermission, user.getUsername());
+        byHasAcceptPermission.forEach(client -> {
+            MessageModel messageModel = new MessageModel(user.getUsername(), String.valueOf(client.getId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
         });
     }

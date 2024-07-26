@@ -7,8 +7,8 @@ package com.erp.base.model.constant;
 public enum NotificationEnum {
     UPDATE_USER("notification.updateUser", "client", false),
     EDIT_SALARY_ROOT("notification.editSalaryRoot", "salaryList", false),
-    ADD_PERFORMANCE("notification.addPerformance", "AddPerformance", false),
-    ACCEPT_PERFORMANCE("notification.acceptPerformance", "AcceptPerformance", false),
+    ADD_PERFORMANCE("notification.addPerformance", "performanceList", false),
+    ACCEPT_PERFORMANCE("notification.acceptPerformance", "personalPerformance", false),
     ADD_LEAVE("notification.addLeave", "AddLeave", false),
     ACCEPT_LEAVE("notification.acceptLeave", "AcceptLeave", false)
 
