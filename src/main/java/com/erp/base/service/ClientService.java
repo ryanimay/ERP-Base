@@ -310,7 +310,7 @@ public class ClientService {
         clientRepository.updateClientAttendStatus(LocalDate.now());
     }
 
-    public Set<Long> queryReviewer(Long departmentId) {
+    public Set<ClientModel> queryReviewer(Long departmentId) {
         return clientRepository.queryReviewer(departmentId, RoleConstant.LEVEL_1, RoleConstant.LEVEL_3);
     }
 

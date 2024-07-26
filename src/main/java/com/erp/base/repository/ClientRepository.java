@@ -47,8 +47,8 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     @Query("UPDATE ClientModel u SET u.attendStatus = :status WHERE u.id = :id")
     int updateClientAttendStatus(long id, int status);
     //如果是主管(level1) or 管理層(level3)
-    @Query("SELECT u.id FROM ClientModel u JOIN u.roles r WHERE (u.department.id = :departmentId AND r.level = :level1) OR r.level = :levelAll")
-    Set<Long> queryReviewer(Long departmentId, int level1, int levelAll);
+    @Query("SELECT u FROM ClientModel u JOIN u.roles r WHERE (u.department.id = :departmentId AND r.level = :level1) OR r.level = :levelAll")
+    Set<ClientModel> queryReviewer(Long departmentId, int level1, int levelAll);
     @Query("SELECT u.id, u.username FROM ClientModel u")
     List<Object[]> findAllNameAndId();
     @Query("SELECT u.username FROM ClientModel u WHERE u.id = :id")
