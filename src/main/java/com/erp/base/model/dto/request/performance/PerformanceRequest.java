@@ -49,7 +49,7 @@ public class PerformanceRequest extends PageRequestParam implements IBaseDto<Per
         performanceModel.setEvent(event);
         performanceModel.setFixedBonus(fixedBonus);
         performanceModel.setPerformanceRatio(performanceRatio);
-        performanceModel.setStatus(status == null ? StatusConstant.PENDING_NO : status);
+        performanceModel.setStatus(status == null || StatusConstant.get(status) == null ? StatusConstant.PENDING_NO : status);
         performanceModel.setEventTime(eventTime);
         return performanceModel;
     }
