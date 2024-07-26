@@ -62,7 +62,7 @@ public class PerformanceRequest extends PageRequestParam implements IBaseDto<Per
                 .add("user", GenericSpecifications.EQ, userId == null ? null : new ClientModel(userId))
                 .add("createTime", GenericSpecifications.GOE, startTime)
                 .add("createTime", GenericSpecifications.LOE, endTime)
-                .add("status", GenericSpecifications.EQ, status)
+                .add("status", GenericSpecifications.EQ, status == null || StatusConstant.get(status) == null ? StatusConstant.PENDING_NO : status)
                 .build();
     }
 }
