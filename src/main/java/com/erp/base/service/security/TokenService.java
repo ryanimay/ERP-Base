@@ -6,10 +6,12 @@ import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
+import com.erp.base.tool.ObjectTool;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,9 +85,24 @@ public class TokenService {
 
     //公鑰解密
     public Map<String,Object> parseToken(String token){
+        checkJWTHeader(token);
         PublicKey publicKey = keyPair.getPublic();
         Claims claims = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token).getBody();
         return new HashMap<>(claims);
+    }
+
+    private void checkJWTHeader(String token) {
+        String[] parts = token.split("\\.");
+        if (parts.length != 3) {
+            throw new SignatureException("Invalid JWT token format");
+        }
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]));
+        Map<String, Object> header = ObjectTool.fromJson(headerJson);
+
+        // 確保簽名方式是RS256
+        if (!SignatureAlgorithm.RS256.getValue().equals(header.get("alg"))) {
+            throw new SignatureException("Invalid JWT signature algorithm");
+        }
     }
 
     //私鑰加密
@@ -104,7 +121,7 @@ public class TokenService {
         PrivateKey privateKey = keyPair.getPrivate();
         return Jwts.builder()
                 .setClaims(claims)
-                .signWith(privateKey)
+                .signWith(privateKey, SignatureAlgorithm.RS256) // 明確指定使用RS256算法
                 .compact();
     }
 
