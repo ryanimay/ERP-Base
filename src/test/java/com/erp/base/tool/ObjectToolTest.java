@@ -1,7 +1,6 @@
 package com.erp.base.tool;
 
 import com.erp.base.controller.Router;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,9 +26,8 @@ class ObjectToolTest {
 
     @Test
     @DisplayName("json轉物件")
-    @SuppressWarnings("unchecked")
-    void fromJson() throws JsonProcessingException {
-        Map<String, String> s = (Map<String, String>)ObjectTool.fromJson(testString, HashMap.class);
+    void fromJson() {
+        Map<String, Object> s = ObjectTool.fromJson(testString);
         Assertions.assertEquals(map.keySet(), s.keySet());
         Assertions.assertEquals(map.get("id"), s.get("id"));
     }
