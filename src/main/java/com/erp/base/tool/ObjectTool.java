@@ -1,6 +1,7 @@
 package com.erp.base.tool;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -10,6 +11,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class ObjectTool {
@@ -45,8 +48,13 @@ public class ObjectTool {
         return json;
     }
 
-    public static <T> T fromJson(String fromValue, Class<T> toValueType) throws JsonProcessingException {
-        return mapper.readValue(fromValue, toValueType);
+    public static Map<String, Object> fromJson(String fromValue) {
+        try {
+            return mapper.readValue(fromValue, new TypeReference<>(){});
+        } catch (JsonProcessingException e) {
+            LOG.error("轉換Json發生錯誤: {0}", e.getMessage());
+        }
+        return new HashMap<>();
     }
 
     public static <T> T convert(Object fromValue, Class<T> toValueType){
