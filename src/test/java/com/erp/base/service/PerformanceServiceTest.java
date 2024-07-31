@@ -154,7 +154,11 @@ class PerformanceServiceTest {
     @Test
     @DisplayName("移除績效_未知ID_錯誤")
     void remove_unknownId_error() {
-        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(2);
+        ClientModel clientModel = new ClientModel(1);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn(2);
         ResponseEntity<ApiResponse> remove = performanceService.remove(1L);
         Assertions.assertEquals(ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + 1 + "] not found"), remove);
     }
@@ -162,7 +166,11 @@ class PerformanceServiceTest {
     @Test
     @DisplayName("移除績效_成功")
     void remove_ok() {
-        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
+        ClientModel clientModel = new ClientModel(1);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn(1);
         ResponseEntity<ApiResponse> remove = performanceService.remove(1L);
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), remove);
     }
@@ -175,7 +183,7 @@ class PerformanceServiceTest {
         UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(2);
+        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn(2);
         PerformanceAcceptRequest request = new PerformanceAcceptRequest();
         request.setEventId(1L);
         ResponseEntity<ApiResponse> remove = performanceService.accept(request);
@@ -199,7 +207,7 @@ class PerformanceServiceTest {
         UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
+        Mockito.when(performanceRepository.updateStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn(1);
         PerformanceAcceptRequest request = new PerformanceAcceptRequest();
         request.setEventId(1L);
         request.setEventUserId(1L);

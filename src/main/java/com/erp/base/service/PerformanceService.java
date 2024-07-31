@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -103,7 +104,11 @@ public class PerformanceService {
     }
 
     public ResponseEntity<ApiResponse> remove(Long eventId) {
-        int i = performanceRepository.updateStatus(eventId, StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO);
+        ClientIdentityDto user = ClientIdentity.getUser();
+        if (user == null) {
+            return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
+        }
+        int i = performanceRepository.updateStatus(eventId, StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO, new ClientModel(user.getId()));
         if (i == 1) return ApiResponse.success(ApiResponseCode.SUCCESS);
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Performance id[" + eventId + "] not found");
     }
@@ -113,9 +118,11 @@ public class PerformanceService {
         if (user == null) {
             return ApiResponse.error(ApiResponseCode.ACCESS_DENIED, "User Identity Not Found");
         }
-        int i = performanceRepository.updateStatus(request.getEventId(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
+        int i = performanceRepository.updateStatus(request.getEventId(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO, new ClientModel(user.getId()));
         if (i == 1) {
-            NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_PERFORMANCE);
+            Set<ClientModel> userSet = new HashSet<>();
+            userSet.add(new ClientModel(request.getEventUserId()));
+            NotificationModel notification = notificationService.createNotificationToUser(NotificationEnum.ACCEPT_PERFORMANCE, userSet);
             MessageModel messageModel = new MessageModel(user.getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);

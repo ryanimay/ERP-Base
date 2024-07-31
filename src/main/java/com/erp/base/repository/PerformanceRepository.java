@@ -1,5 +1,6 @@
 package com.erp.base.repository;
 
+import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.PerformanceModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,8 +15,8 @@ import java.util.Set;
 @Repository
 public interface PerformanceRepository extends JpaRepository<PerformanceModel, Long>, JpaSpecificationExecutor<PerformanceModel> {
     @Modifying
-    @Query("UPDATE PerformanceModel p SET p.status = :updateStatus WHERE p.id = :eventId AND p.status = :status")
-    int updateStatus(Long eventId, int status, int updateStatus);
+    @Query("UPDATE PerformanceModel p SET p.status = :updateStatus, p.applyTime = CURRENT_TIMESTAMP, p.applyBy = :applyBy WHERE p.id = :eventId AND p.status = :status")
+    int updateStatus(Long eventId, int status, int updateStatus, ClientModel applyBy);
     @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status AND p.user.id <> :id")
     Page<PerformanceModel> findAllByStatus(int status, long id, PageRequest page);
     @Query("SELECT p FROM PerformanceModel p WHERE p.status = :status AND p.user.department.name = :departmentName AND p.user.id <> :id")

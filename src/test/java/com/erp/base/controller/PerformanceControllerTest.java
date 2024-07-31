@@ -444,6 +444,8 @@ class PerformanceControllerTest {
         Assertions.assertTrue(byId.isPresent());
         PerformanceModel performanceModel = byId.get();
         Assertions.assertEquals(StatusConstant.REMOVED_NO, performanceModel.getStatus());
+        Assertions.assertNotNull(performanceModel.getApplyBy());
+        Assertions.assertNotNull(performanceModel.getApplyTime());
         performanceRepository.deleteById(performance.getId());
     }
 
@@ -481,6 +483,8 @@ class PerformanceControllerTest {
         Assertions.assertTrue(byId.isPresent());
         PerformanceModel performanceModel = byId.get();
         Assertions.assertEquals(StatusConstant.APPROVED_NO, performanceModel.getStatus());
+        Assertions.assertNotNull(performanceModel.getApplyBy());
+        Assertions.assertNotNull(performanceModel.getApplyTime());
         performanceRepository.deleteById(performance.getId());
     }
 

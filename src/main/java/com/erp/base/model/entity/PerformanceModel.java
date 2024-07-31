@@ -37,6 +37,11 @@ public class PerformanceModel implements IBaseModel {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "create_by", nullable = false)
     private ClientModel createBy;
+    @Column(name = "apply_time")
+    private LocalDateTime applyTime;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "apply_by")
+    private ClientModel applyBy;
     @Column(name = "status")//1.待審 2.已審 3.已結 4.移除
     private Integer status;
 }
