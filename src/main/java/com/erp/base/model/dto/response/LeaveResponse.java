@@ -17,7 +17,7 @@ public class LeaveResponse implements Serializable {
 
     private long id;
     private ClientNameObject user;
-    private String type; //請假類型
+    private LeaveTypeResponse type; //請假類型
     private String startTime;
     private String endTime;
     private String status;
@@ -28,7 +28,7 @@ public class LeaveResponse implements Serializable {
         this.id = model.getId();
         ClientModel u = model.getUser();
         this.user = new ClientNameObject(u.getId(), u.getUsername());
-        this.type = LeaveConstant.get(model.getType());
+        this.type = new LeaveTypeResponse(model.getType(), LeaveConstant.get(model.getType()));
         this.startTime = DateTool.format(model.getStartTime());
         this.endTime = DateTool.format(model.getEndTime());
         this.status = StatusConstant.get(model.getStatus());
