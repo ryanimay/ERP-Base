@@ -269,7 +269,7 @@ class LeaveControllerTest {
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(me.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(me.getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.type").value(LeaveConstant.get(leaveRequest.getType())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.type.name").value(LeaveConstant.get(leaveRequest.getType())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(DateTool.format(leaveRequest.getStartTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(DateTool.format(leaveRequest.getEndTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.status").value(StatusConstant.get(StatusConstant.PENDING_NO)))
@@ -311,7 +311,7 @@ class LeaveControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(leaveRequest.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(me.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(me.getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.type").value(LeaveConstant.get(leaveRequest.getType())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.type.name").value(LeaveConstant.get(leaveRequest.getType())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.startTime").value(DateTool.format(leaveRequest.getStartTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.endTime").value(DateTool.format(leaveRequest.getEndTime())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.status").value(StatusConstant.get(StatusConstant.PENDING_NO)))
