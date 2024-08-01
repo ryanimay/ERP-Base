@@ -1,5 +1,6 @@
 package com.erp.base.controller;
 
+import com.erp.base.model.dto.response.LeaveTypeResponse;
 import com.erp.base.testConfig.TestUtils;
 import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.LeaveConstant;
@@ -387,7 +388,7 @@ class LeaveControllerTest {
     @Test
     @DisplayName("請假類別清單_成功")
     void leaveTypeList_ok() throws Exception {
-        List<String> list = LeaveConstant.list();
+        List<LeaveTypeResponse> list = LeaveConstant.list();
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.TYPE_LIST)
                 .contentType(MediaType.APPLICATION_JSON)
