@@ -34,10 +34,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
 class PerformanceServiceTest {
@@ -269,6 +266,8 @@ class PerformanceServiceTest {
         performanceCalculateResponse.setPerformanceRatio((BigDecimal) obj[2]);
         performanceCalculateResponse.setSettleYear(String.valueOf(obj[3]));
         performanceCalculateResponse.setCount((Long) obj[4]);
-        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS, performanceCalculateResponse), calculate);
+        List<PerformanceCalculateResponse> list = new ArrayList<>();
+        list.add(performanceCalculateResponse);
+        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS, list), calculate);
     }
 }

@@ -509,12 +509,12 @@ class PerformanceControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.id").value(performanceCalculateResponse.getUser().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user.username").value(performanceCalculateResponse.getUser().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.fixedBonus").value(performanceCalculateResponse.getFixedBonus()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.performanceRatio").value(performanceCalculateResponse.getPerformanceRatio()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.settleYear").value(performanceCalculateResponse.getSettleYear()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.count").value(performanceCalculateResponse.getCount()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].user.id").value(performanceCalculateResponse.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].user.username").value(performanceCalculateResponse.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].fixedBonus").value(performanceCalculateResponse.getFixedBonus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].performanceRatio").value(performanceCalculateResponse.getPerformanceRatio()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].settleYear").value(performanceCalculateResponse.getSettleYear()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].count").value(performanceCalculateResponse.getCount()));
         performanceRepository.deleteById(performance.getId());
     }
 
@@ -527,12 +527,7 @@ class PerformanceControllerTest {
                 .param("id", String.valueOf(99L))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        resultActions
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.user").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.fixedBonus").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.performanceRatio").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.settleYear").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.count").isEmpty());
+        resultActions.andExpect(MockMvcResultMatchers.jsonPath("$.data").isEmpty());
     }
 
     private void refreshCache(){

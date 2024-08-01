@@ -23,9 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -149,15 +147,17 @@ public class PerformanceService {
 
     public ResponseEntity<ApiResponse> calculate(Long userId) {
         Set<Object[]> set = performanceRepository.calculateByCreateYear(userId, StatusConstant.APPROVED_NO);
-        PerformanceCalculateResponse performanceCalculateResponse = new PerformanceCalculateResponse();
+        List<PerformanceCalculateResponse> list = new ArrayList<>();
         set.forEach(obj -> {
+            PerformanceCalculateResponse performanceCalculateResponse = new PerformanceCalculateResponse();
             ClientModel user = (ClientModel) obj[0];
             performanceCalculateResponse.setUser(new ClientNameObject(user));
             performanceCalculateResponse.setFixedBonus((BigDecimal) obj[1]);
             performanceCalculateResponse.setPerformanceRatio((BigDecimal) obj[2]);
             performanceCalculateResponse.setSettleYear(String.valueOf(obj[3]));
             performanceCalculateResponse.setCount((Long) obj[4]);
+            list.add(performanceCalculateResponse);
         });
-        return ApiResponse.success(ApiResponseCode.SUCCESS, performanceCalculateResponse);
+        return ApiResponse.success(ApiResponseCode.SUCCESS, list);
     }
 }
