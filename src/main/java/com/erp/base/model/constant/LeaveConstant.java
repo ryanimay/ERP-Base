@@ -1,17 +1,12 @@
 package com.erp.base.model.constant;
 
-import com.erp.base.model.ClientIdentity;
-import com.erp.base.tool.BeanProviderTool;
-import org.springframework.context.MessageSource;
+import com.erp.base.model.dto.response.LeaveTypeResponse;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class LeaveConstant {
-    private static final MessageSource messageSource = BeanProviderTool.getBean(MessageSource.class);
-
     private static final Map<Integer, String> leaveMap = new HashMap<>();
 
     static {
@@ -26,11 +21,10 @@ public class LeaveConstant {
     }
 
     public static String get(int id) {
-        return messageSource.getMessage(leaveMap.get(id), null, ClientIdentity.getLocale());
+        return leaveMap.get(id);
     }
 
-    public static List<String> list() {
-        Locale locale = ClientIdentity.getLocale();
-        return leaveMap.values().stream().map(v -> messageSource.getMessage(v, null, locale)).toList();
+    public static List<LeaveTypeResponse> list() {
+        return leaveMap.keySet().stream().map(key -> new LeaveTypeResponse(key, get(key))).toList();
     }
 }
