@@ -9,8 +9,8 @@ public enum NotificationEnum {
     EDIT_SALARY_ROOT("notification.editSalaryRoot", "salaryList", false),
     ADD_PERFORMANCE("notification.addPerformance", "performanceList", false),
     ACCEPT_PERFORMANCE("notification.acceptPerformance", "personalPerformance", false),
-    ADD_LEAVE("notification.addLeave", "AddLeave", false),
-    ACCEPT_LEAVE("notification.acceptLeave", "AcceptLeave", false)
+    ADD_LEAVE("notification.addLeave", "leaveList", false),
+    ACCEPT_LEAVE("notification.acceptLeave", "personalLeave", false)
 
     ;
     private final String info;
