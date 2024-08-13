@@ -82,6 +82,7 @@ public interface Router {
         String UPDATE = LEAVE + "/update";
         String DELETE = LEAVE + "/delete";
         String ACCEPT = LEAVE + "/accept";
+        String REJECT = LEAVE + "/reject";
         String TYPE_LIST = LEAVE + "/typeList";
     }
 

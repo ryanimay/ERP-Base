@@ -10,7 +10,8 @@ public enum NotificationEnum {
     ADD_PERFORMANCE("notification.addPerformance", "performanceList", false),
     ACCEPT_PERFORMANCE("notification.acceptPerformance", "personalPerformance", false),
     ADD_LEAVE("notification.addLeave", "leaveList", false),
-    ACCEPT_LEAVE("notification.acceptLeave", "personalLeave", false)
+    ACCEPT_LEAVE("notification.acceptLeave", "personalLeave", false),
+    REJECT_LEAVE("notification.rejectLeave", "personalLeave", false)
 
     ;
     private final String info;

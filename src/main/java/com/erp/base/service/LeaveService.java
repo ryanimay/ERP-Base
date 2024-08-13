@@ -111,6 +111,18 @@ public class LeaveService {
         return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
     }
 
+    public ResponseEntity<ApiResponse> reject(LeaveAcceptRequest request) {
+        int i = leaveRepository.updateLeaveStatus(request.getId(), StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO);
+        if(i == 1) {
+            NotificationModel notification = notificationService.createNotification(NotificationEnum.REJECT_LEAVE);
+            ClientIdentityDto user = ClientIdentity.getUser();
+            MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            messageService.sendTo(messageModel);
+            return ApiResponse.success(ApiResponseCode.SUCCESS);
+        }
+        return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found");
+    }
+
     public ResponseEntity<ApiResponse> pendingList(PageRequestParam page) {
         ClientIdentityDto user = ClientIdentity.getUser();
         if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);

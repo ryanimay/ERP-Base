@@ -59,6 +59,12 @@ public class LeaveController {
     public ResponseEntity<ApiResponse> accept(@Parameter(description = "審核假單請求") @RequestBody LeaveAcceptRequest request){
         return leaveService.accept(request);
     }
+    @Loggable
+    @PutMapping(Router.LEAVE.REJECT)
+    @Operation(summary = "審核假單")
+    public ResponseEntity<ApiResponse> reject(@Parameter(description = "駁回假單請求") @RequestBody LeaveAcceptRequest request){
+        return leaveService.reject(request);
+    }
 
     @GetMapping(Router.LEAVE.TYPE_LIST)
     @Operation(summary = "請假類別清單")
