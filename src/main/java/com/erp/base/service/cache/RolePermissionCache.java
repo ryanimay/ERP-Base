@@ -95,7 +95,7 @@ public class RolePermissionCache implements ICache {
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROLE_PERMISSION + " + #id")
     public Set<RolePermissionDto> getRolePermission(long id) {
         RoleModel role = roleService.findById(id);
-        return role.getRolePermissionsDto();
+        return role == null ? null : role.getRolePermissionsDto();
     }
 
     @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSION_STATUS + " + #path")

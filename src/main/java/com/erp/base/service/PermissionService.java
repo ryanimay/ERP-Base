@@ -42,6 +42,7 @@ public class PermissionService {
 
     public ResponseEntity<ApiResponse> getRolePermission(long roleId) {
         Set<RolePermissionDto> rolePermission = cacheService.getRolePermission(roleId);
+        if(rolePermission == null) return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR);
         List<Long> rolePermissionList = rolePermission.stream().map(RolePermissionDto::getId).toList();
         return ApiResponse.success(ApiResponseCode.SUCCESS, rolePermissionList);
     }
