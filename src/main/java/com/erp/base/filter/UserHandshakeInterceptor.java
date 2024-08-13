@@ -50,7 +50,6 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
             createAuthentication(userId);
             attributes.put(TokenService.TOKEN_PROPERTIES_UID, userId);
         } catch (Exception e) {
-            e.printStackTrace();
             LOG.error("User authentication failed");
             return false;
         }
