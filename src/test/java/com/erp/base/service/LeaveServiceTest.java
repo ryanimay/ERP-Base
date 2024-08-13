@@ -187,6 +187,30 @@ class LeaveServiceTest {
     }
 
     @Test
+    @DisplayName("駁回假單_未知ID/錯誤")
+    void reject_unknownError() {
+        Mockito.when(leaveRepository.updateLeaveStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(2);
+        LeaveAcceptRequest request = new LeaveAcceptRequest();
+        request.setId(1L);
+        ResponseEntity<ApiResponse> delete = leaveService.reject(request);
+        Assertions.assertEquals(ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "Id Not Found"), delete);
+    }
+
+    @Test
+    @DisplayName("駁回假單_成功")
+    void reject_ok() {
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Mockito.when(leaveRepository.updateLeaveStatus(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
+        LeaveAcceptRequest request = new LeaveAcceptRequest();
+        request.setId(1L);
+        request.setEventUserId(1L);
+        ResponseEntity<ApiResponse> delete = leaveService.reject(request);
+        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), delete);
+    }
+
+    @Test
     @DisplayName("待審核假單_找不到用戶_錯誤")
     void pendingList_userNotFound_error() {
         ResponseEntity<ApiResponse> delete = leaveService.pendingList(new PageRequestParam());

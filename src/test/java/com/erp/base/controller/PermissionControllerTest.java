@@ -54,7 +54,7 @@ class PermissionControllerTest {
     @Value("${security.password}")
     private String securityPwd;
     private static final long DEFAULT_UID = 1L;
-    private final List<Integer> permissionArray = List.of(35,18,5,9,31,59,49,37,40,44,52,63,3,56,39,34,29,11,30,42,28,58,1,68,36,12,4,7,21,19,27,6,64,10,13,41,17,62,57,48,32,51,2,67,47,50,43,14,46,20,66,24,60,55,15,23,45,54,22,53,38,65,16,25,26,61,33,8,69,70,71,72,73);
+    private final List<Integer> permissionArray = List.of(35,18,5,9,31,59,49,37,40,44,52,63,3,56,39,34,29,11,30,42,28,58,1,68,36,12,4,7,21,19,27,6,64,10,13,41,17,62,57,48,32,51,2,67,47,50,43,14,46,20,66,24,60,55,15,23,45,54,22,53,38,65,16,25,26,61,33,8,69,70,71,72,73,74);
 
     @Test
     @DisplayName("權限清單_成功")
@@ -86,7 +86,7 @@ class PermissionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[10].children", Matchers.hasSize(7)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[11].children", Matchers.hasSize(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[12].children", Matchers.hasSize(4)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[13].children", Matchers.hasSize(7)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[13].children", Matchers.hasSize(8)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[14].children", Matchers.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[15].children", Matchers.hasSize(4)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[16].children", Matchers.hasSize(6)));
@@ -117,7 +117,7 @@ class PermissionControllerTest {
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data", Matchers.hasSize(73)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data", Matchers.hasSize(74)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data", Matchers.containsInAnyOrder(permissionArray.toArray())));
     }
 
