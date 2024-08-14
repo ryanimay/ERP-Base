@@ -1,8 +1,5 @@
 package com.erp.base.controller;
 
-import com.erp.base.model.dto.response.LeaveTypeResponse;
-import com.erp.base.testConfig.TestUtils;
-import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.model.constant.LeaveConstant;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
@@ -10,6 +7,7 @@ import com.erp.base.model.dto.request.leave.LeaveAcceptRequest;
 import com.erp.base.model.dto.request.leave.LeaveRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.LeaveResponse;
+import com.erp.base.model.dto.response.LeaveTypeResponse;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.LeaveModel;
@@ -18,6 +16,8 @@ import com.erp.base.repository.ClientRepository;
 import com.erp.base.repository.LeaveRepository;
 import com.erp.base.repository.RoleRepository;
 import com.erp.base.service.CacheService;
+import com.erp.base.testConfig.TestUtils;
+import com.erp.base.testConfig.redis.TestRedisConfiguration;
 import com.erp.base.tool.DateTool;
 import com.erp.base.tool.ObjectTool;
 import jakarta.persistence.EntityManager;
@@ -207,8 +207,8 @@ class LeaveControllerTest {
     }
 
     @Test
-    @DisplayName("本人假單_成功")
-    void leaveList_ok() throws Exception {
+    @DisplayName("假單清單_特定id_成功")
+    void leaveList_userId_ok() throws Exception {
         LeaveResponse selfLeave1 = new LeaveResponse(createLeave(me));
         LeaveResponse selfLeave2 = new LeaveResponse(createLeave(me));
         LeaveResponse selfLeave3 = new LeaveResponse(createLeave(me));
@@ -216,6 +216,54 @@ class LeaveControllerTest {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("userId", String.valueOf(me.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        testUtils.comparePage(resultActions, 10, 1, 3, 1);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(selfLeave1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.id").value(selfLeave1.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].user.username").value(selfLeave1.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(selfLeave1.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(selfLeave1.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(selfLeave1.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(selfLeave1.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(selfLeave1.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createdTime").value(selfLeave1.getCreatedTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(selfLeave2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.id").value(selfLeave2.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].user.username").value(selfLeave2.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].type").value(selfLeave2.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(selfLeave2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(selfLeave2.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(selfLeave2.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].info").value(selfLeave2.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createdTime").value(selfLeave2.getCreatedTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].id").value(selfLeave3.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].user.id").value(selfLeave3.getUser().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].user.username").value(selfLeave3.getUser().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].type").value(selfLeave3.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].startTime").value(selfLeave3.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].endTime").value(selfLeave3.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].status").value(selfLeave3.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].info").value(selfLeave3.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[2].createdTime").value(selfLeave3.getCreatedTime()));
+        leaveRepository.deleteById(selfLeave1.getId());
+        leaveRepository.deleteById(selfLeave2.getId());
+        leaveRepository.deleteById(selfLeave3.getId());
+    }
+
+    @Test
+    @DisplayName("假單清單_搜尋時間_成功")
+    void leaveList_searchTime_ok() throws Exception {
+        LeaveResponse selfLeave1 = new LeaveResponse(createLeave(me));
+        LeaveResponse selfLeave2 = new LeaveResponse(createLeave(me));
+        LeaveResponse selfLeave3 = new LeaveResponse(createLeave(me));
+        refreshCache();
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.LIST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("searchTime", DateTool.now().toString())
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 10, 1, 3, 1);
@@ -258,8 +306,8 @@ class LeaveControllerTest {
         LeaveRequest leaveRequest = new LeaveRequest();
         leaveRequest.setType(2);
         leaveRequest.setInfo("測試新增");
-        leaveRequest.setStartTime(DateTool.now());
-        leaveRequest.setEndTime(DateTool.now());
+        leaveRequest.setStartTime(DateTool.now().withHour(0).withMinute(0).withSecond(0));
+        leaveRequest.setEndTime(DateTool.now().withHour(23).withMinute(59).withSecond(59));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.LEAVE.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -299,8 +347,8 @@ class LeaveControllerTest {
         leaveRequest.setId(leaveModel.getId());
         leaveRequest.setInfo("測試更新");
         leaveRequest.setType(3);
-        leaveRequest.setStartTime(DateTool.now());
-        leaveRequest.setEndTime(DateTool.now());
+        leaveRequest.setStartTime(DateTool.now().withHour(0).withMinute(0).withSecond(0));
+        leaveRequest.setEndTime(DateTool.now().withHour(23).withMinute(59).withSecond(59));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.LEAVE.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -451,8 +499,8 @@ class LeaveControllerTest {
         LeaveModel leaveEntity = new LeaveModel();
         leaveEntity.setUser(model);
         leaveEntity.setType(2);
-        leaveEntity.setStartTime(DateTool.now());
-        leaveEntity.setEndTime(DateTool.now());
+        leaveEntity.setStartTime(DateTool.now().withHour(0).withMinute(0).withSecond(0));
+        leaveEntity.setEndTime(DateTool.now().withHour(23).withMinute(59).withSecond(59));
         leaveEntity.setInfo("測試請假:" + model.getUsername());
         leaveRepository.save(leaveEntity);
         return leaveEntity;

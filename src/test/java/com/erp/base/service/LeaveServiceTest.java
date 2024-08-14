@@ -27,6 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -57,18 +59,21 @@ class LeaveServiceTest {
     }
 
     @Test
-    @DisplayName("假單_找不到用戶_錯誤")
-    void list_userNotFound_error() {
-        ResponseEntity<ApiResponse> list = leaveService.list(new PageRequestParam());
-        Assertions.assertEquals(ApiResponse.error(ApiResponseCode.USER_NOT_FOUND), list);
+    @SuppressWarnings("unchecked")
+    @DisplayName("假單_未知用戶_成功")
+    void list_userNotFound_ok() {
+        Page<LeaveModel> page = new PageImpl<>(new ArrayList<>());
+        Mockito.when(leaveRepository.findAll((Specification<LeaveModel>)Mockito.any(), (PageRequest)Mockito.any())).thenReturn(page);
+        LeaveRequest request = new LeaveRequest();
+        request.setUserId(9999L);
+        ResponseEntity<ApiResponse> list = leaveService.list(request);
+        Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, LeaveResponse.class)), list);
     }
 
     @Test
-    @DisplayName("假單_成功")
+    @SuppressWarnings("unchecked")
+    @DisplayName("假單_特定ID_成功")
     void list_ok() {
-        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         List<LeaveModel> leaveModels = new ArrayList<>();
         LeaveModel leaveModel = new LeaveModel();
         leaveModel.setId(1);
@@ -77,8 +82,10 @@ class LeaveServiceTest {
         leaveModel.setType(1);
         leaveModels.add(leaveModel);
         Page<LeaveModel> page = new PageImpl<>(leaveModels);
-        Mockito.when(leaveRepository.findAllByUser(Mockito.anyLong(), Mockito.any())).thenReturn(page);
-        ResponseEntity<ApiResponse> list = leaveService.list(new PageRequestParam());
+        Mockito.when(leaveRepository.findAll((Specification<LeaveModel>)Mockito.any(), (PageRequest)Mockito.any())).thenReturn(page);
+        LeaveRequest request = new LeaveRequest();
+        request.setUserId(1L);
+        ResponseEntity<ApiResponse> list = leaveService.list(request);
         Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, LeaveResponse.class)), list);
     }
 
