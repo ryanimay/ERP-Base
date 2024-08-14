@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -100,9 +101,12 @@ public class LeaveService {
     public ResponseEntity<ApiResponse> accept(LeaveAcceptRequest request) {
         int i = leaveRepository.updateLeaveStatus(request.getId(), StatusConstant.PENDING_NO, StatusConstant.APPROVED_NO);
         if(i == 1) {
-            NotificationModel notification = notificationService.createNotification(NotificationEnum.ACCEPT_LEAVE);
+            Long eventUserId = request.getEventUserId();
+            Set<ClientModel> userSet = new HashSet<>();
+            userSet.add(new ClientModel(eventUserId));
+            NotificationModel notification = notificationService.createNotificationToUser(NotificationEnum.ACCEPT_LEAVE, userSet);
             ClientIdentityDto user = ClientIdentity.getUser();
-            MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), String.valueOf(eventUserId), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
@@ -112,9 +116,12 @@ public class LeaveService {
     public ResponseEntity<ApiResponse> reject(LeaveAcceptRequest request) {
         int i = leaveRepository.updateLeaveStatus(request.getId(), StatusConstant.PENDING_NO, StatusConstant.REMOVED_NO);
         if(i == 1) {
-            NotificationModel notification = notificationService.createNotification(NotificationEnum.REJECT_LEAVE);
+            Long eventUserId = request.getEventUserId();
+            Set<ClientModel> userSet = new HashSet<>();
+            userSet.add(new ClientModel(eventUserId));
+            NotificationModel notification = notificationService.createNotificationToUser(NotificationEnum.REJECT_LEAVE, userSet);
             ClientIdentityDto user = ClientIdentity.getUser();
-            MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), request.getEventUserId().toString(), WebsocketConstant.TOPIC.NOTIFICATION, notification);
+            MessageModel messageModel = new MessageModel(Objects.requireNonNull(user).getUsername(), String.valueOf(request.getEventUserId()), WebsocketConstant.TOPIC.NOTIFICATION, notification);
             messageService.sendTo(messageModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
