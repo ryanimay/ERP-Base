@@ -29,11 +29,11 @@ public class LeaveController {
     public ResponseEntity<ApiResponse> pendingList(@Parameter(description = "假單請求") PageRequestParam page){
         return leaveService.pendingList(page);
     }
-    //搜本人假單
+
     @GetMapping(Router.LEAVE.LIST)
     @Operation(summary = "休假清單")
-    public ResponseEntity<ApiResponse> list(@Parameter(description = "假單請求") PageRequestParam page){
-        return leaveService.list(page);
+    public ResponseEntity<ApiResponse> list(@Parameter(description = "假單請求") LeaveRequest request){
+        return leaveService.list(request);
     }
     @Loggable
     @PostMapping(Router.LEAVE.ADD)
@@ -61,7 +61,7 @@ public class LeaveController {
     }
     @Loggable
     @PutMapping(Router.LEAVE.REJECT)
-    @Operation(summary = "審核假單")
+    @Operation(summary = "駁回假單")
     public ResponseEntity<ApiResponse> reject(@Parameter(description = "駁回假單請求") @RequestBody LeaveAcceptRequest request){
         return leaveService.reject(request);
     }

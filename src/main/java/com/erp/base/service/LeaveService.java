@@ -52,10 +52,8 @@ public class LeaveService {
         this.leaveRepository = leaveRepository;
     }
 
-    public ResponseEntity<ApiResponse> list(PageRequestParam page) {
-        ClientIdentityDto user = ClientIdentity.getUser();
-        if(user == null) return ApiResponse.error(ApiResponseCode.USER_NOT_FOUND);
-        Page<LeaveModel> leaves = leaveRepository.findAllByUser(user.getId(), page.getPage());
+    public ResponseEntity<ApiResponse> list(LeaveRequest request) {
+        Page<LeaveModel> leaves = leaveRepository.findAll(request.getSpecification(), request.getPage());
         return ApiResponse.success(new PageResponse<>(leaves, LeaveResponse.class));
     }
 
