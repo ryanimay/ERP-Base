@@ -54,11 +54,28 @@ public class LeaveRequest extends PageRequestParam implements IBaseDto<LeaveMode
     @JsonIgnore
     public Specification<LeaveModel> getSpecification() {
         GenericSpecifications<LeaveModel> genericSpecifications = new GenericSpecifications<>();
-        return genericSpecifications
+        Specification<LeaveModel> specification1 = genericSpecifications
                 .add("user", GenericSpecifications.EQ, userId == null ? null : new ClientModel(userId))
-                //月份搜尋yyyy-MM-01 00:00:00 ~ yyyy-MM-lastDay 23:59:59
-                .add("startTime", GenericSpecifications.GOE, searchTime == null ? null : searchTime.withDayOfMonth(1).atStartOfDay())
-                .add("endTime", GenericSpecifications.LOE, searchTime == null ? null : searchTime.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX))
-                .build();
+                .buildAnd();
+
+        genericSpecifications = new GenericSpecifications<>();
+        LocalDateTime currentMonthStart = searchTime == null ? null : searchTime.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime currentMonthEnd = searchTime == null ? null : searchTime.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
+        Specification<LeaveModel> specification2 = genericSpecifications
+                //開始時間介於搜尋月分中
+                .addBetween("startTime", GenericSpecifications.BETWEEN, new LocalDateTime[]{currentMonthStart, currentMonthEnd})
+                //結束時間介於搜尋月分中
+                .addBetween("endTime", GenericSpecifications.BETWEEN, new LocalDateTime[]{currentMonthStart, currentMonthEnd})
+                .buildOr();
+
+        genericSpecifications = new GenericSpecifications<>();
+        Specification<LeaveModel> specification3 = genericSpecifications
+                //開始時間少於搜尋月
+                .add("startTime", GenericSpecifications.LOE, currentMonthEnd)
+                //結束時間大於搜尋月
+                .add("endTime", GenericSpecifications.GOE, currentMonthStart)
+                .buildAnd();
+        //WHERE userId = ? AND ( startTime BETWEEN ? and ? OR endTime BETWEEN ? and ? OR ( startTime <= ? AND endTime >= ?))
+        return specification1.and(specification2.or(specification3));
     }
 }
