@@ -63,6 +63,6 @@ public class PerformanceRequest extends PageRequestParam implements IBaseDto<Per
                 .add("createTime", GenericSpecifications.GOE, startTime)
                 .add("createTime", GenericSpecifications.LOE, endTime)
                 .add("status", GenericSpecifications.EQ, status == null ? null : StatusConstant.get(status) == null ? StatusConstant.PENDING_NO : status)
-                .build();
+                .buildAnd();
     }
 }

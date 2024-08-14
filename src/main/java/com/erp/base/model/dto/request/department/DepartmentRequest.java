@@ -38,6 +38,6 @@ public class DepartmentRequest extends PageRequestParam implements IBaseDto<Depa
         return genericSpecifications
                 .add("id", GenericSpecifications.EQ, id)
                 .add("name", GenericSpecifications.LIKE, name)
-                .build();
+                .buildAnd();
     }
 }

@@ -46,6 +46,6 @@ public class DepartmentEditRequest implements IBaseDto<DepartmentModel> {
         return genericSpecifications
                 .add("id", GenericSpecifications.EQ, id)
                 .add("name", GenericSpecifications.LIKE, name)
-                .build();
+                .buildAnd();
     }
 }

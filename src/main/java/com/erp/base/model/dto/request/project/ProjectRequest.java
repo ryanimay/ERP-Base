@@ -58,6 +58,6 @@ public class ProjectRequest extends PageRequestParam implements IBaseDto<Project
                 .add("scheduledEndTime", GenericSpecifications.LOE, scheduledEndTime)
                 .add("manager", GenericSpecifications.EQ, managerId == null ? null : new ClientModel(managerId))
                 .add("status", GenericSpecifications.EQ, status)
-                .build();
+                .buildAnd();
     }
 }

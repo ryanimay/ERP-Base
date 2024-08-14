@@ -56,6 +56,6 @@ public class SalaryRequest extends PageRequestParam implements IBaseDto<SalaryMo
                 .add("id", GenericSpecifications.EQ, id)
                 .add("user", GenericSpecifications.EQ, userId == null ? null : new ClientModel(userId))
                 .add("root", GenericSpecifications.EQ, true)
-                .build();
+                .buildAnd();
     }
 }

@@ -62,6 +62,6 @@ public class ProcurementRequest extends PageRequestParam implements IBaseDto<Pro
                 .add("createTime", GenericSpecifications.GOE, startTime)
                 .add("createTime", GenericSpecifications.LOE, endTime)
                 .add("status", GenericSpecifications.EQ, status)
-                .build();
+                .buildAnd();
     }
 }

@@ -42,6 +42,6 @@ public class RegisterRequest implements IBaseDto<ClientModel> {
         GenericSpecifications<ClientModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
                 .add("name", GenericSpecifications.LIKE, username)
-                .build();
+                .buildAnd();
     }
 }

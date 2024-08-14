@@ -52,6 +52,6 @@ public class LogRequest extends PageRequestParam implements IBaseDto<LogModel> {
                 .add("ip", GenericSpecifications.EQ, ip)
                 .add("time", GenericSpecifications.GOE, startTime)
                 .add("time", GenericSpecifications.LOE, endTime)
-                .build();
+                .buildAnd();
     }
 }
