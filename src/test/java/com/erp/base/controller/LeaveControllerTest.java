@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -260,10 +261,11 @@ class LeaveControllerTest {
         LeaveResponse selfLeave2 = new LeaveResponse(createLeave(me));
         LeaveResponse selfLeave3 = new LeaveResponse(createLeave(me));
         refreshCache();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DateTool.YYYY_MM);
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.LEAVE.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("searchTime", DateTool.now().toString())
+                .param("searchTime", DateTool.now().format(dateTimeFormatter))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
         testUtils.comparePage(resultActions, 10, 1, 3, 1);

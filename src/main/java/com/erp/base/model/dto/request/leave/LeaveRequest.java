@@ -14,7 +14,10 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -33,8 +36,8 @@ public class LeaveRequest extends PageRequestParam implements IBaseDto<LeaveMode
     @Schema(description = "搜尋用UserId")
     private Long userId;
     @Schema(description = "搜尋用時間")
-    @DateTimeFormat(pattern = DateTool.YYYY_MM_DD_T_HH_MM_SS)
-    private LocalDateTime searchTime;
+    @DateTimeFormat(pattern = DateTool.YYYY_MM)
+    private LocalDate searchTime;
 
     @Override
     public LeaveModel toModel() {
@@ -53,8 +56,9 @@ public class LeaveRequest extends PageRequestParam implements IBaseDto<LeaveMode
         GenericSpecifications<LeaveModel> genericSpecifications = new GenericSpecifications<>();
         return genericSpecifications
                 .add("user", GenericSpecifications.EQ, userId == null ? null : new ClientModel(userId))
-                .add("startTime", GenericSpecifications.LOE, searchTime)
-                .add("endTime", GenericSpecifications.GOE, searchTime)
+                //月份搜尋yyyy-MM-01 00:00:00 ~ yyyy-MM-lastDay 23:59:59
+                .add("startTime", GenericSpecifications.GOE, searchTime == null ? null : searchTime.withDayOfMonth(1).atStartOfDay())
+                .add("endTime", GenericSpecifications.LOE, searchTime == null ? null : searchTime.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX))
                 .build();
     }
 }
