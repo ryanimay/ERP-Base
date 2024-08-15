@@ -4,11 +4,12 @@ package com.erp.base.service;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.response.ProjectResponse;
+import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.repository.ProjectRepository;
+import com.erp.base.service.security.UserDetailImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,13 +18,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +39,7 @@ class ProjectServiceTest {
     @SuppressWarnings("unchecked")
     @DisplayName("專案清單_成功")
     void list_ok() {
-        ArrayList<ProjectModel> projectModels = new ArrayList<>();
+        List<ProjectModel> projectModels = new ArrayList<>();
         ProjectModel projectModel = new ProjectModel();
         projectModel.setId(1L);
         ClientModel createBy = new ClientModel(1);
@@ -46,15 +48,18 @@ class ProjectServiceTest {
         projectModel.setManager(createBy);
         projectModel.setInfo("test");
         projectModels.add(projectModel);
-        Page<ProjectModel> page = new PageImpl<>(projectModels);
-        Mockito.when(projectRepository.findAll((Specification<ProjectModel>)Mockito.any(), (PageRequest)Mockito.any())).thenReturn(page);
+        Mockito.when(projectRepository.findAll((Specification<ProjectModel>)Mockito.any())).thenReturn(projectModels);
         ResponseEntity<ApiResponse> all = projectService.list(new ProjectRequest());
-        Assertions.assertEquals(ApiResponse.success(new PageResponse<>(page, ProjectResponse.class)), all);
+        Assertions.assertEquals(ApiResponse.success(projectModels.stream().map(ProjectResponse::new).toList()), all);
     }
 
     @Test
     @DisplayName("新增專案_成功")
     void add_ok() {
+        ClientModel clientModel = new ClientModel(1);
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(clientModel), null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         ProjectRequest request = new ProjectRequest();
         request.setId(1L);
         request.setManagerId(1L);

@@ -2,9 +2,8 @@ package com.erp.base.model.dto.request.project;
 
 import com.erp.base.model.GenericSpecifications;
 import com.erp.base.model.dto.request.IBaseDto;
-import com.erp.base.model.dto.request.PageRequestParam;
-import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.model.entity.ClientModel;
+import com.erp.base.model.entity.ProjectModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -16,13 +15,13 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "專案共用請求")
-public class ProjectRequest extends PageRequestParam implements IBaseDto<ProjectModel> {
+public class ProjectRequest implements IBaseDto<ProjectModel> {
     @Schema(description = "專案ID")
     private Long id;
     @Schema(description = "專案名稱")
     private String name;
-    @Schema(description = "專案共用請求")
-    private String type;//1.開發案 2.維護案
+    @Schema(description = "專案類別")
+    private String type;//1.開發案 2.維護案 3.其他
     @Schema(description = "計畫開始時間")
     private LocalDateTime scheduledStartTime;
     @Schema(description = "計畫結束時間")
@@ -33,6 +32,8 @@ public class ProjectRequest extends PageRequestParam implements IBaseDto<Project
     private Long managerId;
     @Schema(description = "狀態")
     private Integer status;
+    @Schema(description = "標記顏色")
+    private String markColor;
 
     @Override
     public ProjectModel toModel() {
@@ -43,6 +44,7 @@ public class ProjectRequest extends PageRequestParam implements IBaseDto<Project
         projectModel.setScheduledEndTime(scheduledEndTime);
         projectModel.setInfo(info);
         projectModel.setManager(new ClientModel(managerId));
+        projectModel.setMarkColor(markColor);
         return projectModel;
     }
 

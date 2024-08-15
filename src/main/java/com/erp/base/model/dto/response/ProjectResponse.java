@@ -1,6 +1,5 @@
 package com.erp.base.model.dto.response;
 
-import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.tool.DateTool;
 import lombok.Data;
@@ -9,7 +8,7 @@ import lombok.Data;
 public class ProjectResponse {
     private long id;
     private String name;
-    private String type;//1.開發案 2.維護案
+    private String type;//1.開發案 2.維護案 3.其他
     private String createTime;
     private ClientNameObject createBy;
     private String startTime;
@@ -18,7 +17,8 @@ public class ProjectResponse {
     private String scheduledEndTime;
     private String info;
     private ClientNameObject manager;
-    private String status;
+    private int status;
+    private String markColor;
 
     public ProjectResponse(ProjectModel model) {
         this.id = model.getId();
@@ -32,6 +32,7 @@ public class ProjectResponse {
         this.scheduledEndTime = DateTool.format(model.getScheduledEndTime());
         this.info = model.getInfo();
         this.manager = new ClientNameObject(model.getManager());
-        this.status = StatusConstant.get(model.getStatus());
+        this.status = model.getStatus();
+        this.markColor = model.getMarkColor();
     }
 }

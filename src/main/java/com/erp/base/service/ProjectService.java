@@ -1,11 +1,10 @@
 package com.erp.base.service;
 
+import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
-import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.response.ProjectResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
@@ -13,11 +12,11 @@ import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.repository.ProjectRepository;
 import com.erp.base.tool.DateTool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,8 +30,8 @@ public class ProjectService {
     }
 
     public ResponseEntity<ApiResponse> list(ProjectRequest request) {
-        Page<ProjectModel> all = projectRepository.findAll(request.getSpecification(), request.getPage());
-        return ApiResponse.success(new PageResponse<>(all, ProjectResponse.class));
+        List<ProjectModel> all = projectRepository.findAll(request.getSpecification());
+        return ApiResponse.success(all.stream().map(ProjectResponse::new).toList());
     }
 
     public ResponseEntity<ApiResponse> add(ProjectRequest request) {
@@ -53,6 +52,7 @@ public class ProjectService {
             if(request.getScheduledEndTime() != null) projectModel.setScheduledEndTime(request.getScheduledEndTime());
             if(request.getInfo() != null) projectModel.setInfo(request.getInfo());
             if(request.getManagerId() != null) projectModel.setManager(new ClientModel(request.getManagerId()));
+            if(request.getMarkColor() != null) projectModel.setMarkColor(request.getMarkColor());
             projectRepository.save(projectModel);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }

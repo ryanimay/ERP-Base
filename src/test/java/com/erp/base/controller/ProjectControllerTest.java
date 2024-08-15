@@ -78,36 +78,35 @@ class ProjectControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(projectResponse1.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value(projectResponse1.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(projectResponse1.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(projectResponse1.getCreateTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy.id").value(projectResponse1.getCreateBy().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy.username").value(projectResponse1.getCreateBy().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(projectResponse1.getStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(projectResponse1.getEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].scheduledStartTime").value(projectResponse1.getScheduledStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].scheduledEndTime").value(projectResponse1.getScheduledEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(projectResponse1.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].manager.id").value(projectResponse1.getManager().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].manager.username").value(projectResponse1.getManager().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(projectResponse1.getStatus()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(projectResponse2.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].name").value(projectResponse2.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].type").value(projectResponse2.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createTime").value(projectResponse2.getCreateTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createBy.id").value(projectResponse2.getCreateBy().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createBy.username").value(projectResponse2.getCreateBy().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(projectResponse2.getStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(projectResponse2.getEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].scheduledStartTime").value(projectResponse2.getScheduledStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].scheduledEndTime").value(projectResponse2.getScheduledEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].info").value(projectResponse2.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].manager.id").value(projectResponse2.getManager().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].manager.username").value(projectResponse2.getManager().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(projectResponse2.getStatus()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(projectResponse1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].name").value(projectResponse1.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].type").value(projectResponse1.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createTime").value(projectResponse1.getCreateTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createBy.id").value(projectResponse1.getCreateBy().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createBy.username").value(projectResponse1.getCreateBy().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].startTime").value(projectResponse1.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].endTime").value(projectResponse1.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].scheduledStartTime").value(projectResponse1.getScheduledStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].scheduledEndTime").value(projectResponse1.getScheduledEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].info").value(projectResponse1.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].manager.id").value(projectResponse1.getManager().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].manager.username").value(projectResponse1.getManager().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].status").value(projectResponse1.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value(projectResponse2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].name").value(projectResponse2.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].type").value(projectResponse2.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].createTime").value(projectResponse2.getCreateTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].createBy.id").value(projectResponse2.getCreateBy().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].createBy.username").value(projectResponse2.getCreateBy().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].startTime").value(projectResponse2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].endTime").value(projectResponse2.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].scheduledStartTime").value(projectResponse2.getScheduledStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].scheduledEndTime").value(projectResponse2.getScheduledEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].info").value(projectResponse2.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].manager.id").value(projectResponse2.getManager().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].manager.username").value(projectResponse2.getManager().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].status").value(projectResponse2.getStatus()));
         projectRepository.deleteById(projectResponse1.getId());
         projectRepository.deleteById(projectResponse2.getId());
     }
@@ -123,22 +122,21 @@ class ProjectControllerTest {
                 .param("type", projectResponse2.getType())
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 10, 1, 1, 1);
         resultActions
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(projectResponse2.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value(projectResponse2.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(projectResponse2.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(projectResponse2.getCreateTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy.id").value(projectResponse2.getCreateBy().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy.username").value(projectResponse2.getCreateBy().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(projectResponse2.getStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(projectResponse2.getEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].scheduledStartTime").value(projectResponse2.getScheduledStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].scheduledEndTime").value(projectResponse2.getScheduledEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(projectResponse2.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].manager.id").value(projectResponse2.getManager().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].manager.username").value(projectResponse2.getManager().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(projectResponse2.getStatus()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(projectResponse2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].name").value(projectResponse2.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].type").value(projectResponse2.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createTime").value(projectResponse2.getCreateTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createBy.id").value(projectResponse2.getCreateBy().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createBy.username").value(projectResponse2.getCreateBy().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].startTime").value(projectResponse2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].endTime").value(projectResponse2.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].scheduledStartTime").value(projectResponse2.getScheduledStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].scheduledEndTime").value(projectResponse2.getScheduledEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].info").value(projectResponse2.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].manager.id").value(projectResponse2.getManager().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].manager.username").value(projectResponse2.getManager().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].status").value(projectResponse2.getStatus()));
         projectRepository.deleteById(projectResponse1.getId());
         projectRepository.deleteById(projectResponse2.getId());
     }
@@ -154,44 +152,42 @@ class ProjectControllerTest {
                 .param("managerId", String.valueOf(me.getId()))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 10, 1, 2, 1);
         resultActions
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].id").value(projectResponse1.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].name").value(projectResponse1.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].type").value(projectResponse1.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createTime").value(projectResponse1.getCreateTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy.id").value(projectResponse1.getCreateBy().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].createBy.username").value(projectResponse1.getCreateBy().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].startTime").value(projectResponse1.getStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].endTime").value(projectResponse1.getEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].scheduledStartTime").value(projectResponse1.getScheduledStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].scheduledEndTime").value(projectResponse1.getScheduledEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].info").value(projectResponse1.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].manager.id").value(projectResponse1.getManager().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].manager.username").value(projectResponse1.getManager().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[0].status").value(projectResponse1.getStatus()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].id").value(projectResponse2.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].name").value(projectResponse2.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].type").value(projectResponse2.getType()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createTime").value(projectResponse2.getCreateTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createBy.id").value(projectResponse2.getCreateBy().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].createBy.username").value(projectResponse2.getCreateBy().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].startTime").value(projectResponse2.getStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].endTime").value(projectResponse2.getEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].scheduledStartTime").value(projectResponse2.getScheduledStartTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].scheduledEndTime").value(projectResponse2.getScheduledEndTime()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].info").value(projectResponse2.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].manager.id").value(projectResponse2.getManager().getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].manager.username").value(projectResponse2.getManager().getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data[1].status").value(projectResponse2.getStatus()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(projectResponse1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].name").value(projectResponse1.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].type").value(projectResponse1.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createTime").value(projectResponse1.getCreateTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createBy.id").value(projectResponse1.getCreateBy().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].createBy.username").value(projectResponse1.getCreateBy().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].startTime").value(projectResponse1.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].endTime").value(projectResponse1.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].scheduledStartTime").value(projectResponse1.getScheduledStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].scheduledEndTime").value(projectResponse1.getScheduledEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].info").value(projectResponse1.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].manager.id").value(projectResponse1.getManager().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].manager.username").value(projectResponse1.getManager().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].status").value(projectResponse1.getStatus()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value(projectResponse2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].name").value(projectResponse2.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].type").value(projectResponse2.getType()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].createTime").value(projectResponse2.getCreateTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].createBy.id").value(projectResponse2.getCreateBy().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].createBy.username").value(projectResponse2.getCreateBy().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].startTime").value(projectResponse2.getStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].endTime").value(projectResponse2.getEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].scheduledStartTime").value(projectResponse2.getScheduledStartTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].scheduledEndTime").value(projectResponse2.getScheduledEndTime()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].info").value(projectResponse2.getInfo()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].manager.id").value(projectResponse2.getManager().getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].manager.username").value(projectResponse2.getManager().getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].status").value(projectResponse2.getStatus()));
         requestBuilder = MockMvcRequestBuilders.get(Router.PROJECT.LIST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("managerId", String.valueOf(99))
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
-        testUtils.comparePage(resultActions, 10, 0, 0, 1);
         resultActions
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.data").isEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isEmpty());
         projectRepository.deleteById(projectResponse1.getId());
         projectRepository.deleteById(projectResponse2.getId());
     }
