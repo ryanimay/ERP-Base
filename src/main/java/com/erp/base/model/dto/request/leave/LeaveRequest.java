@@ -33,7 +33,7 @@ public class LeaveRequest extends PageRequestParam implements IBaseDto<LeaveMode
     private LocalDateTime endTime;
     @Schema(description = "附註")
     private String info;
-    @Schema(description = "搜尋用UserId")
+    @Schema(description = "請假人ID")
     private Long userId;
     @Schema(description = "搜尋用時間")
     @DateTimeFormat(pattern = DateTool.YYYY_MM)
@@ -47,6 +47,7 @@ public class LeaveRequest extends PageRequestParam implements IBaseDto<LeaveMode
         if(endTime != null) leaveModel.setEndTime(endTime);
         leaveModel.setStatus(StatusConstant.PENDING_NO);//初始化都是待審
         if(info != null) leaveModel.setInfo(info);
+        if(userId != null) leaveModel.setUser(new ClientModel(userId));
         return leaveModel;
     }
 
