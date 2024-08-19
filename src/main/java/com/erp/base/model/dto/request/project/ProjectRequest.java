@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -23,9 +23,9 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
     @Schema(description = "專案類別")
     private String type;//1.開發案 2.維護案 3.其他
     @Schema(description = "計畫開始時間")
-    private LocalDateTime scheduledStartTime;
+    private LocalDate scheduledStartTime;
     @Schema(description = "計畫結束時間")
-    private LocalDateTime scheduledEndTime;
+    private LocalDate scheduledEndTime;
     @Schema(description = "內容")
     private String info;
     @Schema(description = "管理人ID")

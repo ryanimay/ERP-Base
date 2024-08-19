@@ -28,8 +28,8 @@ public class ProjectResponse {
         this.createBy = new ClientNameObject(model.getCreateBy());
         this.startTime = DateTool.format(model.getStartTime());
         this.endTime = DateTool.format(model.getEndTime());
-        this.scheduledStartTime = DateTool.format(model.getScheduledStartTime());
-        this.scheduledEndTime = DateTool.format(model.getScheduledEndTime());
+        this.scheduledStartTime = DateTool.formatDate(model.getScheduledStartTime());
+        this.scheduledEndTime = DateTool.formatDate(model.getScheduledEndTime());
         this.info = model.getInfo();
         this.manager = new ClientNameObject(model.getManager());
         this.status = model.getStatus();

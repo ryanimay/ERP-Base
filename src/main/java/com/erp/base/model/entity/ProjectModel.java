@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 /**
  * 專案
@@ -35,9 +36,9 @@ public class ProjectModel implements IBaseModel {
     @Column(name = "end_time")
     private LocalDateTime endTime;
     @Column(name = "scheduled_start_time")
-    private LocalDateTime scheduledStartTime;
+    private LocalDate scheduledStartTime;
     @Column(name = "scheduled_end_time")
-    private LocalDateTime scheduledEndTime;
+    private LocalDate scheduledEndTime;
     @Column(name = "info")
     private String info;
     @ManyToOne(fetch = FetchType.EAGER)

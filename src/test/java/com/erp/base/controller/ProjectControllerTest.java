@@ -198,8 +198,8 @@ class ProjectControllerTest {
         ProjectRequest request = new ProjectRequest();
         request.setName("測試專案");
         request.setType("1");
-        request.setScheduledStartTime(DateTool.now());
-        request.setScheduledEndTime(DateTool.now());
+        request.setScheduledStartTime(DateTool.now().toLocalDate());
+        request.setScheduledEndTime(DateTool.now().toLocalDate());
         request.setInfo("測試專案內容");
         request.setManagerId(me.getId());
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -334,8 +334,8 @@ class ProjectControllerTest {
         projectModel.setCreateBy(model);
         projectModel.setStartTime(DateTool.now());
         projectModel.setEndTime(DateTool.now());
-        projectModel.setScheduledStartTime(DateTool.now());
-        projectModel.setScheduledEndTime(DateTool.now());
+        projectModel.setScheduledStartTime(DateTool.now().toLocalDate());
+        projectModel.setScheduledEndTime(DateTool.now().toLocalDate());
         projectModel.setInfo("專案說明_" + model.getUsername());
         projectModel.setManager(model);
         return projectRepository.save(projectModel);

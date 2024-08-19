@@ -13,7 +13,7 @@ class DateToolTest {
         LocalDateTime now = LocalDateTime.now();
         Assertions.assertNotEquals(now.getNano(), 0);
         String formatString = DateTool.format(now);
-        Assertions.assertEquals(DateTool.parse(formatString).getNano(), 0);
+        Assertions.assertEquals(DateTool.parseDateTime(formatString).getNano(), 0);
     }
 
     @Test
