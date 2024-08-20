@@ -43,7 +43,7 @@ public class ProjectRequest implements IBaseDto<ProjectModel> {
         projectModel.setScheduledStartTime(scheduledStartTime);
         projectModel.setScheduledEndTime(scheduledEndTime);
         projectModel.setInfo(info);
-        projectModel.setManager(new ClientModel(managerId));
+        projectModel.setManager(managerId == null ? null : new ClientModel(managerId));
         projectModel.setMarkColor(markColor);
         return projectModel;
     }
