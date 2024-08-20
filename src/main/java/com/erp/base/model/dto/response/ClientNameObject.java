@@ -15,7 +15,9 @@ public class ClientNameObject implements Serializable {
         this.username = (String) obj[1];
     }
     public ClientNameObject(ClientModel model) {
-        this.id = model.getId();
-        this.username = model.getUsername();
+        if(model != null){
+            this.id = model.getId();
+            this.username = model.getUsername();
+        }
     }
 }
