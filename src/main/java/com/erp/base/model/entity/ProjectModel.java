@@ -48,4 +48,6 @@ public class ProjectModel implements IBaseModel {
     private int status = StatusConstant.PENDING_NO;//1.代辦 2.進行中 3.結案
     @Column(name = "mark_color")
     private String markColor;
+    @Column(name = "order_num")
+    private Integer orderNum;
 }

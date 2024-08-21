@@ -17,4 +17,7 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long>, Jp
     @Modifying
     @Query("UPDATE ProjectModel p SET p.status = :statusClosed, p.endTime = :now WHERE p.status = :statusApproved AND p.id = :projectId")
     int done(Long projectId, LocalDateTime now, int statusApproved, int statusClosed);
+    @Modifying
+    @Query("UPDATE ProjectModel p SET p.orderNum = :order WHERE p.id = :id")
+    void updateOrder(String id, Integer order);
 }

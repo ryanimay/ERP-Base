@@ -2,6 +2,7 @@ package com.erp.base.controller;
 
 import com.erp.base.aspect.Loggable;
 import com.erp.base.model.dto.request.IdRequest;
+import com.erp.base.model.dto.request.OrderRequest;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.ProjectService;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Tag(name = "ProjectController", description = "專案管理相關API")
@@ -49,5 +52,11 @@ public class ProjectController {
     @Operation(summary = "專案狀態(結案)")
     public ResponseEntity<ApiResponse> done(@Parameter(description = "專案ID") @RequestBody IdRequest request){
         return projectService.done(request.getId());
+    }
+    @Loggable
+    @PutMapping(Router.PROJECT.ORDER)
+    @Operation(summary = "控制專案排序")
+    public ResponseEntity<ApiResponse> order(@Parameter(description = "排序物件清單") @RequestBody List<OrderRequest> orders){
+        return projectService.order(orders);
     }
 }

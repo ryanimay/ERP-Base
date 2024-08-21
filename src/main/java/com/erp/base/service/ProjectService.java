@@ -3,6 +3,7 @@ package com.erp.base.service;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
+import com.erp.base.model.dto.request.OrderRequest;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ProjectResponse;
@@ -12,10 +13,12 @@ import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.repository.ProjectRepository;
 import com.erp.base.tool.DateTool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,7 +33,10 @@ public class ProjectService {
     }
 
     public ResponseEntity<ApiResponse> list(ProjectRequest request) {
-        List<ProjectModel> all = projectRepository.findAll(request.getSpecification());
+        List<Sort.Order> orders = new ArrayList<>();
+        orders.add(Sort.Order.asc("orderNum").nullsLast());
+        orders.add(Sort.Order.asc("id"));
+        List<ProjectModel> all = projectRepository.findAll(request.getSpecification(), Sort.by(orders));
         return ApiResponse.success(all.stream().map(ProjectResponse::new).toList());
     }
 
@@ -71,5 +77,10 @@ public class ProjectService {
         return count == 1
                 ? ApiResponse.success(ApiResponseCode.SUCCESS)
                 : ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "UPDATE FAILED, ID[" + projectId + "]");
+    }
+
+    public ResponseEntity<ApiResponse> order(List<OrderRequest> orders) {
+        orders.forEach(order -> projectRepository.updateOrder(order.getId(), order.getOrder()));
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

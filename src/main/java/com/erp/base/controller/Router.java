@@ -93,6 +93,7 @@ public interface Router {
         String UPDATE = PROJECT + "/update";
         String START = PROJECT + "/start";
         String DONE = PROJECT + "/done";
+        String ORDER = PROJECT + "/order";
     }
 
     interface PROCUREMENT{

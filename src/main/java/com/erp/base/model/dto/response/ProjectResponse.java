@@ -19,6 +19,7 @@ public class ProjectResponse {
     private ClientNameObject manager;
     private int status;
     private String markColor;
+    private Integer order;
 
     public ProjectResponse(ProjectModel model) {
         this.id = model.getId();
@@ -34,5 +35,6 @@ public class ProjectResponse {
         this.manager = new ClientNameObject(model.getManager());
         this.status = model.getStatus();
         this.markColor = model.getMarkColor();
+        this.order = model.getOrderNum();
     }
 }
