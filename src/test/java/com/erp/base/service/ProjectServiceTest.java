@@ -2,6 +2,7 @@ package com.erp.base.service;
 
 
 import com.erp.base.model.constant.response.ApiResponseCode;
+import com.erp.base.model.dto.request.OrderRequest;
 import com.erp.base.model.dto.request.project.ProjectRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ProjectResponse;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,7 +50,7 @@ class ProjectServiceTest {
         projectModel.setManager(createBy);
         projectModel.setInfo("test");
         projectModels.add(projectModel);
-        Mockito.when(projectRepository.findAll((Specification<ProjectModel>)Mockito.any())).thenReturn(projectModels);
+        Mockito.when(projectRepository.findAll((Specification<ProjectModel>)Mockito.any(), (Sort)Mockito.any())).thenReturn(projectModels);
         ResponseEntity<ApiResponse> all = projectService.list(new ProjectRequest());
         Assertions.assertEquals(ApiResponse.success(projectModels.stream().map(ProjectResponse::new).toList()), all);
     }
@@ -116,6 +118,23 @@ class ProjectServiceTest {
     void done_ok() {
         Mockito.when(projectRepository.done(Mockito.anyLong(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
         ResponseEntity<ApiResponse> done = projectService.done(1L);
+        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), done);
+    }
+
+    @Test
+    @DisplayName("專案排序_參數為空_成功")
+    void order_emptyParam_ok() {
+        ResponseEntity<ApiResponse> done = projectService.order(new ArrayList<>());
+        Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), done);
+    }
+
+    @Test
+    @DisplayName("專案排序_成功")
+    void order_ok() {
+        ArrayList<OrderRequest> orders = new ArrayList<>();
+        orders.add(new OrderRequest("1", 2));
+        orders.add(new OrderRequest("2", 3));
+        ResponseEntity<ApiResponse> done = projectService.order(orders);
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), done);
     }
 }

@@ -327,6 +327,41 @@ class ProjectControllerTest {
         projectRepository.deleteById(model.getId());
     }
 
+    @Test
+    @DisplayName("專案排序_成功")
+    void projectOrder_ok() throws Exception {
+        ProjectResponse projectResponse1 = new ProjectResponse(createProject(me, "1"));
+        ProjectResponse projectResponse2 = new ProjectResponse(createProject(me, "2"));
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.PROJECT.ORDER)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("""
+                [
+                     {
+                         "id": "%s",
+                         "order": "2"
+                     },
+                     {
+                         "id": "%s",
+                         "order": "1"
+                     }
+                 ]
+                """, projectResponse1.getId(), projectResponse2.getId()))
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
+        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<ProjectModel> byId = projectRepository.findById(projectResponse1.getId());
+        Assertions.assertTrue(byId.isPresent());
+        Assertions.assertEquals(2, byId.get().getOrderNum());
+        Optional<ProjectModel> byId2 = projectRepository.findById(projectResponse2.getId());
+        Assertions.assertTrue(byId2.isPresent());
+        Assertions.assertEquals(1, byId2.get().getOrderNum());
+
+        projectRepository.deleteById(projectResponse1.getId());
+        projectRepository.deleteById(projectResponse2.getId());
+    }
+
     private ProjectModel createProject(ClientModel model, String type){
         ProjectModel projectModel = new ProjectModel();
         projectModel.setName("專案名_" + model.getUsername());
