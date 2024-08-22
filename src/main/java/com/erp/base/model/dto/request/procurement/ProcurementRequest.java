@@ -1,6 +1,7 @@
 package com.erp.base.model.dto.request.procurement;
 
 import com.erp.base.model.GenericSpecifications;
+import com.erp.base.model.constant.ProcurementConstant;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.dto.request.PageRequestParam;
 import com.erp.base.model.entity.ProcurementModel;
@@ -61,7 +62,7 @@ public class ProcurementRequest extends PageRequestParam implements IBaseDto<Pro
                 .add("name", GenericSpecifications.LIKE, name)
                 .add("createTime", GenericSpecifications.GOE, startTime)
                 .add("createTime", GenericSpecifications.LOE, endTime)
-                .add("status", GenericSpecifications.EQ, status)
+                .add("status", GenericSpecifications.EQ, status == null || ProcurementConstant.get(status) == null ? null : status)
                 .buildAnd();
     }
 }

@@ -1,6 +1,5 @@
 package com.erp.base.model.dto.response;
 
-import com.erp.base.model.constant.ProcurementConstant;
 import com.erp.base.model.entity.ProcurementModel;
 import com.erp.base.tool.DateTool;
 import lombok.Data;
@@ -17,7 +16,7 @@ public class ProcurementResponse {
     private String info;
     private String createTime;
     private ClientNameObject createBy;
-    private String status;
+    private int status;
 
     public ProcurementResponse(ProcurementModel model) {
         this.id = model.getId();
@@ -28,7 +27,7 @@ public class ProcurementResponse {
         this.info = model.getInfo();
         this.createTime = DateTool.format(model.getCreateTime());
         this.createBy = new ClientNameObject(model.getCreateBy());
-        this.status = ProcurementConstant.get(model.getStatus());
+        this.status = model.getStatus();
         this.total = price == null ? BigDecimal.valueOf(0) : price.multiply(BigDecimal.valueOf(count));
     }
 }
