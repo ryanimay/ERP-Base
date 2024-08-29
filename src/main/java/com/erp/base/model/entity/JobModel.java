@@ -36,7 +36,7 @@ public class JobModel implements IBaseModel {
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime = DateTool.now();
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "createBy", nullable = false)
+    @JoinColumn(name = "create_by", nullable = false)
     private ClientModel createBy;
     //只會有1.待執行 2.執行中 3.已完成
     @Column(name = "status", nullable = false)
