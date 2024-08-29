@@ -34,6 +34,7 @@ FROM (VALUES
           ('router.personalLeave', 'personalLeave', 'AlarmClock', 1, 1, 'true', 5),
           ('router.leaveList', 'leaveList', 'Drizzling', 1, 2, 'true', 5),
           ('router.projectList', 'projectList', 'Goods', 1, 1, 'true', 6),
-          ('router.procureList', 'procureList', 'ShoppingCartFull', 1, 1, 'true', 7)
+          ('router.procureList', 'procureList', 'ShoppingCartFull', 1, 1, 'true', 7),
+          ('router.jobCard', 'jobCard', 'Ticket', 1, 1, 'true', 8)
      ) AS source (name, path, icon, level, order_num, status, parent_id)
 WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
