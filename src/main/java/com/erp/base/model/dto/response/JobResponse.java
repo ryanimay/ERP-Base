@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class JobResponse {
     private long id;
     private String info;
-    private String username;
+    private ClientNameObject user;
     private String startTime;
     private String endTime;
     private String createdTime;
@@ -24,7 +24,7 @@ public class JobResponse {
     public JobResponse(JobModel model) {
         this.id = model.getId();
         this.info = model.getInfo();
-        this.username = model.getUser().getUsername();
+        this.user = new ClientNameObject(model.getUser());
         this.startTime = DateTool.format(model.getStartTime());
         this.endTime = DateTool.format(model.getEndTime());
         this.createdTime = DateTool.format(model.getCreatedTime());

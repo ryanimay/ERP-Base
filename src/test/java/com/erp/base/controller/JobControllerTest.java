@@ -87,7 +87,7 @@ class JobControllerTest {
         resultActions
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].id").value(trackingJobResponse.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].info").value(trackingJobResponse.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].username").value(trackingJobResponse.getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].user.id").value(trackingJobResponse.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].startTime").value(trackingJobResponse.getStartTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].endTime").value(trackingJobResponse.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].createdTime").value(trackingJobResponse.getCreatedTime()))
@@ -98,7 +98,7 @@ class JobControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.tracking[0].trackingSet[0].username").value(me.getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].id").value(userJobResponse.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].info").value(userJobResponse.getInfo()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].username").value(userJobResponse.getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].user.id").value(userJobResponse.getUser().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].startTime").value(userJobResponse.getStartTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].endTime").value(userJobResponse.getEndTime()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.Pending[0].createdTime").value(userJobResponse.getCreatedTime()))
@@ -178,7 +178,7 @@ class JobControllerTest {
         JobResponse jobModel = new JobResponse(byId.get());
         Assertions.assertEquals(jobModel.getId(), userJobId);
         Assertions.assertEquals(jobModel.getInfo(), jobRequest.getInfo());
-        Assertions.assertEquals(jobModel.getUsername(), me.getUsername());
+        Assertions.assertEquals(jobModel.getUser().getUsername(), me.getUsername());
         Assertions.assertEquals(jobModel.getStartTime(), DateTool.format(jobRequest.getStartTime()));
         Assertions.assertEquals(jobModel.getEndTime(), DateTool.format(jobRequest.getEndTime()));
         Assertions.assertEquals(jobModel.getCreatedTime(), DateTool.format(userJob.getCreatedTime()));
