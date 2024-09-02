@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,7 +67,15 @@ public class JobService {
             if (request.getEndTime() != null) model.setEndTime(request.getEndTime());
             if (request.getStatus() != null) model.setStatus(request.getStatus());
             if (request.getOrder() != null) model.setOrder(request.getOrder());
-            if (request.getIdSet() != null) request.getIdSet().forEach(id -> model.addTracking(new ClientModel(id)));
+            Set<Long> idSet = request.getIdSet();
+            if (idSet != null){
+                if (idSet.isEmpty()) {
+                    //沒元素就清空
+                    model.setTrackingList(new HashSet<>());
+                }else{
+                    idSet.forEach(id -> model.addTracking(new ClientModel(id)));
+                }
+            }
             JobModel save = jobRepository.save(model);
             return ApiResponse.success(ApiResponseCode.SUCCESS, new JobResponse(save));
         }
