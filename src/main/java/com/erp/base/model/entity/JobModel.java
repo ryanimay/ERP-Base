@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,9 +31,9 @@ public class JobModel implements IBaseModel {
     @JoinColumn(name = "user_id", nullable = false)
     private ClientModel user;
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private LocalDate startTime;
     @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private LocalDate endTime;
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime = DateTool.now();
     @ManyToOne(fetch = FetchType.EAGER)

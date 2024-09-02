@@ -3,14 +3,12 @@ package com.erp.base.model.dto.request.job;
 import com.erp.base.model.dto.request.IBaseDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.JobModel;
-import com.erp.base.tool.DateTool;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -23,11 +21,9 @@ public class JobRequest implements IBaseDto<JobModel> {
     @Schema(description = "任務卡執行人")
     private Long userId;
     @Schema(description = "任務卡開始時間")
-    @DateTimeFormat(pattern = DateTool.YYYY_MM_DD_T_HH_MM_SS)
-    private LocalDateTime startTime;
+    private LocalDate startTime;
     @Schema(description = "任務卡結束時間")
-    @DateTimeFormat(pattern = DateTool.YYYY_MM_DD_T_HH_MM_SS)
-    private LocalDateTime endTime;
+    private LocalDate endTime;
     @Schema(description = "任務卡狀態")
     private Integer status;
     @Schema(description = "任務卡排序")

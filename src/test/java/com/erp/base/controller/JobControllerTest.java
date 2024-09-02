@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -118,8 +119,8 @@ class JobControllerTest {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setInfo("測試任務卡內容1");
         jobRequest.setUserId(1L);
-        jobRequest.setStartTime(DateTool.now());
-        jobRequest.setEndTime(DateTool.now());
+        jobRequest.setStartTime(LocalDate.now());
+        jobRequest.setEndTime(LocalDate.now());
         jobRequest.setIdSet(Set.of(jobClient.getId()));
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.JOB.ADD)
@@ -162,8 +163,8 @@ class JobControllerTest {
         jobRequest.setId(userJobId);
         jobRequest.setInfo(userJob.getInfo() + "test");
         jobRequest.setUserId(me.getId());
-        jobRequest.setStartTime(DateTool.now());
-        jobRequest.setEndTime(DateTool.now());
+        jobRequest.setStartTime(LocalDate.now());
+        jobRequest.setEndTime(LocalDate.now());
         jobRequest.setStatus(2);
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.JOB.UPDATE)
@@ -179,8 +180,8 @@ class JobControllerTest {
         Assertions.assertEquals(jobModel.getId(), userJobId);
         Assertions.assertEquals(jobModel.getInfo(), jobRequest.getInfo());
         Assertions.assertEquals(jobModel.getUser().getUsername(), me.getUsername());
-        Assertions.assertEquals(jobModel.getStartTime(), DateTool.format(jobRequest.getStartTime()));
-        Assertions.assertEquals(jobModel.getEndTime(), DateTool.format(jobRequest.getEndTime()));
+        Assertions.assertEquals(jobModel.getStartTime(), DateTool.formatDate(jobRequest.getStartTime()));
+        Assertions.assertEquals(jobModel.getEndTime(), DateTool.formatDate(jobRequest.getEndTime()));
         Assertions.assertEquals(jobModel.getCreatedTime(), DateTool.format(userJob.getCreatedTime()));
         Assertions.assertEquals(jobModel.getCreateBy(), "test");
         Assertions.assertEquals(jobModel.getStatus(), StatusConstant.get(2));

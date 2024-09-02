@@ -25,8 +25,8 @@ public class JobResponse {
         this.id = model.getId();
         this.info = model.getInfo();
         this.user = new ClientNameObject(model.getUser());
-        this.startTime = DateTool.format(model.getStartTime());
-        this.endTime = DateTool.format(model.getEndTime());
+        this.startTime = DateTool.formatDate(model.getStartTime());
+        this.endTime = DateTool.formatDate(model.getEndTime());
         this.createdTime = DateTool.format(model.getCreatedTime());
         this.createBy = model.getCreateBy().getUsername();
         this.status = StatusConstant.get(model.getStatus());
