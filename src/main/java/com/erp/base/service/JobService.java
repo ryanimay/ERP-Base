@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,12 +37,14 @@ public class JobService {
         ClientIdentityDto client = cacheService.getClient(user.getId());
         ClientModel clientModel = client.toEntity();
         List<JobModel> all = jobRepository.findByUserOrTracking(clientModel);
-
-        Map<String, List<JobResponse>> map = all.stream()
-                .collect(Collectors.groupingBy(
-                        model -> model.getUser().equals(clientModel) ? StatusConstant.get(model.getStatus()) : "tracking",
-                        Collectors.mapping(JobResponse::new, Collectors.toList())
-                ));
+        Map<String, List<JobResponse>> map = new HashMap<>();
+        for (JobModel jobModel : all) {
+            String key = jobModel.getUser().equals(clientModel) ? StatusConstant.get(jobModel.getStatus()) : "tracking";
+            map.computeIfAbsent(key, k -> new ArrayList<>()).add(new JobResponse(jobModel));
+            if (!key.equals("tracking") && jobModel.getTrackingList().stream().anyMatch(c -> c.equals(clientModel))) {
+                map.computeIfAbsent("tracking", k -> new ArrayList<>()).add(new JobResponse(jobModel));
+            }
+        }
         return ApiResponse.success(ApiResponseCode.SUCCESS, map);
     }
 
@@ -73,7 +74,9 @@ public class JobService {
                     //沒元素就清空
                     model.setTrackingList(new HashSet<>());
                 }else{
-                    idSet.forEach(id -> model.addTracking(new ClientModel(id)));
+                    Set<ClientModel> clientSet = new HashSet<>();
+                    idSet.forEach(id -> clientSet.add(new ClientModel(id)));
+                    model.setTrackingList(clientSet);
                 }
             }
             JobModel save = jobRepository.save(model);
