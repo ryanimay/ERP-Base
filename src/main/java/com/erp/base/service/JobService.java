@@ -3,6 +3,7 @@ package com.erp.base.service;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.StatusConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
+import com.erp.base.model.dto.request.OrderRequest;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.JobResponse;
@@ -87,6 +88,11 @@ public class JobService {
 
     public ResponseEntity<ApiResponse> deleteById(Long id) {
         jobRepository.deleteById(id);
+        return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public ResponseEntity<ApiResponse> order(List<OrderRequest> orders) {
+        orders.forEach(order -> jobRepository.updateOrder(order.getId(), order.getOrder()));
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

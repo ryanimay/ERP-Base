@@ -110,6 +110,7 @@ public interface Router {
         String ADD = JOB + "/add";
         String UPDATE = JOB + "/update";
         String REMOVE = JOB + "/remove";
+        String ORDER = JOB + "/order";
     }
 
     interface DEPARTMENT{

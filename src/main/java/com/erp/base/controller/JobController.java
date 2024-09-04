@@ -1,5 +1,7 @@
 package com.erp.base.controller;
 
+import com.erp.base.aspect.Loggable;
+import com.erp.base.model.dto.request.OrderRequest;
 import com.erp.base.model.dto.request.job.JobRequest;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.service.JobService;
@@ -9,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Tag(name = "JobController", description = "任務卡相關API")
@@ -42,4 +46,10 @@ public class JobController {
         return jobService.deleteById(id);
     }
 
+    @Loggable
+    @PutMapping(Router.JOB.ORDER)
+    @Operation(summary = "控制任務排序")
+    public ResponseEntity<ApiResponse> order(@Parameter(description = "排序物件清單") @RequestBody List<OrderRequest> orders){
+        return jobService.order(orders);
+    }
 }
