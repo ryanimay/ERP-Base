@@ -85,7 +85,7 @@ class QuartzJobServiceTest {
 
     @Test
     @DisplayName("切換排程_未知ID_錯誤")
-    void toggle_unknownId_error() throws SchedulerException {
+    void toggle_unknownId_error() {
         Mockito.when(quartzJobRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         IdRequest request = new IdRequest();
         request.setId(1L);

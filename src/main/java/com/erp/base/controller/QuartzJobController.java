@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-
 @RestController
 @Tag(name = "QuartzJobController", description = "排程相關API")
 public class QuartzJobController {
@@ -43,15 +41,7 @@ public class QuartzJobController {
     @PutMapping(Router.QUARTZ_JOB.UPDATE)
     @Operation(summary = "編輯排程")
     public ResponseEntity<ApiResponse> update(@RequestBody QuartzJobRequest request) {
-        ResponseEntity<ApiResponse> response;
-        try {
-            response = quartzJobService.update(request);
-        } catch (ClassNotFoundException e) {
-            response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
-        } catch (SchedulerException | ParseException e) {
-            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
-        }
-        return response;
+        return quartzJobService.update(request);
     }
 
     @Loggable

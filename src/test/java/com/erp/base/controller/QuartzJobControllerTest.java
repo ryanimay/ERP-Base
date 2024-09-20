@@ -191,7 +191,7 @@ class QuartzJobControllerTest {
     void updateQuartzJob_unexpectedCron_error() throws Exception {
         QuartzJobModel quartzJob = createQuartzJob();
         quartzJob.setCron("");
-        ResponseEntity<ApiResponse> response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, "Unexpected end of expression.");
+        ResponseEntity<ApiResponse> response = ApiResponse.errorMsgFormat(ApiResponseCode.CRON_ERROR, quartzJob.getCron());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.QUARTZ_JOB.UPDATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJob))

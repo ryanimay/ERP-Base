@@ -85,28 +85,43 @@ public class QuartzJobService {
         scheduler.scheduleJob(jobDetail, trigger);
     }
 
-    public ResponseEntity<ApiResponse> update(QuartzJobRequest request) throws ClassNotFoundException, SchedulerException, ParseException {
+    public ResponseEntity<ApiResponse> update(QuartzJobRequest request) {
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
-        Long id = request.getId();
-        Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
-        if (byId.isPresent()) {
-            QuartzJobModel model = byId.get();
-            //有關triggerKey生成，不能更動
-//            if (request.getName() != null) model.setName(request.getName());
-//            if (request.getGroup() != null) model.setGroupName(request.getGroup());
-            if (request.getCron() != null) model.setCron(request.getCron());
-            if (request.getParam() != null) model.setParam(request.getParam());
-            if (request.getInfo() != null) model.setInfo(request.getInfo());
-            if (request.getClassPath() != null) model.setClassPath(request.getClassPath());
-            quartzJobRepository.save(model);
+        try {
+            Long id = request.getId();
+            Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
+            if (byId.isPresent()) {
+                QuartzJobModel model = byId.get();
+                //有關triggerKey生成，不能更動
+    //            if (request.getName() != null) model.setName(request.getName());
+    //            if (request.getGroup() != null) model.setGroupName(request.getGroup());
+                if (request.getCron() != null) model.setCron(request.getCron());
+                if (request.getParam() != null) model.setParam(request.getParam());
+                if (request.getInfo() != null) model.setInfo(request.getInfo());
+                if (request.getClassPath() != null) model.setClassPath(request.getClassPath());
 
-            CronTrigger trigger = createTrigger(model).getObject();
-            if (trigger == null) throw new SchedulerException();
-            //更新現有排程器內的任務內容
-            scheduler.rescheduleJob(trigger.getKey(), trigger);
-            updateQuartzTableData(model);
-        } else {
-            response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "JobId Not Found.");
+                CronTrigger trigger = createTrigger(model).getObject();
+                if (trigger == null) throw new SchedulerException();
+                //先拿舊trigger的狀態
+                TriggerKey triggerKey = trigger.getKey();
+                Trigger.TriggerState triggerState = scheduler.getTriggerState(triggerKey);
+                //更新現有排程器內的任務內容
+                scheduler.rescheduleJob(triggerKey, trigger);
+                //更新之後如果原先是暫停狀態，就保持暫停
+                if(triggerState == Trigger.TriggerState.PAUSED) {
+                    scheduler.pauseTrigger(triggerKey);
+                }
+                updateQuartzTableData(model);
+                quartzJobRepository.save(model);
+            } else {
+                response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "JobId Not Found.");
+            }
+        } catch (ClassNotFoundException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
+        } catch (ParseException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.CRON_ERROR, request.getCron());
+        } catch (SchedulerException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
         return response;
     }
