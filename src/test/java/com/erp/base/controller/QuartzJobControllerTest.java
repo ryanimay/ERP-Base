@@ -120,7 +120,7 @@ class QuartzJobControllerTest {
         quartzJobModel.setCron("");
         quartzJobModel.setInfo("測試排程內容");
         quartzJobModel.setClassPath("com.erp.base.config.quartz.job.TestJob");
-        ResponseEntity<ApiResponse> response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, "Unexpected end of expression.");
+        ResponseEntity<ApiResponse> response = ApiResponse.errorMsgFormat(ApiResponseCode.CRON_ERROR, quartzJobModel.getCron());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.QUARTZ_JOB.ADD)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectTool.toJson(quartzJobModel))

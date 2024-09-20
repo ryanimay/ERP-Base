@@ -20,7 +20,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.http.ResponseEntity;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +52,7 @@ class QuartzJobServiceTest {
     void add_classNotFound_error() {
         QuartzJobRequest request = new QuartzJobRequest();
         request.setClassPath("testErrorPath");
-        Assertions.assertThrows(ClassNotFoundException.class, () -> quartzJobService.add(request));
+        Assertions.assertEquals(ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath()),  quartzJobService.add(request));
     }
 
     @Test
@@ -62,7 +61,7 @@ class QuartzJobServiceTest {
         QuartzJobRequest request = new QuartzJobRequest();
         request.setCron("*/60 * * * * ?");
         request.setClassPath("com.erp.base.config.quartz.job.TestJob");
-        Assertions.assertThrows(ParseException.class, () -> quartzJobService.add(request));
+        Assertions.assertEquals(ApiResponse.errorMsgFormat(ApiResponseCode.CRON_ERROR, request.getCron()), quartzJobService.add(request));
     }
 
     @Test
@@ -72,7 +71,7 @@ class QuartzJobServiceTest {
         QuartzJobRequest request = new QuartzJobRequest();
         request.setCron("*/30 * * * * ?");
         request.setClassPath("com.erp.base.config.quartz.job.TestJob");
-        Assertions.assertThrows(SchedulerException.class, () -> quartzJobService.add(request));
+        Assertions.assertEquals(ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, "null"), quartzJobService.add(request));
     }
 
     @Test
@@ -100,7 +99,7 @@ class QuartzJobServiceTest {
         QuartzJobModel job = new QuartzJobModel();
         job.setName("test");
         job.setGroupName("test");
-        job.setStatus(true);
+        job.setStatus(false);
         Mockito.when(quartzJobRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(job));
         IdRequest request = new IdRequest();
         request.setId(1L);
@@ -115,7 +114,7 @@ class QuartzJobServiceTest {
         QuartzJobModel job = new QuartzJobModel();
         job.setName("test");
         job.setGroupName("test");
-        job.setStatus(false);
+        job.setStatus(true);
         Mockito.when(quartzJobRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(job));
         IdRequest request = new IdRequest();
         request.setId(1L);
