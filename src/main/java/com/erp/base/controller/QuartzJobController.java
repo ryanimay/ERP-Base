@@ -58,13 +58,7 @@ public class QuartzJobController {
     @PutMapping(Router.QUARTZ_JOB.TOGGLE)
     @Operation(summary = "排程狀態切換")
     public ResponseEntity<ApiResponse> toggle(@Parameter(description = "排程ID") @RequestBody IdRequest request) {
-        ResponseEntity<ApiResponse> response;
-        try {
-            response = quartzJobService.toggle(request);
-        } catch (SchedulerException e) {
-            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
-        }
-        return response;
+        return quartzJobService.toggle(request);
     }
 
     @Loggable

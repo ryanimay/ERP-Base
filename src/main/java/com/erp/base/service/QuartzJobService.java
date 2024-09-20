@@ -165,23 +165,30 @@ public class QuartzJobService {
         return trigger;
     }
 
-    public ResponseEntity<ApiResponse> toggle(IdRequest request) throws SchedulerException {
-        Long id = request.getId();
-        quartzJobRepository.switchStatusById(id);
-        Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
-        if (byId.isPresent()) {
-            QuartzJobModel model = byId.get();
-            boolean status = model.isStatus();
-            JobKey jobKey = new JobKey(model.getName(), model.getGroupName());
-            if (status) {
-                scheduler.resumeJob(jobKey);
-            } else {
-                scheduler.pauseJob(jobKey);
+    public ResponseEntity<ApiResponse> toggle(IdRequest request) {
+        ResponseEntity<ApiResponse> response;
+        try {
+            Long id = request.getId();
+            Optional<QuartzJobModel> byId = quartzJobRepository.findById(id);
+            if (byId.isPresent()) {
+                QuartzJobModel model = byId.get();
+                boolean status = model.isStatus();
+                JobKey jobKey = new JobKey(model.getName(), model.getGroupName());
+                //如果當前狀態是true就停用，反之
+                if (status) {
+                    scheduler.pauseJob(jobKey);
+                } else {
+                    scheduler.resumeJob(jobKey);
+                }
+                quartzJobRepository.switchStatusById(id);
+                response = ApiResponse.success(ApiResponseCode.SUCCESS);
+            }else{
+                response = ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "JobId Not Found.");
             }
-            return ApiResponse.success(ApiResponseCode.SUCCESS);
-        }else{
-            return ApiResponse.error(ApiResponseCode.UNKNOWN_ERROR, "JobId Not Found.");
+        } catch (SchedulerException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
+        return response;
     }
 
     public void exec(IdRequest request) throws SchedulerException {
