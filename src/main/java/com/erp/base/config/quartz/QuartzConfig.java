@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * 只用來讀現有排程
@@ -40,6 +41,9 @@ public class QuartzConfig {
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean() {
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        Properties quartzProperties = new Properties();
+        quartzProperties.setProperty("org.quartz.jobStore.misfireThreshold", "10000");  // misfires閾值設為10秒
+        schedulerFactoryBean.setQuartzProperties(quartzProperties);
         schedulerFactoryBean.setApplicationContext(applicationContext);
         schedulerFactoryBean.setJobFactory(jobFactory());
         schedulerFactoryBean.setDataSource(quartzDataSource);
