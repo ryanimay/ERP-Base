@@ -35,7 +35,9 @@ public enum ApiResponseCode {
     SCHEDULER_ERROR(HttpStatus.BAD_REQUEST, "response.schedulerError"),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "response.invalidInput"),
     UPDATE_ERROR(HttpStatus.BAD_REQUEST, "response.updateError"),
-    CACHE_KEY_ERROR(HttpStatus.BAD_REQUEST, "response.cacheKeyError");
+    CACHE_KEY_ERROR(HttpStatus.BAD_REQUEST, "response.cacheKeyError"),
+    JOB_NAME_EXISTS(HttpStatus.BAD_REQUEST, "response.jobNameExists"),
+    CRON_ERROR(HttpStatus.BAD_REQUEST, "response.cronError");
 
     private final int code;
     private final String message;

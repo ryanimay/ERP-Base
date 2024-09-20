@@ -49,22 +49,40 @@ public class QuartzJobService {
         return quartzJobRepository.findAll();
     }
 
-    public void add(QuartzJobRequest request) throws ClassNotFoundException, SchedulerException, ParseException {
-        QuartzJobModel model = request.toModel();
-        quartzJobRepository.save(model);
-        CronTriggerFactoryBean trigger = createTrigger(model);
-        AddQuartzJob(trigger);
-        //如果設置狀態為false就先暫停
-        if (!model.isStatus()) {
-            scheduler.pauseJob(Objects.requireNonNull(trigger.getObject()).getJobKey());
+    public ResponseEntity<ApiResponse> add(QuartzJobRequest request) {
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
+        try {
+            QuartzJobModel model = request.toModel();
+            CronTriggerFactoryBean triggerBean = createTrigger(model);
+            JobDetail jobDetail = (JobDetail) triggerBean.getJobDataMap().get("jobDetail");
+            if (scheduler.checkExists(jobDetail.getKey())) {
+                throw new ObjectAlreadyExistsException("");
+            }
+            CronTrigger trigger = triggerBean.getObject();
+            AddQuartzJob(jobDetail, trigger);
+            //先存schedule確認沒有錯誤再插入表
+            quartzJobRepository.save(model);
+            //如果設置狀態為false就先暫停
+            if (!model.isStatus()) {
+                scheduler.pauseJob(Objects.requireNonNull(trigger).getJobKey());
+            }
+        } catch (ClassNotFoundException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
+        } catch (ObjectAlreadyExistsException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.JOB_NAME_EXISTS, request.getName());
+        } catch (ParseException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.CRON_ERROR, request.getCron());
+        } catch (SchedulerException e) {
+            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
         }
+        return response;
     }
 
     /**
      * 把新增的任務加到現有排程器內
      */
-    private void AddQuartzJob(CronTriggerFactoryBean trigger) throws SchedulerException {
-        scheduler.scheduleJob((JobDetail) trigger.getJobDataMap().get("jobDetail"), trigger.getObject());
+    private void AddQuartzJob(JobDetail jobDetail, CronTrigger trigger) throws SchedulerException {
+        scheduler.scheduleJob(jobDetail, trigger);
     }
 
     public ResponseEntity<ApiResponse> update(QuartzJobRequest request) throws ClassNotFoundException, SchedulerException, ParseException {

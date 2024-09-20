@@ -36,15 +36,7 @@ public class QuartzJobController {
     @PostMapping(Router.QUARTZ_JOB.ADD)
     @Operation(summary = "新增排程")
     public ResponseEntity<ApiResponse> add(@RequestBody QuartzJobRequest request) {
-        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS);
-        try {
-            quartzJobService.add(request);
-        } catch (ClassNotFoundException e) {
-            response = ApiResponse.errorMsgFormat(ApiResponseCode.CLASS_NOT_FOUND, request.getClassPath());
-        } catch (SchedulerException | ParseException e) {
-            response = ApiResponse.errorMsgFormat(ApiResponseCode.SCHEDULER_ERROR, e.getMessage());
-        }
-        return response;
+        return quartzJobService.add(request);
     }
 
     @Loggable
