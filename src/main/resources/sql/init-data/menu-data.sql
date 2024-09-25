@@ -13,7 +13,8 @@ FROM (VALUES
           (6, 'router.projectManagement', null, 'Briefcase', 0, 6, 'true', null),
           (7, 'router.procureManagement', null, 'ShoppingCart', 0, 7, 'true', null),
           (8, 'router.jobManagement', null, 'EditPen', 0, 8, 'true', null),
-          (9, 'router.scheduleManagement', null, 'Clock', 0, 9, 'true', null)
+          (9, 'router.scheduleManagement', null, 'Clock', 0, 9, 'true', null),
+          (10, 'router.logList', 'logList', 'WarnTriangleFilled', 0, 9, 'true', null)
      ) AS source (id, name, path, icon, level, order_num, status, parent_id)
 WHERE NOT EXISTS(SELECT 1 FROM menu WHERE source.name = menu.name);
 -- 關閉自訂主鍵
