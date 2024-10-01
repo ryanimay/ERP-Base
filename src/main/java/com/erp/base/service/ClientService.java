@@ -13,10 +13,7 @@ import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.response.PageResponse;
 import com.erp.base.model.dto.security.ClientIdentityDto;
-import com.erp.base.model.entity.AttendModel;
-import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.RoleModel;
+import com.erp.base.model.entity.*;
 import com.erp.base.model.mail.ResetPasswordModel;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.security.TokenService;
@@ -117,6 +114,7 @@ public class ClientService {
         //依部門設置註冊用戶的默認權限
         entity = departmentService.setDepartmentDefaultRole(entity, dto.getDepartmentId());
         entity.setPassword(passwordEncode(entity.getPassword()));
+        entity.setAnnualLeave(new AnnualLeaveModel());
         clientRepository.save(entity);
         //新增空的簽到表
         addNewAttend(entity.getId());

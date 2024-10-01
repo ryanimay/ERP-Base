@@ -8,10 +8,7 @@ import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.response.ClientResponseModel;
 import com.erp.base.model.dto.security.ClientIdentityDto;
-import com.erp.base.model.entity.AttendModel;
-import com.erp.base.model.entity.ClientModel;
-import com.erp.base.model.entity.NotificationModel;
-import com.erp.base.model.entity.RoleModel;
+import com.erp.base.model.entity.*;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.repository.ClientRepository;
 import com.erp.base.service.CacheService;
@@ -152,6 +149,11 @@ class ClientControllerTest {
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
         ClientModel model = repository.findByUsername("testRegister");
         Assertions.assertNotNull(model);
+        AnnualLeaveModel annualLeave = model.getAnnualLeave();
+        Assertions.assertNotNull(annualLeave);
+        //確保年假初始化
+        Assertions.assertEquals("0", annualLeave.getCurrentLeave());
+        Assertions.assertEquals("0", annualLeave.getTotalLeave());
 
         List<AttendModel> all = attendRepository.findAll();
         Assertions.assertTrue(all.stream().anyMatch(attend -> attend.getUser().getId() == model.getId()));

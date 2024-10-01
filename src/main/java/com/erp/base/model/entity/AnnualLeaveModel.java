@@ -22,7 +22,7 @@ public class AnnualLeaveModel implements IBaseModel {
     @Column(name = "id")
     private long id;
     @Column(name = "current_leave")
-    private String currentLeave;
+    private String currentLeave = "0";
     @Column(name = "total_leave")
-    private String totalLeave;
+    private String totalLeave = "0";
 }
