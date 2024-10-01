@@ -270,4 +270,13 @@ class PerformanceServiceTest {
         list.add(performanceCalculateResponse);
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS, list), calculate);
     }
+
+    @Test
+    @DisplayName("用戶績效資訊_成功")
+    void getClientPerformance_ok() {
+        PerformanceCountDto rs = new PerformanceCountDto(1L, 2L);
+        Mockito.when(performanceRepository.getClientPerformance(Mockito.anyLong())).thenReturn(rs);
+        PerformanceCountDto result = performanceService.getClientPerformance(1L);
+        Assertions.assertEquals(rs, result);
+    }
 }

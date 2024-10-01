@@ -73,42 +73,27 @@ class ClientCacheTest {
     }
 
     @Test
-    void refreshClient_ok() {
-        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(client);
-        clientCache.refreshClient(client.getId());
-        clientCache.getClient(client.getId());
-        clientCache.refreshClient(client.getId());
-        clientCache.getClient(client.getId());
-        Mockito.verify(clientService, Mockito.times(2)).findById(client.getId());
-        Mockito.verifyNoMoreInteractions(clientService);
-    }
-
-    @Test
-    void refreshAll_ok() {
-        Mockito.when(clientService.findById(Mockito.anyLong())).thenReturn(client);
-        clientCache.refreshAll();
-        long id = client.getId();
-        clientCache.getClient(id);
-        clientCache.getClient(id + 1);
-        clientCache.refreshAll();
-        clientCache.getClient(id);
-        clientCache.getClient(id + 1);
-        Mockito.verify(clientService, Mockito.times(2)).findById(id);
-        Mockito.verify(clientService, Mockito.times(2)).findById(id + 1);
-        Mockito.verifyNoMoreInteractions(clientService);
-    }
-
-    @Test
     void getClientNameList_ok() {
         List<ClientNameObject> list = new ArrayList<>();
         list.add(new ClientNameObject(client));
         Mockito.when(clientService.getClientNameList()).thenReturn(list);
-        clientCache.refreshAll();
         List<ClientNameObject> clientNameList = clientCache.getClientNameList();
         List<ClientNameObject> clientNameList1 = clientCache.getClientNameList();
         Assertions.assertEquals(list, clientNameList);
         Assertions.assertEquals(list, clientNameList1);
         Mockito.verify(clientService, Mockito.times(1)).getClientNameList();
+        Mockito.verifyNoMoreInteractions(clientService);
+    }
+
+    @Test
+    void getSystemUser_ok() {
+        Mockito.when(clientService.getSystemUser()).thenReturn("1/1");
+        String result = clientCache.getSystemUser();
+        Mockito.when(clientService.getSystemUser()).thenReturn("1/2");
+        String result1 = clientCache.getSystemUser();
+        Assertions.assertEquals("1/1", result);
+        Assertions.assertEquals("1/1", result1);
+        Mockito.verify(clientService, Mockito.times(1)).getSystemUser();
         Mockito.verifyNoMoreInteractions(clientService);
     }
 }

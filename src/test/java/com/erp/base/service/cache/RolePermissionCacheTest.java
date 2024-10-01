@@ -1,5 +1,6 @@
 package com.erp.base.service.cache;
 
+import com.erp.base.model.dto.response.MenuResponse;
 import com.erp.base.model.dto.response.role.PermissionListResponse;
 import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.DepartmentModel;
@@ -82,21 +83,8 @@ class RolePermissionCacheTest {
     }
 
     @Test
-    void refreshRole_ok() {
-        Mockito.when(roleService.findAll()).thenReturn(roles);
-        rolePermissionCache.refreshRole();
-        rolePermissionCache.getRole();
-        rolePermissionCache.refreshRole();
-        rolePermissionCache.getRole();
-
-        Mockito.verify(roleService, Mockito.times(2)).findAll();
-        Mockito.verifyNoMoreInteractions(roleService);
-    }
-
-    @Test
     void getPermission_ok() {
         Mockito.when(permissionService.findAll()).thenReturn(permissions);
-        rolePermissionCache.refreshAll();
         List<PermissionModel> permission = rolePermissionCache.getPermission();
         List<PermissionModel> permission1 = rolePermissionCache.getPermission();
 
@@ -110,7 +98,6 @@ class RolePermissionCacheTest {
     @Test
     void getPermissionList_ok() {
         Mockito.when(permissionService.findAll()).thenReturn(permissions);
-        rolePermissionCache.refreshAll();
         List<PermissionListResponse> permissionList = rolePermissionCache.getPermissionList();
         Assertions.assertEquals(permissions.get(0), permissionList.get(1).getChildren().get(0));
         Assertions.assertEquals(permissions.get(1), permissionList.get(1).getChildren().get(1));
@@ -122,7 +109,6 @@ class RolePermissionCacheTest {
         RoleModel r = new RoleModel(1);
         r.setPermissions(new HashSet<>(permissions));
         Mockito.when(roleService.findById(Mockito.anyLong())).thenReturn(r);
-        rolePermissionCache.refreshAll();
         Set<RolePermissionDto> rolePermission = rolePermissionCache.getRolePermission(1L);
         List<RolePermissionDto> rolePermissionDtoList = new ArrayList<>(rolePermission);
         Assertions.assertEquals(new RolePermissionDto(permissions.get(1)), rolePermissionDtoList.get(0));
@@ -131,10 +117,51 @@ class RolePermissionCacheTest {
     }
 
     @Test
+    void permissionStatus_ok() {
+        Mockito.when(permissionService.checkPermissionIfDeny(Mockito.any())).thenReturn(true);
+        boolean status = rolePermissionCache.permissionStatus("/test");
+        Mockito.when(permissionService.checkPermissionIfDeny(Mockito.any())).thenReturn(false);
+        boolean status1 = rolePermissionCache.permissionStatus("/test");
+
+        Assertions.assertTrue(status);
+        Assertions.assertTrue(status1);
+
+        Mockito.verify(permissionService, Mockito.times(1)).checkPermissionIfDeny(Mockito.any());
+        Mockito.verifyNoMoreInteractions(permissionService);
+    }
+
+    @Test
     void getDepartment_ok() {
         Mockito.when(departmentService.findById(Mockito.anyLong())).thenReturn(new DepartmentModel(1L));
-        rolePermissionCache.refreshAll();
         DepartmentModel department = rolePermissionCache.getDepartment(1L);
         Assertions.assertEquals(1L, department.getId());
+    }
+
+    @Test
+    void findMenuTree_ok() {
+        Mockito.when(menuService.findAllTree()).thenReturn(new ArrayList<>());
+        List<MenuResponse> result = rolePermissionCache.findMenuTree();
+        Mockito.when(menuService.findAllTree()).thenReturn(null);
+        List<MenuResponse> result1 = rolePermissionCache.findMenuTree();
+
+        Assertions.assertEquals(new ArrayList<>(), result);
+        Assertions.assertEquals(result, result1);
+
+        Mockito.verify(menuService, Mockito.times(1)).findAllTree();
+        Mockito.verifyNoMoreInteractions(menuService);
+    }
+
+    @Test
+    void getRoleMenu_ok() {
+        Mockito.when(menuService.getRoleMenu(Mockito.anyLong())).thenReturn(new ArrayList<>());
+        List<MenuResponse> result = rolePermissionCache.getRoleMenu(1L);
+        Mockito.when(menuService.getRoleMenu(Mockito.anyLong())).thenReturn(null);
+        List<MenuResponse> result1 = rolePermissionCache.getRoleMenu(1L);
+
+        Assertions.assertEquals(new ArrayList<>(), result);
+        Assertions.assertEquals(result, result1);
+
+        Mockito.verify(menuService, Mockito.times(1)).getRoleMenu(Mockito.anyLong());
+        Mockito.verifyNoMoreInteractions(menuService);
     }
 }

@@ -170,10 +170,18 @@ class DepartmentServiceTest {
     }
 
     @Test
-    @DisplayName("部門員工清單_成功")
+    @DisplayName("部門角色關聯解除_成功")
     void remove_ok() {
         Mockito.when(departmentRepository.findById(Mockito.any())).thenReturn(Optional.of(new DepartmentModel(1L)));
         ResponseEntity<ApiResponse> response = departmentService.remove(1L);
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), response);
+    }
+
+    @Test
+    @DisplayName("總部門數量_成功")
+    void getSystemDepartment_ok() {
+        Mockito.when(departmentRepository.count()).thenReturn(3L);
+        String num = departmentService.getSystemDepartment();
+        Assertions.assertEquals("3", num);
     }
 }

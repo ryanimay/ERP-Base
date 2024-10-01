@@ -14,6 +14,7 @@ FROM (VALUES ('*', '用戶:測試接口', '/client/opValid', 'true'),
              ('CLIENT_CLIENTSTATUS', '用戶:用戶狀態', '/client/clientStatus', 'true'),
              ('CLIENT_NAMELIST', '用戶:名稱列表', '/client/nameList', 'true'),
              ('CLIENT_REFRESH', '用戶:刷新Token', '/client/refreshT', 'true'),
+             ('CLIENT_SYSTEMINFO', '用戶:系統資訊', '/client/systemInfo', 'true'),
              ('ROLE_LIST', '角色:角色列表', '/role/list', 'true'),
              ('ROLE_UPDATE', '角色:更新角色', '/role/update', 'true'),
              ('ROLE_ADD', '角色:新增角色', '/role/add', 'true'),
@@ -139,12 +140,18 @@ FROM (VALUES ('departmentA', 2),
              ('departmentC', 2)) AS source(name, default_role)
 WHERE NOT EXISTS(SELECT 1 FROM department WHERE source.name = department.name);
 
+-- 預設部門
+INSERT INTO annual_leave (current_leave, total_leave)
+SELECT current_leave, total_leave
+FROM (VALUES ('1', '5')) AS source(current_leave, total_leave)
+WHERE NOT EXISTS(SELECT 1 FROM annual_leave WHERE source.current_leave = annual_leave.current_leave);
+
 --模擬登入用戶資料
-INSERT INTO client(username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id)
-SELECT username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id
+INSERT INTO client(username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id, annual_leave_id)
+SELECT username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id, annual_leave_id
 FROM (VALUES
-          ('test', 'test', true, false, 'testMail@gmail.com', 0, CURRENT_TIMESTAMP, false, 1, 1)
-      ) AS source(username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id)
+          ('test', 'test', true, false, 'testMail@gmail.com', 0, CURRENT_TIMESTAMP, false, 1, 1, 1)
+      ) AS source(username, password, is_active, is_lock, email, create_by, create_time, must_update_password, attend_status, department_id, annual_leave_id)
 WHERE NOT EXISTS(SELECT 1 FROM client WHERE source.username = client.username);
 
 INSERT INTO client_roles(client_id, role_id)

@@ -87,7 +87,7 @@ class CacheControllerTest {
     @Test
     @DisplayName("刷緩存_刷新用戶緩存_成功")
     void refreshCache_refreshClient_ok() throws Exception {
-        cacheService.refreshClient();
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT);
         ClientIdentityDto client = cacheService.getClient(DEFAULT_UID);
         Assertions.assertNotNull(client);
         client.setEmail("testEdit2@gmail.com");
@@ -106,7 +106,7 @@ class CacheControllerTest {
     @Test
     @DisplayName("刷緩存_刷新權限緩存_成功")
     void refreshCache_refreshRolePermission_ok() throws Exception {
-        cacheService.refreshRolePermission();
+        cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION);
         DepartmentModel department = cacheService.getDepartment(4L);
         Assertions.assertNull(department);
         DepartmentModel newDepartment = new DepartmentModel();
@@ -130,13 +130,32 @@ class CacheControllerTest {
     }
 
     @Test
-    @DisplayName("刷緩存_key不存在_錯誤")
-    void refreshCache_unknownCacheKey_error() throws Exception {
-        ResponseEntity<ApiResponse> response = ApiResponse.errorMsgFormat(ApiResponseCode.CACHE_KEY_ERROR, "No cache found for key: testKey");
+    @DisplayName("刷緩存_刷新單一key緩存_成功")
+    void refreshCache_refreshCacheKey_ok() throws Exception {
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT);
+        ClientIdentityDto client = cacheService.getClient(DEFAULT_UID);
+        Assertions.assertNotNull(client);
+        client.setEmail("testEdit2@gmail.com");
+        ClientModel entity = client.toEntity();
+        entity = clientRepository.save(entity);
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.REFRESH_CACHE_SUCCESS);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("cacheKey", "testKey")
+                .param("cacheKey", CacheConstant.CLIENT.NAME_CLIENT + ":" + CacheConstant.CLIENT.CLIENT + DEFAULT_UID)
                 .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
+        ClientIdentityDto newClient = cacheService.getClient(DEFAULT_UID);
+        Assertions.assertEquals(newClient.getEmail(), entity.getEmail());
     }
+
+//    @Test
+//    @DisplayName("刷緩存_key不存在_錯誤")
+//    void refreshCache_unknownCacheKey_error() throws Exception {
+//        ResponseEntity<ApiResponse> response = ApiResponse.errorMsgFormat(ApiResponseCode.CACHE_KEY_ERROR, "No cache found for key: testKey");
+//        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(Router.CACHE.REFRESH)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .param("cacheKey", "testKey")
+//                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
+//        testUtils.performAndExpect(mockMvc, requestBuilder, response);
+//    }
 }

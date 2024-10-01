@@ -1098,6 +1098,29 @@ class ClientControllerTest {
                 .contentType(MediaType.APPLICATION_JSON);
         testUtils.performAndExpect(mockMvc, requestBuilder, response);
     }
+
+    @Test
+    @DisplayName("系統資訊_成功")
+    void systemInfo_ok() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, map);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Router.CLIENT.SYSTEM_INFO)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, testUtils.createTestToken(DEFAULT_UID));
+
+        ResultActions resultActions = testUtils.performAndExpectCodeAndMessage(mockMvc, requestBuilder, response);
+        resultActions
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.clientPerformance.pendingCount").value("0"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.clientPerformance.approvedCount").value("0"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.annualLeave.currentLeave").value("1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.annualLeave.totalLeave").value("5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.annualLeave.pendingLeave").value("0"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemDepartment").value("3"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemProject").value("0"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemUser").value("1/1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemProcure[0]").value("0"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemProcure[1]").value("0"));
+    }
     //更改role用於測試權限
     private void editRole(long roleId){
         Optional<ClientModel> byId = repository.findById(1L);

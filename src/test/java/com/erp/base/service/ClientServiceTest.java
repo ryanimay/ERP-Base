@@ -3,9 +3,7 @@ package com.erp.base.service;
 
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.*;
-import com.erp.base.model.dto.response.ApiResponse;
-import com.erp.base.model.dto.response.ClientResponseModel;
-import com.erp.base.model.dto.response.PageResponse;
+import com.erp.base.model.dto.response.*;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.mail.ResetPasswordModel;
@@ -33,9 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClientServiceTest {
@@ -47,6 +43,10 @@ class ClientServiceTest {
     private TokenService tokenService;
     @Mock
     private DepartmentService departmentService;
+    @Mock
+    private PerformanceService performanceService;
+    @Mock
+    private CacheService cacheService;
     @InjectMocks
     private ClientService clientService;
 
@@ -56,7 +56,6 @@ class ClientServiceTest {
         clientService.setResetPasswordModel(Mockito.mock(ResetPasswordModel.class));
         clientService.setMessageService(Mockito.mock(MessageService.class));
         clientService.setNotificationService(Mockito.mock(NotificationService.class));
-        clientService.setCacheService(Mockito.mock(CacheService.class));
         clientService.setAttendService(Mockito.mock(AttendService.class));
     }
 
@@ -249,5 +248,41 @@ class ClientServiceTest {
         Mockito.when(clientRepository.switchClientStatusByIdAndUsername(Mockito.anyLong(), Mockito.any(), Mockito.anyBoolean())).thenReturn(1);
         ResponseEntity<ApiResponse> response = clientService.clientStatus(new ClientStatusRequest());
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), response);
+    }
+
+    @Test
+    @DisplayName("系統參數_成功")
+    void systemInfo_ok() {
+        UserDetailImpl principal = new UserDetailImpl(new ClientIdentityDto(new ClientModel(1)), null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        AnnualLeaveDto annualLeaveDto = new AnnualLeaveDto("1", "2", 3L);
+        Mockito.when(clientRepository.getClientLeave(Mockito.anyLong())).thenReturn(annualLeaveDto);
+        PerformanceCountDto performanceCountDto = new PerformanceCountDto(1L, 2L);
+        Mockito.when(performanceService.getClientPerformance(Mockito.anyLong())).thenReturn(performanceCountDto);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("systemUser", 1);
+        map.put("systemDepartment", 2);
+        map.put("systemProject", 3);
+        map.put("systemProcure", 4);
+        Mockito.when(cacheService.getSystemInfo()).thenReturn(map);
+        ResponseEntity<ApiResponse> response = clientService.systemInfo();
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("annualLeave", annualLeaveDto);
+        responseMap.put("clientPerformance", performanceCountDto);
+        responseMap.put("systemInfo", map);
+
+        ResponseEntity<ApiResponse> expected = ApiResponse.success(ApiResponseCode.SUCCESS, responseMap);
+        Assertions.assertEquals(expected, response);
+    }
+
+    @Test
+    @DisplayName("統計用戶_成功")
+    void getSystemUser_ok() {
+        List<Object[]> objects = new ArrayList<>();
+        objects.add(new Object[]{"1", "3"});
+        Mockito.when(clientRepository.getSystemUser()).thenReturn(objects);
+        String response = clientService.getSystemUser();
+        Assertions.assertEquals("1/3", response);
     }
 }

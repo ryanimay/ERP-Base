@@ -12,6 +12,7 @@ import com.erp.base.model.entity.ProjectModel;
 import com.erp.base.repository.ProjectRepository;
 import com.erp.base.service.security.UserDetailImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,11 @@ class ProjectServiceTest {
     private ProjectRepository projectRepository;
     @InjectMocks
     private ProjectService projectService;
+
+    @BeforeEach
+    void setUp() {
+        projectService.setCacheService(Mockito.mock(CacheService.class));
+    }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -136,5 +142,13 @@ class ProjectServiceTest {
         orders.add(new OrderRequest("2", 3));
         ResponseEntity<ApiResponse> done = projectService.order(orders);
         Assertions.assertEquals(ApiResponse.success(ApiResponseCode.SUCCESS), done);
+    }
+
+    @Test
+    @DisplayName("總專案數量_成功")
+    void getSystemProject_ok() {
+        Mockito.when(projectRepository.count()).thenReturn(3L);
+        String num = projectService.getSystemProject();
+        Assertions.assertEquals("3", num);
     }
 }
