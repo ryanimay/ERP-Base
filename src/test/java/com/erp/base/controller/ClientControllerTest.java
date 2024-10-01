@@ -101,6 +101,7 @@ class ClientControllerTest {
         testModel.setUsername("test1");
         testModel.setPassword("test1");
         testModel.setEmail("testMail1@gmail.com");
+        testModel.setAnnualLeave(new AnnualLeaveModel());
     }
 
     @Test
@@ -704,7 +705,8 @@ class ClientControllerTest {
                 save.getUsername(),
                 "test" + save.getEmail(),
                 List.of(2L, 3L),
-                null
+                null,
+                "2"
         );
         ResponseEntity<ApiResponse> response = ApiResponse.success(ApiResponseCode.SUCCESS, save);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
@@ -729,6 +731,9 @@ class ClientControllerTest {
         Set<NotificationModel> notificationByUserId = repository.findNotificationByUserId(save.getId());
         Assertions.assertNotNull(notificationByUserId);
         Assertions.assertFalse(notificationByUserId.isEmpty());
+        Optional<ClientModel> byId = repository.findById(save.getId());
+        Assertions.assertTrue(byId.isPresent());
+        Assertions.assertEquals("2", byId.get().getAnnualLeave().getTotalLeave());
         repository.deleteById(save.getId());
     }
 
@@ -737,6 +742,7 @@ class ClientControllerTest {
     void updateClient_userNotFound_error() throws Exception {
         UpdateClientInfoRequest request = new UpdateClientInfoRequest(
                 9999L,
+                null,
                 null,
                 null,
                 null,
@@ -758,7 +764,8 @@ class ClientControllerTest {
                 "test",
                 "test",
                 List.of(),
-                1L
+                1L,
+                null
         );
         ResponseEntity<ApiResponse> response = ApiResponse.error(HttpStatus.BAD_REQUEST, "Email格式錯誤");
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(Router.CLIENT.UPDATE)
@@ -772,6 +779,7 @@ class ClientControllerTest {
     @DisplayName("編輯用戶_id為空_錯誤")
     void updateClient_noId_error() throws Exception {
         UpdateClientInfoRequest request = new UpdateClientInfoRequest(
+                null,
                 null,
                 null,
                 null,

@@ -57,7 +57,7 @@ public class ClientModel implements IBaseModel, Comparable<ClientModel> {
     @JoinColumn(name = "department_id")
     private DepartmentModel department;//所屬部門
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "annual_leave_id")
     private AnnualLeaveModel annualLeave;//個人年假計算
 

@@ -26,4 +26,6 @@ public class UpdateClientInfoRequest {
     private List<Long> roles;
     @Schema(description = "用戶部門")
     private Long departmentId;
+    @Schema(description = "用戶年假總數")
+    private String annualLeave;
 }

@@ -257,6 +257,10 @@ public class ClientService {
         if (request.getEmail() != null) client.setEmail(request.getEmail());
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
         if (request.getDepartmentId() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
+        if (request.getAnnualLeave() != null) {
+            AnnualLeaveModel annualLeave = client.getAnnualLeave();
+            annualLeave.setTotalLeave(request.getAnnualLeave());
+        }
         ClientModel save = clientRepository.save(client);
         cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + client.getId());
         //非本人就發送通知
