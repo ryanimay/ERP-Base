@@ -1,6 +1,7 @@
 package com.erp.base.service;
 
 import com.erp.base.model.ClientIdentity;
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.response.ApiResponse;
 import com.erp.base.model.dto.response.ClientResponseModel;
@@ -24,6 +25,12 @@ import java.util.List;
 public class AttendService {
     private AttendRepository attendRepository;
     private ClientService clientService;
+    private CacheService cacheService;
+
+    @Autowired
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
+    }
     @Autowired
     public void setClientService(@Lazy ClientService clientService){
         this.clientService = clientService;
@@ -51,6 +58,8 @@ public class AttendService {
         switch(type){
             case 1 -> {
                 count = attendRepository.signIn(user.getId(), nowDate, nowTime);
+                //有用戶打卡就刷新系統用戶數量緩存
+                cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.SYSTEM_USER);
                 status = 2;
             }
             case 2 -> {

@@ -8,6 +8,7 @@ import com.erp.base.model.entity.ClientModel;
 import com.erp.base.repository.AttendRepository;
 import com.erp.base.service.security.UserDetailImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,10 @@ class AttendServiceTest {
         clientResponse = new ClientResponseModel(clientModel);
     }
 
+    @BeforeEach
+    void setUp() {
+        attendService.setCacheService(Mockito.mock(CacheService.class));
+    }
     @Test
     @DisplayName("簽到_找不到用戶_錯誤")
     void signIn_userNotFound_error() {
