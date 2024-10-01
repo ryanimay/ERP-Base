@@ -137,4 +137,9 @@ public class ClientController {
     public ResponseEntity<ApiResponse> refresh(){
         return clientService.refreshToken();
     }
+    @PostMapping(Router.CLIENT.SYSTEM_INFO)
+    @Operation(summary = "首頁展示系統資訊")
+    public ResponseEntity<ApiResponse> systemInfo(){
+        return clientService.systemInfo();
+    }
 }

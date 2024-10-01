@@ -2,6 +2,7 @@ package com.erp.base.service;
 
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.constant.StatusConstant;
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.OrderRequest;
 import com.erp.base.model.dto.request.project.ProjectRequest;
@@ -27,6 +28,12 @@ import java.util.Optional;
 @Transactional
 public class ProjectService {
     private ProjectRepository projectRepository;
+    private CacheService cacheService;
+
+    @Autowired
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
+    }
     @Autowired
     public void setProjectRepository(ProjectRepository projectRepository){
         this.projectRepository = projectRepository;
@@ -45,6 +52,8 @@ public class ProjectService {
         ProjectModel projectModel = request.toModel();
         projectModel.setCreateBy(new ClientModel(Objects.requireNonNull(user).getId()));
         projectRepository.save(projectModel);
+        //更新系統專案參數
+        cacheService.refreshCache(CacheConstant.OTHER.OTHER + CacheConstant.SPLIT_CONSTANT + CacheConstant.OTHER.SYSTEM_PROJECT);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -82,5 +91,9 @@ public class ProjectService {
     public ResponseEntity<ApiResponse> order(List<OrderRequest> orders) {
         orders.forEach(order -> projectRepository.updateOrder(order.getId(), order.getOrder()));
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public String getSystemProject() {
+        return String.valueOf(projectRepository.count());
     }
 }

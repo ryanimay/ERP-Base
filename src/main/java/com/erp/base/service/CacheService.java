@@ -9,17 +9,16 @@ import com.erp.base.model.dto.security.RolePermissionDto;
 import com.erp.base.model.entity.DepartmentModel;
 import com.erp.base.model.entity.RoleModel;
 import com.erp.base.service.cache.ClientCache;
-import com.erp.base.service.cache.ICache;
+import com.erp.base.service.cache.OtherCache;
 import com.erp.base.service.cache.RolePermissionCache;
 import com.erp.base.service.cache.TokenBlackList;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 所有緩存相關的調用都集中在這個service
@@ -30,39 +29,27 @@ public class CacheService {
     private final ClientCache clientCache;
     private final RolePermissionCache rolePermissionCache;
     private final TokenBlackList tokenBlackList;
-    private final Map<String, ICache> cacheMap = new HashMap<>();
+    private final OtherCache otherCache;
+    private final CacheManager cacheManager;
 
     @Autowired
-    public CacheService(ClientCache clientCache, RolePermissionCache rolePermissionCache, TokenBlackList tokenBlackList) {
+    public CacheService(ClientCache clientCache, RolePermissionCache rolePermissionCache, TokenBlackList tokenBlackList, OtherCache otherCache, CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
         this.clientCache = clientCache;
         this.rolePermissionCache = rolePermissionCache;
         this.tokenBlackList = tokenBlackList;
-        cacheMap.put(CacheConstant.CLIENT.NAME_CLIENT, clientCache);
-        cacheMap.put(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION, rolePermissionCache);
-        cacheMap.put(CacheConstant.TOKEN_BLACK_LIST.TOKEN_BLACK_LIST, tokenBlackList);
+        this.otherCache = otherCache;
     }
 
     /**
      * 全刷
      */
     public void refreshAllCache() {
-        cacheMap.values().forEach(ICache::refreshAll);
-    }
-
-    public void refreshClient() {
-        clientCache.refreshAll();
-    }
-
-    public void refreshRolePermission() {
-        rolePermissionCache.refreshAll();
+        cacheManager.getCacheNames().forEach(name -> Objects.requireNonNull(cacheManager.getCache(name)).clear());
     }
 
     public ClientIdentityDto getClient(Long id) {
         return clientCache.getClient(id);
-    }
-
-    public void refreshClient(Long id) {
-        clientCache.refreshClient(id);
     }
 
     public List<ClientNameObject> getClientNameList() {
@@ -77,10 +64,6 @@ public class CacheService {
         return rolePermissionCache.getRole();
     }
 
-    public void refreshRole() {
-        rolePermissionCache.refreshRole();
-    }
-
     public List<PermissionListResponse> getPermissionMap() {
         return rolePermissionCache.getPermissionList();
     }
@@ -93,10 +76,19 @@ public class CacheService {
         return rolePermissionCache.getDepartment(departmentId);
     }
 
-    public void refreshCache(String cacheKey) {
-        ICache cache = cacheMap.get(cacheKey);
-        if (cache == null) throw new IllegalArgumentException("No cache found for key: " + cacheKey);
-        cache.refreshAll();
+    /**
+     * 傳入param格式為'cacheName.cacheKey'
+     */
+    public void refreshCache(String param) {
+        if(param.contains(CacheConstant.SPLIT_CONSTANT)){
+            String[] key = param.split(CacheConstant.SPLIT_CONSTANT);
+            if(StringUtils.isNotEmpty(key[1])){
+                Objects.requireNonNull(cacheManager.getCache(key[0])).evict(key[1]);
+                return;
+            }
+            param = key[0];
+        }
+        Objects.requireNonNull(cacheManager.getCache(param)).clear();
     }
 
     public void addTokenBlackList(String token) {
@@ -115,7 +107,12 @@ public class CacheService {
         return rolePermissionCache.getRoleMenu(id);
     }
 
-    public void refreshRoleMenu(Long id) {
-        rolePermissionCache.refreshRoleMenu(id);
+    public Map<String, Object> getSystemInfo() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("systemUser", clientCache.getSystemUser());
+        map.put("systemDepartment", otherCache.getSystemDepartment());
+        map.put("systemProject", otherCache.getSystemProject());
+        map.put("systemProcure", otherCache.getSystemProcure());
+        return map;
     }
 }

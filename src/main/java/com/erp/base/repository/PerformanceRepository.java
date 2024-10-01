@@ -1,5 +1,6 @@
 package com.erp.base.repository;
 
+import com.erp.base.model.dto.response.PerformanceCountDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.PerformanceModel;
 import org.springframework.data.domain.Page;
@@ -27,4 +28,9 @@ public interface PerformanceRepository extends JpaRepository<PerformanceModel, L
             "AND FUNCTION('YEAR', p.createTime) = FUNCTION('YEAR', CURRENT_DATE) " +
             "GROUP BY p.user")
     Set<Object[]> calculateByCreateYear(Long userId, int status);
+    @Query("SELECT new com.erp.base.model.dto.response.PerformanceCountDto(" +
+            "SUM(CASE WHEN p.status = 1 THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.status = 2 THEN 1 ELSE 0 END)) " +
+            "FROM PerformanceModel p WHERE p.user.id = :uid")
+    PerformanceCountDto getClientPerformance(long uid);
 }

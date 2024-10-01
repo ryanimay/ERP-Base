@@ -1,5 +1,6 @@
 package com.erp.base.service;
 
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.permission.BanRequest;
 import com.erp.base.model.dto.request.permission.SecurityConfirmRequest;
@@ -55,7 +56,7 @@ public class PermissionService {
 
     public ResponseEntity<ApiResponse> ban(BanRequest request) {
         permissionRepository.updateStatusById(request.getId(), request.isStatus());
-        cacheService.refreshRolePermission();
+        cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 

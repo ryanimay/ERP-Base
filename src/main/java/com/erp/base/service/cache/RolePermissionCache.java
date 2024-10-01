@@ -15,7 +15,6 @@ import com.erp.base.tool.LogFactory;
 import com.erp.base.tool.ObjectTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @CacheConfig(cacheNames = CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION)
-public class RolePermissionCache implements ICache {
+public class RolePermissionCache {
     LogFactory LOG = new LogFactory(RolePermissionCache.class);
     private RoleService roleService;
     private PermissionService permissionService;
@@ -55,24 +54,20 @@ public class RolePermissionCache implements ICache {
         this.roleService = roleService;
     }
 
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROLES)
+    @Cacheable(key = "'" +CacheConstant.ROLE_PERMISSION.ROLES + "'")
     public Map<Long, RoleModel> getRole() {
         List<RoleModel> allRoles = roleService.findAll();
         return allRoles.stream().collect(Collectors.toMap(RoleModel::getId, role -> role));
     }
 
-    @CacheEvict(key = CacheConstant.ROLE_PERMISSION.ROLES)
-    public void refreshRole() {
-    }
-
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSIONS)
+    @Cacheable(key = "'" +CacheConstant.ROLE_PERMISSION.PERMISSIONS + "'")
     public List<PermissionModel> getPermission() {
         List<PermissionModel> allPermission = permissionService.findAll();
         LOG.info("all permission: {0}", ObjectTool.toJson(allPermission));
         return allPermission;
     }
 
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSIONS_MAP)
+    @Cacheable(key = "'" + CacheConstant.ROLE_PERMISSION.PERMISSIONS_MAP + "'")
     public List<PermissionListResponse> getPermissionList() {
         List<PermissionModel> allPermission = getPermission();
         Map<String, List<PermissionModel>> map = new HashMap<>();
@@ -92,38 +87,29 @@ public class RolePermissionCache implements ICache {
     }
 
     //角色擁有權限
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROLE_PERMISSION + " + #id")
+    @Cacheable(key = "'" + CacheConstant.ROLE_PERMISSION.ROLE_PERMISSION + "'" + " + #id")
     public Set<RolePermissionDto> getRolePermission(long id) {
         RoleModel role = roleService.findById(id);
         return role == null ? null : role.getRolePermissionsDto();
     }
 
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.PERMISSION_STATUS + " + #path")
+    @Cacheable(key = "'" + CacheConstant.ROLE_PERMISSION.PERMISSION_STATUS + "'" + " + #path")
     public Boolean permissionStatus(String path) {
         return permissionService.checkPermissionIfDeny(path);
     }
 
-    @CacheEvict(allEntries = true)
-    public void refreshAll() {
-        LOG.info("refresh all rolePermission cache");
-    }
-
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.DEPARTMENT + " + #id")
+    @Cacheable(key = "'" + CacheConstant.ROLE_PERMISSION.DEPARTMENT + "'" + " + #id")
     public DepartmentModel getDepartment(Long id) {
         return departmentService.findById(id);
     }
 
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.MENU_TREE)
+    @Cacheable(key = "'" + CacheConstant.ROLE_PERMISSION.MENU_TREE + "'")
     public List<MenuResponse> findMenuTree() {
         return menuService.findAllTree();
     }
 
-    @Cacheable(key = CacheConstant.ROLE_PERMISSION.ROLE_MENU + " + #id")
+    @Cacheable(key = "'" + CacheConstant.ROLE_PERMISSION.ROLE_MENU + "'" + " + #id")
     public List<MenuResponse> getRoleMenu(Long id) {
         return menuService.getRoleMenu(id);
-    }
-
-    @CacheEvict(key = CacheConstant.ROLE_PERMISSION.ROLE_MENU + " + #id")
-    public void refreshRoleMenu(Long id) {
     }
 }

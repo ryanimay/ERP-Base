@@ -1,5 +1,6 @@
 package com.erp.base.repository;
 
+import com.erp.base.model.dto.response.AnnualLeaveDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.model.entity.NotificationModel;
 import org.springframework.data.domain.Page;
@@ -58,4 +59,14 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
     Page<ClientModel> findById(Long id, PageRequest page);
     @Query("SELECT n FROM NotificationModel n JOIN n.clients c WHERE c.id = :id")
     Set<NotificationModel> findNotificationByUserId(Long id);
+    @Query("SELECT new com.erp.base.model.dto.response.AnnualLeaveDto(" +
+            "COALESCE(c.annualLeave.currentLeave, 0), " +
+            "COALESCE(c.annualLeave.totalLeave, 0), " +
+            "( " +
+            "   SELECT COUNT(l) FROM LeaveModel l WHERE c.id = l.user.id AND l.status = 1" +
+            ")) " +
+            " FROM ClientModel c WHERE c.id = :id ")
+    AnnualLeaveDto getClientLeave(long id);
+    @Query("SELECT COALESCE(SUM(CASE WHEN c.attendStatus = 1 THEN 1 ELSE 0 END), 0) AS sum, COUNT(c) AS num FROM ClientModel c WHERE c.isLock <> true AND c.isActive <> false")
+    List<Object[]> getSystemUser();
 }

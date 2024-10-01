@@ -5,11 +5,9 @@ import com.erp.base.model.dto.response.ClientNameObject;
 import com.erp.base.model.dto.security.ClientIdentityDto;
 import com.erp.base.model.entity.ClientModel;
 import com.erp.base.service.ClientService;
-import com.erp.base.tool.LogFactory;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -21,8 +19,7 @@ import java.util.List;
  */
 @Service
 @CacheConfig(cacheNames = CacheConstant.CLIENT.NAME_CLIENT)
-public class ClientCache implements ICache{
-    LogFactory LOG = new LogFactory(ClientCache.class);
+public class ClientCache{
     private ClientService clientService;
 
     @Autowired
@@ -31,7 +28,7 @@ public class ClientCache implements ICache{
     }
 
     //有關使用者資訊，密碼有經過springSecurity加密
-    @Cacheable(key = CacheConstant.CLIENT.CLIENT + " + #id")
+    @Cacheable(key = "'" +CacheConstant.CLIENT.CLIENT + "'" + " + #id")
     public ClientIdentityDto getClient(Long id) {
         ClientModel model = clientService.findById(id);
         if(model == null) return null;
@@ -39,17 +36,14 @@ public class ClientCache implements ICache{
         return new ClientIdentityDto(model);
     }
 
-    @CacheEvict(key = CacheConstant.CLIENT.CLIENT + " + #id")
-    public void refreshClient(Long id) {
-    }
-
-    @CacheEvict(allEntries = true)
-    public void refreshAll() {
-        LOG.info("refresh all client cache");
-    }
-
-    @Cacheable(key = CacheConstant.CLIENT.CLIENT_NAME_LIST)
+    @Cacheable(key = "'" +CacheConstant.CLIENT.CLIENT_NAME_LIST+ "'")
     public List<ClientNameObject> getClientNameList() {
         return clientService.getClientNameList();
+    }
+
+    //系統用戶數量
+    @Cacheable(key = "'" +CacheConstant.CLIENT.SYSTEM_USER+ "'")
+    public String getSystemUser() {
+        return clientService.getSystemUser();
     }
 }

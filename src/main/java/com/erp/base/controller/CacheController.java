@@ -37,7 +37,7 @@ public class CacheController {
             } else {
                 cacheService.refreshAllCache();
             }
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ArrayIndexOutOfBoundsException | NullPointerException e){
             response = ApiResponse.errorMsgFormat(ApiResponseCode.CACHE_KEY_ERROR, e.getMessage());
         }
         return response;

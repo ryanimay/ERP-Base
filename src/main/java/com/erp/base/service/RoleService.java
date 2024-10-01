@@ -1,5 +1,6 @@
 package com.erp.base.service;
 
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.IdRequest;
 import com.erp.base.model.dto.request.role.RoleMenuRequest;
@@ -72,7 +73,7 @@ public class RoleService {
         if (model != null) {
             model.setRoleName(name);
             roleRepository.save(model);
-            cacheService.refreshRole();
+            cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION + CacheConstant.SPLIT_CONSTANT + CacheConstant.ROLE_PERMISSION.ROLES);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
 
@@ -84,7 +85,7 @@ public class RoleService {
         ResponseEntity<ApiResponse> response = checkRoleName(name, null);
         if (response != null) return response;
         RoleModel model = roleRepository.save(new RoleModel(name));
-        cacheService.refreshRole();
+        cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION + CacheConstant.SPLIT_CONSTANT + CacheConstant.ROLE_PERMISSION.ROLES);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new RoleNameResponse(model));
     }
 
@@ -102,7 +103,7 @@ public class RoleService {
         //確定角色沒人使用，先把部門角色關聯解除
         departmentService.removeRole(id);
         roleRepository.deleteById(id);
-        cacheService.refreshRole();
+        cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION + CacheConstant.SPLIT_CONSTANT + CacheConstant.ROLE_PERMISSION.ROLES);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -118,7 +119,7 @@ public class RoleService {
         Set<PermissionModel> permissionSet = request.getPermissionSet();
         roleModel.setPermissions(permissionSet);
         roleRepository.save(roleModel);
-        cacheService.refreshRolePermission();
+        cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -129,7 +130,7 @@ public class RoleService {
         Set<MenuModel> set = request.getMenuSet();
         roleModel.setMenus(set);
         roleRepository.save(roleModel);
-        cacheService.refreshRoleMenu(id);
+        cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION + CacheConstant.SPLIT_CONSTANT + CacheConstant.ROLE_PERMISSION.ROLE_MENU +id);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 }

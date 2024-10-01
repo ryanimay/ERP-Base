@@ -5,6 +5,7 @@ import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.MessageModel;
 import com.erp.base.model.constant.NotificationEnum;
 import com.erp.base.model.constant.RoleConstant;
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.client.*;
 import com.erp.base.model.dto.response.ApiResponse;
@@ -23,6 +24,7 @@ import com.erp.base.tool.DateTool;
 import com.erp.base.tool.EncodeTool;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -49,7 +51,12 @@ public class ClientService {
     private NotificationService notificationService;
     private DepartmentService departmentService;
     private AttendService attendService;
+    private PerformanceService performanceService;
     private static final String RESET_PREFIX = "##";
+    @Autowired
+    public void setPerformanceService(@Lazy PerformanceService performanceService){
+        this.performanceService = performanceService;
+    }
 
     @Autowired
     public void setAttendService(AttendService attendService) {
@@ -113,6 +120,8 @@ public class ClientService {
         clientRepository.save(entity);
         //新增空的簽到表
         addNewAttend(entity.getId());
+        //刷新系統用戶緩存
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.SYSTEM_USER);
         return ApiResponse.success(ApiResponseCode.REGISTER_SUCCESS);
     }
 
@@ -132,7 +141,7 @@ public class ClientService {
     private void updateLastLoginTime(ClientModel user) {
         user.setLastLoginTime(DateTool.now());
         clientRepository.save(user);
-        cacheService.refreshClient(user.getId());
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + user.getId());
     }
 
     public PageResponse<ClientResponseModel> list(ClientListRequest param) {
@@ -171,7 +180,7 @@ public class ClientService {
             Context context = mailService.createContext(username, password);
             mailService.sendMail(resetRequest.getEmail(), resetPasswordModel, context, null);
             ClientModel newClient = findByUsername(username);
-            cacheService.refreshClient(newClient.getId());
+            cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + newClient.getId());
             return ApiResponse.success(ApiResponseCode.RESET_PASSWORD_SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.RESET_PASSWORD_FAILED);
@@ -187,7 +196,7 @@ public class ClientService {
         int result = updatePassword(passwordEncode(request.getPassword()), false, username, client.getEmail(), client.getId());
         //如果不為1代表更改有問題，拋出並回滾
         if (result != 1) throw new IncorrectResultSizeDataAccessException(1, result);
-        cacheService.refreshClient(client.getId());
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + client.getId());
         return ApiResponse.success(ApiResponseCode.UPDATE_PASSWORD_SUCCESS);
     }
 
@@ -251,7 +260,7 @@ public class ClientService {
         if (request.getRoles() != null) client.setRoles(getRoles(request.getRoles()));
         if (request.getDepartmentId() != null) departmentService.setDepartmentDefaultRole(client, request.getDepartmentId());
         ClientModel save = clientRepository.save(client);
-        cacheService.refreshClient(client.getId());
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + client.getId());
         //非本人就發送通知
         checkUserOrSendMessage(client);
         return ApiResponse.success(ApiResponseCode.SUCCESS, new ClientResponseModel(save));
@@ -278,7 +287,9 @@ public class ClientService {
         long uid = request.getClientId();
         int count = clientRepository.lockClientByIdAndUsername(uid, username, request.isStatus());
         if (count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        cacheService.refreshClient(uid);
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + uid);
+        //刷新系統用戶緩存
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.SYSTEM_USER);
         //如果是更新成鎖定，就觸發用戶
         if (request.isStatus()) callClientLogout(uid);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -289,7 +300,9 @@ public class ClientService {
         long uid = request.getClientId();
         int count = clientRepository.switchClientStatusByIdAndUsername(uid, username, request.isStatus());
         if (count != 1) throw new IncorrectResultSizeDataAccessException(1, count);
-        cacheService.refreshClient(uid);
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + uid);
+        //刷新系統用戶緩存
+        cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.SYSTEM_USER);
         //如果是更新成停用，就觸發用戶
         if (!request.isStatus()) callClientLogout(uid);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
@@ -330,7 +343,7 @@ public class ClientService {
 
     public ClientResponseModel updateClientAttendStatus(ClientIdentityDto model, int status) {
         int resultCount = clientRepository.updateClientAttendStatus(model.getId(), status);
-        if (resultCount == 1) cacheService.refreshClient(model.getId());
+        if (resultCount == 1) cacheService.refreshCache(CacheConstant.CLIENT.NAME_CLIENT + CacheConstant.SPLIT_CONSTANT + CacheConstant.CLIENT.CLIENT + model.getId());
         ClientIdentityDto clientDto = cacheService.getClient(model.getId());
         return new ClientResponseModel(clientDto);
     }
@@ -360,5 +373,22 @@ public class ClientService {
         String accessToken = tokenService.createToken(TokenService.ACCESS_TOKEN, user.getId(), TokenService.ACCESS_TOKEN_EXPIRE_TIME);
         httpHeaders.add(HttpHeaders.AUTHORIZATION, TokenService.TOKEN_PREFIX + accessToken);
         return ApiResponse.success(httpHeaders, null);
+    }
+
+    public ResponseEntity<ApiResponse> systemInfo() {
+        ClientIdentityDto user = ClientIdentity.getUser();
+        Map<String, Object> responseMap = new HashMap<>();
+        assert user != null;
+        long uid = user.getId();
+        responseMap.put("annualLeave", clientRepository.getClientLeave(uid));
+        responseMap.put("clientPerformance", performanceService.getClientPerformance(uid));
+        responseMap.put("systemInfo", cacheService.getSystemInfo());
+        return ApiResponse.success(ApiResponseCode.SUCCESS, responseMap);
+    }
+
+    //統計 已打卡/總用戶數
+    public String getSystemUser() {
+        Object[] systemUser = clientRepository.getSystemUser().get(0);
+        return systemUser[0] + "/" + systemUser[1];
     }
 }

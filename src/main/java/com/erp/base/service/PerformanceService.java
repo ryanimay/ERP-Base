@@ -160,4 +160,8 @@ public class PerformanceService {
         });
         return ApiResponse.success(ApiResponseCode.SUCCESS, list);
     }
+
+    public PerformanceCountDto getClientPerformance(long uid) {
+        return performanceRepository.getClientPerformance(uid);
+    }
 }

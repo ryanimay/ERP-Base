@@ -5,13 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
 @CacheConfig(cacheNames = CacheConstant.TOKEN_BLACK_LIST.TOKEN_BLACK_LIST)
-public class TokenBlackList implements ICache{
+public class TokenBlackList {
 
     private Cache cache;
     @Autowired
@@ -26,11 +25,5 @@ public class TokenBlackList implements ICache{
 
     public boolean exists(String token){
         return cache.get(token) != null;
-    }
-
-    @Override
-    @CacheEvict(allEntries = true)
-    public void refreshAll() {
-
     }
 }

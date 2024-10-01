@@ -1,5 +1,6 @@
 package com.erp.base.service;
 
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.dto.request.department.DepartmentEditRequest;
 import com.erp.base.model.dto.request.department.DepartmentRequest;
@@ -85,7 +86,9 @@ public class DepartmentService {
 
     public ResponseEntity<ApiResponse> edit(DepartmentEditRequest request) {
         departmentRepository.save(request.toModel());
-        cacheService.refreshRolePermission();
+        cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION);
+        //刷新系統部門參數
+        cacheService.refreshCache(CacheConstant.OTHER.OTHER + CacheConstant.SPLIT_CONSTANT + CacheConstant.OTHER.SYSTEM_DEPARTMENT);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -93,7 +96,9 @@ public class DepartmentService {
         DepartmentModel model = findById(id);
         if (model != null && (model.getClientModelList() == null || model.getClientModelList().isEmpty())) {
             departmentRepository.deleteById(id);
-            cacheService.refreshRolePermission();
+            cacheService.refreshCache(CacheConstant.ROLE_PERMISSION.NAME_ROLE_PERMISSION);
+            //刷新系統部門參數
+            cacheService.refreshCache(CacheConstant.OTHER.OTHER + CacheConstant.SPLIT_CONSTANT + CacheConstant.OTHER.SYSTEM_DEPARTMENT);
             return ApiResponse.success(ApiResponseCode.SUCCESS);
         }
         return ApiResponse.error(ApiResponseCode.DEPARTMENT_IN_USE);
@@ -101,5 +106,9 @@ public class DepartmentService {
 
     public void removeRole(Long id) {
         departmentRepository.removeRole(id);
+    }
+
+    public String getSystemDepartment() {
+        return String.valueOf(departmentRepository.count());
     }
 }

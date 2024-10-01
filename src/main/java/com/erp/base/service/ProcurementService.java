@@ -1,5 +1,6 @@
 package com.erp.base.service;
 
+import com.erp.base.model.constant.cache.CacheConstant;
 import com.erp.base.model.constant.response.ApiResponseCode;
 import com.erp.base.model.ClientIdentity;
 import com.erp.base.model.dto.request.procurement.ProcurementRequest;
@@ -22,6 +23,12 @@ import java.util.Optional;
 @Transactional
 public class ProcurementService {
     private ProcurementRepository procurementRepository;
+    private CacheService cacheService;
+
+    @Autowired
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
+    }
 
     @Autowired
     public void setProcurementRepository(ProcurementRepository procurementRepository) {
@@ -37,6 +44,8 @@ public class ProcurementService {
         ProcurementModel procurementModel = request.toModel();
         procurementModel.setCreateBy(new ClientModel(Objects.requireNonNull(ClientIdentity.getUser()).getId()));
         procurementRepository.save(procurementModel);
+        //更新系統專案參數
+        cacheService.refreshCache(CacheConstant.OTHER.OTHER + CacheConstant.SPLIT_CONSTANT + CacheConstant.OTHER.SYSTEM_PROCURE);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
     }
 
@@ -58,6 +67,12 @@ public class ProcurementService {
 
     public ResponseEntity<ApiResponse> delete(Long id) {
         procurementRepository.deleteById(id);
+        //更新系統專案參數
+        cacheService.refreshCache(CacheConstant.OTHER.OTHER + CacheConstant.SPLIT_CONSTANT + CacheConstant.OTHER.SYSTEM_PROCURE);
         return ApiResponse.success(ApiResponseCode.SUCCESS);
+    }
+
+    public Object[] getSystemProcure() {
+        return procurementRepository.getSystemProcure().get(0);
     }
 }

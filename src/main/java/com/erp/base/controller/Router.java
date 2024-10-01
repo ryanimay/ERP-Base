@@ -22,6 +22,7 @@ public interface Router {
         String NAME_LIST = CLIENT + "/nameList";
         String LOGOUT = CLIENT + "/logout";
         String REFRESHT = CLIENT + "/refreshT";
+        String SYSTEM_INFO = CLIENT + "/systemInfo";
     }
 
     interface ROLE{
