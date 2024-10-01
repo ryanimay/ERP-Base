@@ -1127,7 +1127,7 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.annualLeave.pendingLeave").value("0"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemDepartment").value("3"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemProject").value("0"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemUser").value("1/1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemUser").value("0/1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemProcure[0]").value("0"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.systemInfo.systemProcure[1]").value("0"));
     }

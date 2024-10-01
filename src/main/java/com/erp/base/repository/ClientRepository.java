@@ -67,6 +67,6 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long> {
             ")) " +
             " FROM ClientModel c WHERE c.id = :id ")
     AnnualLeaveDto getClientLeave(long id);
-    @Query("SELECT COALESCE(SUM(CASE WHEN c.attendStatus = 1 THEN 1 ELSE 0 END), 0) AS sum, COUNT(c) AS num FROM ClientModel c WHERE c.isLock <> true AND c.isActive <> false")
+    @Query("SELECT COALESCE(SUM(CASE WHEN c.attendStatus = 2 THEN 1 ELSE 0 END), 0) AS sum, COUNT(c) AS num FROM ClientModel c WHERE c.isLock <> true AND c.isActive <> false")
     List<Object[]> getSystemUser();
 }
