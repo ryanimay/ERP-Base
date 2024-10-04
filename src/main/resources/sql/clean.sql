@@ -30,3 +30,4 @@
   drop table salary
   drop table tracking_job
   drop table log
+  drop table annual_leave
