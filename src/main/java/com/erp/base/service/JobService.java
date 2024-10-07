@@ -39,6 +39,10 @@ public class JobService {
         ClientModel clientModel = client.toEntity();
         List<JobModel> all = jobRepository.findByUserOrTracking(clientModel);
         Map<String, List<JobResponse>> map = new HashMap<>();
+        //固定放基本的
+        map.put(StatusConstant.get(1), new ArrayList<>());
+        map.put(StatusConstant.get(2), new ArrayList<>());
+        map.put(StatusConstant.get(3), new ArrayList<>());
         for (JobModel jobModel : all) {
             String key = jobModel.getUser().equals(clientModel) ? StatusConstant.get(jobModel.getStatus()) : "tracking";
             map.computeIfAbsent(key, k -> new ArrayList<>()).add(new JobResponse(jobModel));
