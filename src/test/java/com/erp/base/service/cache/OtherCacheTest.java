@@ -1,5 +1,6 @@
 package com.erp.base.service.cache;
 
+import com.erp.base.service.ClientService;
 import com.erp.base.service.DepartmentService;
 import com.erp.base.service.ProcurementService;
 import com.erp.base.service.ProjectService;
@@ -27,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 class OtherCacheTest {
     @MockBean
     private DepartmentService departmentService;
+    @MockBean
+    private ClientService clientService;
     @MockBean
     private ProjectService projectService;
     @MockBean

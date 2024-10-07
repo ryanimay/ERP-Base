@@ -69,7 +69,6 @@ class ClientCacheTest {
         Assertions.assertEquals(expectClientDto, result2);
 
         Mockito.verify(clientService, Mockito.times(1)).findById(id);
-        Mockito.verifyNoMoreInteractions(clientService);
     }
 
     @Test

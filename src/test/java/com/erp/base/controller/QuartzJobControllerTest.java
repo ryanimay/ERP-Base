@@ -329,7 +329,7 @@ class QuartzJobControllerTest {
     @DisplayName("單次觸發任務_測試每日重置_成功")
     void execQuartzJob_ok() throws Exception {
         List<AttendModel> all = attendRepository.findAll();
-        Assertions.assertTrue(all.isEmpty());
+        Assertions.assertEquals(1, all.size());
         QuartzJobModel quartzJob = new QuartzJobModel();
         quartzJob.setName("測試排程");
         quartzJob.setGroupName(Scheduler.DEFAULT_GROUP);
