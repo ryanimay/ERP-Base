@@ -1,15 +1,19 @@
 # 練習用的專案
 ~~先簡單設個目標，不然我怕會越研究越深最後什麼都做不出來XD~~  
 主要是想練習SpringSecurity+JWT做用戶登入和權限驗證  
+Java17  
+SpringBoot3.1.5  
+SpringSecurity  
 權限設計用RBAC(Role-Base-Access-Control)的方式  
-i18n  
-Websocket做即時系統通知，沒有區分服務所以沒用kafka  
+i18n(只做中英)  
+Websocket做即時系統通知 
 Quartz做排程(月結薪資，每日打卡紀錄之類的)  
 jxls做報表  
 javaMail  
 Redis緩存  
 前端Vus.js  
 資料庫SpringDataJpa + MSSQL  
+Mockito+Junit5  
 ~~順便練習寫TDD和測試(測試最後再補，花太多時間了)  
 剩下有想到再補~~
 
@@ -62,12 +66,10 @@ i18n僅保留中/英
 (如果有勾選rememberMe才會返回refreshToken，否則就是單依靠accessToken做後續操作)  
 並且因為SecurityContext只保留再請求的生命週期間  
 之後登入成功後的每個請求流程都是:  
-Filter先驗證AccessToken是否過期，  
-如果過期就再驗證RefreshToken是否過期和是否在黑名單內  
-(如果登入沒有勾選rememberMe，這邊就會直接拋出要求重登)  
-如果通過驗證則把AccessToken和RefreshToken都刷新，並且把舊Token加入Redis黑名單  
-如果RefreshToken也過期，就直接拋出，返回Unauthorized  
-驗證過程中只要是過期以外的錯誤都是直接返回403  
+Filter驗證AccessToken是否過期是否有效，  
+RefreshToken用於刷新AccessToken，
+刷新時機由前端控制，前端驗證AccessToken過期會發起刷新請求
+後單驗證過程中只要是過期以外的錯誤都是直接返回403  
 並且只要沒有拋出(JWT驗證通過)  
 就必須透過JWT內儲存的用戶資訊產出Authentication以利該請求進行後續權限驗證  
 (目前是只存用戶名稱，想秉持用戶驗證和權限驗證的獨立性但不確定優劣)  
@@ -98,10 +100,27 @@ JWT做非對稱加密的作用應該是比較偏向多服務間的後端溝通�
 除此之外還需要調適就是針對每台機器差異性?主要開發都是在公司電腦，測試也都完全沒問題，但切回家用電腦測試程式碼會有偶發性的加載失敗錯誤，排查不出結果先擱置
   
 然後整體測試大概是  
-IntegrationTest: 150支  
+IntegrationTest: 180支  
 UnitTest: 200支  
 大致考量所有可能性  
 Service類覆蓋率大概都在90%，其餘不管  
 我也不知道這重不重要就做個紀錄
 
 ※最後針對IntegrationTest有個問題就是，最好的測試其實是每個測試都完全隔離，但因為IntegrationTest需要完整加載spring上下文以及配置，變成跑100支測試就需要完整重複加載100次?很疑惑，目前就是折衷一個Controller類只重複加載一次而已(@SpringBootTest)
+
+***
+## 2024.10.8
+專案整體完成
+後端相對前端開發問題少很多，就這邊留個紀錄  
+1. 真的要養成筆記習慣，邊寫邊做，之前都太輕視這部分，遇到問題當下解決就過了，但過一陣子都很難再回憶起遇到過什麼坑
+2. 設定檔部分後續有用jasypt做掉，一開始就應該要注意Git不要上到敏感資訊
+3. 目前專案啟動流程:  
+   1. 資料庫配置 
+   2. redis配置,啟動  
+   3. 後端專案因為有配置jasypt,啟動要下指令帶入密鑰    
+      手動運行test.java.com.erp.base.tool.JasyptEncodeTest, 填寫資料庫設定和mail設定  
+      產出後寫進properties對應屬性ENC(密文)  
+      <font style='color:red;'>mvn package</font>打包,  
+      <font style='color:red;'>java "-Djasypt.encryptor.password=密鑰" -jar ./target/erp-0.0.1.jar</font>啟動包(powershell)
+   4. 前端專案啟動
+4. 後續應該就是研究專案部屬
