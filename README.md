@@ -1,19 +1,18 @@
 # 練習用的專案
 ~~先簡單設個目標，不然我怕會越研究越深最後什麼都做不出來XD~~  
 主要是想練習SpringSecurity+JWT做用戶登入和權限驗證  
-Java17  
-SpringBoot3.1.5  
-SpringSecurity  
-權限設計用RBAC(Role-Base-Access-Control)的方式  
-i18n(只做中英)  
-Websocket做即時系統通知 
-Quartz做排程(月結薪資，每日打卡紀錄之類的)  
-jxls做報表  
-javaMail  
-Redis緩存  
-前端Vus.js  
-資料庫SpringDataJpa + MSSQL  
-Mockito+Junit5  
+Java 17  
+Spring Boot 3.1.5  
+Spring Data JPA + Microsoft SQL Server (MSSQL)  
+Spring Security + JWT (RBAC實現權限控制)  
+國際化(i18n) 只做繁中/英文  
+Websocket 做即時系統通知  
+Quartz 做任務調度(如月結薪資，刷新每日打卡紀錄)  
+jxls 生成Excel报表  
+javaMail + Thymeleaf  
+Redis 用於緩存  
+Swagger 產出API文件  
+Mockito + Junit5 用於單元測試、集成測試  
 ~~順便練習寫TDD和測試(測試最後再補，花太多時間了)  
 剩下有想到再補~~
 
@@ -68,12 +67,12 @@ i18n僅保留中/英
 之後登入成功後的每個請求流程都是:  
 Filter驗證AccessToken是否過期是否有效，  
 RefreshToken用於刷新AccessToken，
-刷新時機由前端控制，前端驗證AccessToken過期會發起刷新請求
+刷新時機由前端控制，前端驗證AccessToken過期會發起刷新請求  
 後單驗證過程中只要是過期以外的錯誤都是直接返回403  
 並且只要沒有拋出(JWT驗證通過)  
 就必須透過JWT內儲存的用戶資訊產出Authentication以利該請求進行後續權限驗證  
 (目前是只存用戶名稱，想秉持用戶驗證和權限驗證的獨立性但不確定優劣)  
-然後因為是每次用戶請求都會產生新的Authentication，所以權限是即時更新的
+然後因為是每次用戶請求都會產生新的Authentication(不想把權限放進JWT)，所以權限是即時更新的
 但缺點就是每次請求都要查詢當下權限，目前是只想到利用緩存優化  
 另外  
 ~~這邊JWT設計是用非對稱式加密  
@@ -96,8 +95,8 @@ JWT做非對稱加密的作用應該是比較偏向多服務間的後端溝通�
   
 然後為了驗證配置類的運作正常(Ex:SpringSecurity的權限我是寫在DB，需要確保專案啟動後動態加載的正常運作)，這我實在是想不到怎麼用mockTest，所以就變成寫IntegrationTest  
 又為了維持離線測試隔離外部，這邊分別是用<font color="#f00">H2取代DB</font>以及<font color="#f00">embedded-redis取代的redis</font>  
-目前缺陷就是雖然ORM不是寫SQL但DB預設資料的部分還是得靠SQL INSERT，H2還需要另外改一版，不能混用原先的SQL  
-除此之外還需要調適就是針對每台機器差異性?主要開發都是在公司電腦，測試也都完全沒問題，但切回家用電腦測試程式碼會有偶發性的加載失敗錯誤，排查不出結果先擱置
+目前缺陷就是雖然ORM不是寫SQL但DB預設資料的部分還是得靠SQL INSERT，H2還需要另外改一版，不能混用原先的SQL(後來才想到塞初始化資料可以用CommandLineRunner)  
+~~除此之外還需要調適就是針對每台機器差異性?主要開發都是在公司電腦，測試也都完全沒問題，但切回家用電腦測試程式碼會有偶發性的加載失敗錯誤，排查不出結果先擱置~~(後續排查發現是運行測試embedded-redis預留空間內存不足，所以時好時壞每台電腦結果也不同，在TestRedisConfiguration加上針對redis配置maxheap就解決了)
   
 然後整體測試大概是  
 IntegrationTest: 180支  
@@ -112,15 +111,26 @@ Service類覆蓋率大概都在90%，其餘不管
 ## 2024.10.8
 專案整體完成
 後端相對前端開發問題少很多，就這邊留個紀錄  
-1. 真的要養成筆記習慣，邊寫邊做，之前都太輕視這部分，遇到問題當下解決就過了，但過一陣子都很難再回憶起遇到過什麼坑
-2. 設定檔部分後續有用jasypt做掉，一開始就應該要注意Git不要上到敏感資訊
-3. 目前專案啟動流程:  
+1. 真的要養成筆記習慣，邊寫邊做，之前都太輕視這部分，很多時候遇到問題當下解決就過了，但過一陣子都很難再回憶起遇到過什麼坑
+2. SpringSecurity結合JWT的部分，一開始是在網路上找範例嘗試，結果找到的範例是驗證邏輯自定義處理掉，後續看sourceCode發現其實某些驗證是security默認會做，不需要又另外複寫，但就沒繼續往下改了維持目前這樣
+3. 關於用戶驗證和鑑權拆分，這部分好像找不到一個標準說法，到底是要  
+   1. 產出JWT順便把權限存入，後續都只要解JWT鑑權  
+   2. JWT單純控制只用於辨識用戶，再自己檢查權限  
+   
+   前者比較沒有資源浪費問題但是權限更新不及時，只能透過重複登入拿新的Token來刷新權限，也不確定存權限有沒有安全疑慮，後者則是實時刷新權限，但資源浪費每次動作都要檢查權限?Token單純就是辨識用戶，要縮減浪費目前是只透過緩存，不確定怎麼做比較好
+4. Websocket使用，這邊是用在即時的系統通知，一開始想法是希望當有重要的操作或更動可以即時顯示通知，但後續發現其實只會有單向，用SSE好像就足夠了?  
+   而且也會有權限疑問，不可能隨便就能讓人連線，但要在握手階段檢查權限除了直接用URL帶參數的方式帶入Token，試不出其他方式，測試放header在握手階段也拿不到，先連上再進行權限驗證也很奇怪，不確定是不是有其他方式    
+   然後目前用戶封鎖或停用的設計也是透過Websocket往client端丟提示觸發前端踢出用戶，感覺怪怪的但暫時想不到其他解法，其他解法(session?)也只針對後端，前端沒辦法做到主動踢出
+5. swagger太晚才嵌入，後續其實有點懶得去改了，所以文檔產出其實不是很完整，測試功能也沒有調通，想說API可用性依靠自動測試就可以了
+6. 設定檔脫敏部分後續有用jasypt做掉，一開始就應該要注意Git不要上到敏感資訊，不然後續還要用Git filter-repo處理commit紀錄很麻煩
+7. 目前專案啟動流程:  
    1. 資料庫配置 
    2. redis配置,啟動  
    3. 後端專案因為有配置jasypt,啟動要下指令帶入密鑰    
-      手動運行test.java.com.erp.base.tool.JasyptEncodeTest, 填寫資料庫設定和mail設定  
-      產出後寫進properties對應屬性ENC(密文)  
-      <font style='color:red;'>mvn package</font>打包,  
-      <font style='color:red;'>java "-Djasypt.encryptor.password=密鑰" -jar ./target/erp-0.0.1.jar</font>啟動包(powershell)
+      手動運行test.java.com.erp.base.tool.JasyptEncodeTest,   
+      產出後寫進properties對應屬性ENC(密文)--資料庫設定和mail設定  
+      <font style='color:red;'>mvn clean package</font>打包,  
+      <font style='color:red;'>java "-Djasypt.encryptor.password=密鑰" -jar ./target/erp-0.0.1.jar</font>啟動包  
+      (intellij的terminal默認是powershell, 如果是cmd就去掉雙引號)
    4. 前端專案啟動
-4. 後續應該就是研究專案部屬
+8. 後續應該就是研究專案部屬
