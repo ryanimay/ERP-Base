@@ -13,11 +13,13 @@ javaMail + Thymeleaf
 Redis 用於緩存  
 Swagger 產出API文件  
 Mockito + Junit5 用於單元測試、集成測試  
+Jasypt 做配置脫敏  
 ~~順便練習寫TDD和測試(測試最後再補，花太多時間了)  
 剩下有想到再補~~
 
 SpringSecurity筆記:https://hackmd.io/@S1MNxjTORYSfAfivxMlEQw/rykdZBNEa
-
+Quartz:https://hackmd.io/@S1MNxjTORYSfAfivxMlEQw/S1tkrG_pC
+Jasypt:https://hackmd.io/@S1MNxjTORYSfAfivxMlEQw/rJvzRwQkke
 ***
 ## 2024.1.2
 舊設計棄置(branch master_abandoned)  
