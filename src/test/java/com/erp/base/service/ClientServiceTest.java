@@ -149,7 +149,9 @@ class ClientServiceTest {
     @Test
     @DisplayName("更新密碼_找不到用戶_錯誤")
     void updatePassword_userNotFound_error() {
-        ResponseEntity<ApiResponse> response = clientService.updatePassword(new UpdatePasswordRequest());
+        UpdatePasswordRequest request = new UpdatePasswordRequest();
+        request.setId(77L);
+        ResponseEntity<ApiResponse> response = clientService.updatePassword(request);
         Assertions.assertEquals(ApiResponse.error(ApiResponseCode.IDENTITY_ERROR), response);
     }
 
