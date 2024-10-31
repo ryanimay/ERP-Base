@@ -40,5 +40,12 @@ pipeline {
                 echo "Docker image has been pushed successfully!"
             }
         }
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo "Deploying to Kubernetes..."
+                sh 'kubectl apply -f ./erp-base-deployment.yml'
+                echo "Deployment applied successfully!"
+            }
+        }
     }
 }
