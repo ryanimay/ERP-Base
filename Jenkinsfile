@@ -54,7 +54,7 @@ pipeline {
                 sh 'chmod +x ./kubectl'
                 echo "Deploying to Kubernetes..."
                 //用kubectl執行
-                sh 'kubectl apply -f ./erp-base-deployment.yml'
+                sh './kubectl apply -f ./erp-base-deployment.yml'
                 echo "Deployment applied successfully!"
             }
         }
