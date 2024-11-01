@@ -51,9 +51,7 @@ pipeline {
                 echo "Installing kubectl..."
                 //安裝kubectl
                 sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'
-                sh 'chmod +x ./kubectl'
-                //開放權限
-                sh './kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --serviceaccount=default:default'
+                sh 'chmod u+x ./kubectl'
                 //用kubectl執行
                 echo "Deploying to Kubernetes..."
                 sh './kubectl apply -f ./erp-base-deployment.yml'
