@@ -43,22 +43,17 @@ pipeline {
         stage('Deploy to Kubernetes') {
             agent {
                 kubernetes {
-                    yaml """
-                    apiVersion: v1
-                    kind: Pod
-                    metadata:
-                      name: kubectl-apply
-                    spec:
-                      containers:
-                      - name: kubectl
-                        image: bitnami/kubectl:latest
-                        command: ['sleep']
-                        args: ['infinity']
-                    """
+                    label 'k8s-agent'
+                    defaultContainer 'jnlp'
                 }
             }
             steps {
+                echo "Installing kubectl..."
+                //安裝kubectl
+                sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'
+                sh 'chmod +x ./kubectl'
                 echo "Deploying to Kubernetes..."
+                //用kubectl執行
                 sh 'kubectl apply -f ./erp-base-deployment.yml'
                 echo "Deployment applied successfully!"
             }
