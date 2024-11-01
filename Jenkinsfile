@@ -41,6 +41,12 @@ pipeline {
             }
         }
         stage('Deploy to Kubernetes') {
+            agent {
+                kubernetes {
+                    label 'k8s-agent'
+                    defaultContainer 'jnlp'
+                }
+            }
             steps {
                 echo "Deploying to Kubernetes..."
                 sh 'kubectl apply -f ./erp-base-deployment.yml'
