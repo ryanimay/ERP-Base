@@ -43,8 +43,18 @@ pipeline {
         stage('Deploy to Kubernetes') {
             agent {
                 kubernetes {
-                    label 'k8s-agent'
-                    defaultContainer 'jnlp'
+                    yaml """
+                    apiVersion: v1
+                    kind: Pod
+                    metadata:
+                      name: kubectl-apply
+                    spec:
+                      containers:
+                      - name: kubectl
+                        image: bitnami/kubectl:latest
+                        command: ['sleep']
+                        args: ['infinity']
+                    """
                 }
             }
             steps {
