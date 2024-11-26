@@ -1,4 +1,4 @@
-pipeline {//test
+pipeline {
     agent any
 
     stages {
@@ -40,23 +40,23 @@ pipeline {//test
                 echo "Docker image has been pushed successfully!"
             }
         }
-        stage('Deploy to Kubernetes') {
-            agent {
-                kubernetes {
-                    label 'k8s-agent'
-                    defaultContainer 'jnlp'
-                }
-            }
-            steps {
-                echo "Installing kubectl..."
-                //安裝kubectl
-                sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'
-                sh 'chmod u+x ./kubectl'
-                //用kubectl執行
-                echo "Deploying to Kubernetes..."
-                sh './kubectl apply -f ./erp-base-deployment.yml'
-                echo "Deployment applied successfully!"
-            }
-        }
+//         stage('Deploy to Kubernetes') {
+//             agent {
+//                 kubernetes {
+//                     label 'k8s-agent'
+//                     defaultContainer 'jnlp'
+//                 }
+//             }
+//             steps {
+//                 echo "Installing kubectl..."
+//                 //安裝kubectl
+//                 sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'
+//                 sh 'chmod u+x ./kubectl'
+//                 //用kubectl執行
+//                 echo "Deploying to Kubernetes..."
+//                 sh './kubectl apply -f ./erp-base-deployment.yml'
+//                 echo "Deployment applied successfully!"
+//             }
+//         }
     }
 }
