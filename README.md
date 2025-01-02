@@ -135,4 +135,5 @@ Service類覆蓋率大概都在90%，其餘不管
       <font style='color:red;'>java "-Djasypt.encryptor.password=密鑰" -jar ./target/erp-0.0.1.jar</font>啟動包  
       (intellij的terminal默認是powershell, 如果是cmd就去掉雙引號)
    4. 前端專案啟動
-8. 後續應該就是研究專案部屬
+8. 專案部屬在GCP，筆記:https://hackmd.io/@S1MNxjTORYSfAfivxMlEQw/r1oiE-j-yg
+
