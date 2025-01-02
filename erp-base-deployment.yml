@@ -4,7 +4,7 @@ metadata:
   name: erp-base
   labels:
     app: erp-base
-spec: 
+spec:
   replicas: 1
   selector:
     matchLabels:
@@ -17,17 +17,18 @@ spec:
       imagePullSecrets:
         - name: dockerhub
       containers:
-      - name: erp-base
-        image: ryanimay840121/erp-base:latest
-        env:
-          - name: JASYPT_ENCRYPTOR_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: jasypt
-                key: JASYPT_ENCRYPTOR_PASSWORD
-        ports:
-          - containerPort: 8081
-          
+        - name: erp-base
+          image: ryanimay840121/erp-base:latest
+          imagePullPolicy: Always
+          env:
+            - name: JASYPT_ENCRYPTOR_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jasypt
+                  key: JASYPT_ENCRYPTOR_PASSWORD
+          ports:
+            - containerPort: 8081
+
 ---
 apiVersion: v1
 kind: Service
